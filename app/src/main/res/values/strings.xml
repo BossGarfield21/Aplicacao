@@ -23,4 +23,8 @@
     <string name="title_activity_area_pessoal">AreaPessoalActivity</string>
     <string name="title_activity_grupos_main">GruposMainActivity</string>
     <string name="title_activity_maps">Map</string>
+    <string name="title_activity_drawe_map">DraweMapActivity</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
 </resources>
