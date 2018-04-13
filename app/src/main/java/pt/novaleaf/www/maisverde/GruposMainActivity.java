@@ -14,8 +14,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import java.util.Map;
-
 public class GruposMainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -84,7 +82,7 @@ public class GruposMainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_feed) {
-            Intent i = new Intent(GruposMainActivity.this, MainMenuActivity.class);
+            Intent i = new Intent(GruposMainActivity.this, FeedActivity.class);
             startActivity(i);
             //finish();
         } else if (id == R.id.nav_mapa) {

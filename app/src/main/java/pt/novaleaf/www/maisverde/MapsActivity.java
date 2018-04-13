@@ -2,7 +2,6 @@ package pt.novaleaf.www.maisverde;
 
 import android.content.Intent;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -74,7 +73,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         int id = item.getItemId();
 
         if (id == R.id.nav_feed) {
-            Intent i = new Intent(MapsActivity.this, MainMenuActivity.class);
+            Intent i = new Intent(MapsActivity.this, FeedActivity.class);
             startActivity(i);
             //finish();
         } else if (id == R.id.nav_mapa) {

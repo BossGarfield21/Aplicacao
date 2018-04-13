@@ -14,7 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainMenuActivity extends AppCompatActivity
+public class FeedActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     @Override
@@ -83,17 +83,17 @@ public class MainMenuActivity extends AppCompatActivity
 
         if (id == R.id.nav_mapa) {
 
-            Intent i = new Intent(MainMenuActivity.this, MapsActivity.class);
+            Intent i = new Intent(FeedActivity.this, MapsActivity.class);
             startActivity(i);
 
         } else if (id == R.id.nav_area_pessoal) {
-            Intent i = new Intent(MainMenuActivity.this, AreaPessoalActivity.class);
+            Intent i = new Intent(FeedActivity.this, AreaPessoalActivity.class);
             startActivity(i);
             //finish();
 
         } else if (id == R.id.nav_grupos) {
 
-            Intent i = new Intent(MainMenuActivity.this, GruposMainActivity.class);
+            Intent i = new Intent(FeedActivity.this, GruposMainActivity.class);
             startActivity(i);
 
         } else if (id == R.id.nav_share) {

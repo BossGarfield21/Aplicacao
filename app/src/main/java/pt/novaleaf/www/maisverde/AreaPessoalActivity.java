@@ -82,7 +82,7 @@ public class AreaPessoalActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_feed) {
-            Intent i = new Intent(AreaPessoalActivity.this, MainMenuActivity.class);
+            Intent i = new Intent(AreaPessoalActivity.this, FeedActivity.class);
             startActivity(i);
             //finish();
         } else if (id == R.id.nav_mapa) {
