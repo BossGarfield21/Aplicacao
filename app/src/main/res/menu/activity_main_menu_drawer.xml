@@ -6,14 +6,14 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_feed"
-            android:icon="@android:drawable/picture_frame"
+            android:icon="@mipmap/ic_feed_foreground"
             android:title="Feed"/><item
         android:id="@+id/nav_mapa"
         android:icon="@android:drawable/ic_dialog_map"
         android:title="Mapa"/>
         <item
             android:id="@+id/nav_grupos"
-            android:icon="@drawable/ic_menu_gallery"
+            android:icon="@mipmap/ic_foreground_group_black"
             android:title="Grupos"/>
         <item
             android:id="@+id/nav_area_pessoal"

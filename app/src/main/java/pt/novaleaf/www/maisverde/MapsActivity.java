@@ -37,8 +37,8 @@ public class MapsActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent i = new Intent(MapsActivity.this, CriarOcorrenciaActivity.class);
+                startActivity(i);
             }
         });
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -83,7 +83,12 @@ public class MapsActivity extends AppCompatActivity
         if (id == R.id.action_help) {
             return true;
         } else if(id == R.id.action_logout){
-            //TODO: sair da app
+            //TODO: revogar token
+            Intent i = new Intent(MapsActivity.this, LoginActivity.class);
+            startActivity(i);
+        } else if(id == R.id.action_acerca){
+            Intent i = new Intent(MapsActivity.this, AcercaActivity.class);
+            startActivity(i);
         }
 
         return super.onOptionsItemSelected(item);

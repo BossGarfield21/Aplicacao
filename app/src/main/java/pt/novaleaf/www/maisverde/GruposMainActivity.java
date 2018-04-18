@@ -28,8 +28,8 @@ public class GruposMainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent i = new Intent(GruposMainActivity.this, CriarGrupoActivity.class);
+                startActivity(i);
             }
         });
 
@@ -72,6 +72,11 @@ public class GruposMainActivity extends AppCompatActivity
             return true;
         } else if(id == R.id.action_logout){
             //TODO: sair da app
+            Intent i = new Intent(GruposMainActivity.this, LoginActivity.class);
+            startActivity(i);
+        } else if(id == R.id.action_acerca){
+            Intent i = new Intent(GruposMainActivity.this, AcercaActivity.class);
+            startActivity(i);
         }
 
         return super.onOptionsItemSelected(item);

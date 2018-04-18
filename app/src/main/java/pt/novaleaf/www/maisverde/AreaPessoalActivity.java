@@ -1,9 +1,14 @@
 package pt.novaleaf.www.maisverde;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.AttributeSet;
+import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 
 public class AreaPessoalActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -23,6 +29,8 @@ public class AreaPessoalActivity extends AppCompatActivity
         setContentView(R.layout.activity_area_pessoal);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        FloatingActionButton floatingActionButton = (FloatingActionButton) findViewById(R.id.fab);
+        floatingActionButton.setVisibility(View.GONE);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -72,8 +80,15 @@ public class AreaPessoalActivity extends AppCompatActivity
             return true;
         } else if(id == R.id.action_logout){
             //TODO: sair da app
+            Intent i = new Intent(AreaPessoalActivity.this, LoginActivity.class);
+            startActivity(i);
         } else if(id == R.id.action_change){
-            //TODO: sair da app
+            //mudar dados
+            Intent i = new Intent(AreaPessoalActivity.this, SettingsPessoaisActivity.class);
+            startActivity(i);
+        } else if(id == R.id.action_acerca){
+            Intent i = new Intent(AreaPessoalActivity.this, AcercaActivity.class);
+            startActivity(i);
         }
 
         return super.onOptionsItemSelected(item);
