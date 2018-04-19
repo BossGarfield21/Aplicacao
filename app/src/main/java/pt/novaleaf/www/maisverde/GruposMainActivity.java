@@ -1,6 +1,8 @@
 package pt.novaleaf.www.maisverde;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -72,10 +74,14 @@ public class GruposMainActivity extends AppCompatActivity
             return true;
         } else if(id == R.id.action_logout){
             //TODO: sair da app
+            SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
+            editor.clear();
+            editor.commit();
             Intent i = new Intent(GruposMainActivity.this, LoginActivity.class);
             startActivity(i);
+            finish();
         } else if(id == R.id.action_acerca){
-            Intent i = new Intent(GruposMainActivity.this, AcercaActivity.class);
+            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://anovaleaf.ddns.net"));
             startActivity(i);
         }
 
@@ -95,10 +101,12 @@ public class GruposMainActivity extends AppCompatActivity
         } else if (id == R.id.nav_mapa) {
             Intent i = new Intent(GruposMainActivity.this, MapsActivity.class);
             startActivity(i);
+            //finish();
 
         } else if (id == R.id.nav_area_pessoal) {
             Intent i = new Intent(GruposMainActivity.this, AreaPessoalActivity.class);
             startActivity(i);
+            //finish();
 
         } else if (id == R.id.nav_grupos) {
 

@@ -27,11 +27,7 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText mEmailView;
     private EditText mUsernameView;
     private EditText mPasswordView;
-    private EditText mMoradaView;
-    private EditText mLocalidadeView;
-    private EditText mCodPostalView;
     private EditText mPassConfirmView;
-    private EditText mRoleView;
     private Button bRegistar;
 
     @Override
@@ -43,10 +39,6 @@ public class RegisterActivity extends AppCompatActivity {
         mEmailView = (EditText) findViewById(R.id.email);
         mPasswordView = (EditText) findViewById(R.id.password);
         mPassConfirmView = (EditText) findViewById(R.id.passwordConfirm);
-        mMoradaView = (EditText) findViewById(R.id.morada);
-        mLocalidadeView = (EditText) findViewById(R.id.localidade);
-        mCodPostalView = (EditText) findViewById(R.id.cod_postal);
-        mRoleView = (EditText) findViewById(R.id.role);
         bRegistar = (Button) findViewById(R.id.registar_button);
 
         bRegistar.setOnClickListener(new View.OnClickListener() {
@@ -68,21 +60,13 @@ public class RegisterActivity extends AppCompatActivity {
         mEmailView.setError(null);
         mPasswordView.setError(null);
         mUsernameView.setError(null);
-        mMoradaView.setError(null);
-        mCodPostalView.setError(null);
-        mLocalidadeView.setError(null);
         mPassConfirmView.setError(null);
-        mRoleView.setError(null);
 
         // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
         String passwordConf = mPassConfirmView.getText().toString();
         String username = mUsernameView.getText().toString();
-        String morada = mMoradaView.getText().toString();
-        String localidade = mLocalidadeView.getText().toString();
-        String codPostal = mCodPostalView.getText().toString();
-        String role = mRoleView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -118,33 +102,6 @@ public class RegisterActivity extends AppCompatActivity {
             cancel = true;
         }
 
-        // check for a valid morada
-        if (TextUtils.isEmpty(morada)) {
-            mMoradaView.setError(getString(R.string.error_field_required));
-            focusView = mMoradaView;
-            cancel = true;
-        }
-
-        //check for a valid localidade
-        if (TextUtils.isEmpty(localidade)) {
-            mLocalidadeView.setError(getString(R.string.error_field_required));
-            focusView = mLocalidadeView;
-            cancel = true;
-        }
-
-        if (TextUtils.isEmpty(role)) {
-            mRoleView.setError(getString(R.string.error_field_required));
-            focusView = mRoleView;
-            cancel = true;
-        }
-
-        //check for a valid codigo postal
-        if (TextUtils.isEmpty(codPostal)) {
-            mCodPostalView.setError(getString(R.string.error_field_required));
-            focusView = mCodPostalView;
-            cancel = true;
-        }
-
         if (cancel) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
@@ -152,7 +109,7 @@ public class RegisterActivity extends AppCompatActivity {
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            mAuthTask = new UserRegisterTask(email, password, username, morada, localidade, codPostal, passwordConf, role);
+            mAuthTask = new UserRegisterTask(email, password, username, passwordConf);
             mAuthTask.execute((Void) null);
         }
 
@@ -160,18 +117,12 @@ public class RegisterActivity extends AppCompatActivity {
 
     private boolean isEmailValid(String email) {
         //TODO: Replace this with your own logic
-        return email.contains("@");
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
         return password.length() > 4;
-    }
-
-    private boolean isCodPostalValid(String codPostal) {
-        //TODO: Replace this with your own logic
-        return true;
-        //       return password.length() > 4;
     }
 
     /**
@@ -184,23 +135,17 @@ public class RegisterActivity extends AppCompatActivity {
         private final String mPassword;
         private final String mPasswordConfirm;
         private final String mUsername;
-        private final String mMorada;
-        private final String mLocalidade;
-        private final String mCodPostal;
         private final String mRole;
 
 
 
         UserRegisterTask(String email, String password, String username,
-                         String morada, String localidade, String codPostal, String passwordConfirm, String role) {
+                          String passwordConfirm) {
             mEmail = email;
             mPassword = password;
             mPasswordConfirm = passwordConfirm;
             mUsername = username;
-            mMorada = morada;
-            mLocalidade = localidade;
-            mCodPostal = codPostal;
-            mRole = role;
+            mRole = "volunteer";
         }
 
         /**
@@ -227,23 +172,12 @@ public class RegisterActivity extends AppCompatActivity {
 
                 jsonObject.put("username", mUsername);
                 jsonObject.put("password", mPassword);
-                //jsonObject.put("confirmation_password", mPasswordConfirm);
-                //jsonObject.put("name", mUsername);
                 jsonObject.put("email", mEmail);
-                //jsonObject.put("role", mRole);
-                //jsonObject.put("telephone", "999999999");
-                //jsonObject.put("mobile_phone", "999999999");
-                jsonObject.put("morada", mMorada);
-                //jsonObject.put("complementaryaddress", "rua das silvas");
-                jsonObject.put("localidade", mLocalidade);
-                //jsonObject.put("postalcode", mCodPostal);
-                //jsonObject.put("nif", "999999999");
-                //jsonObject.put("cc", "123456-SSS");
+                jsonObject.put("role", mRole);
+                jsonObject.put("confirmation_password", mPasswordConfirm);
 
 
-
-
-                URL url = new URL("https://empirical-axon-196102.appspot.com/rest/register/v3");
+                URL url = new URL("https://novaleaf-197719.appspot.com/rest/register");
                 return RequestsREST.doPOST(url, jsonObject);
 
 
@@ -257,21 +191,17 @@ public class RegisterActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(final String result) {
             mAuthTask = null;
-            //Log.i("cxuvuy", result +" ffs+pk");
+            Log.i("result", result +" ffs+pk");
 
             if (result != null) {
-                //JSONObject token = null
-                // We parse the result
 
-                //token = new JSONObject(result);
-                //Log.i("RegisterActivity", token.toString());
+                Log.i("RegisterActivity", result);
                 // TODO: store the token in the SharedPreferences
 
                 // TODO: call the main activity (to be implemented) with data in the intent
                 Intent myIntent = new Intent(RegisterActivity.this, LoginActivity.class);
                 RegisterActivity.this.startActivity(myIntent);
                 finish();
-
 
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));

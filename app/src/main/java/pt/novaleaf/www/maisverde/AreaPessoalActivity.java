@@ -1,12 +1,22 @@
 package pt.novaleaf.www.maisverde;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,9 +29,26 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.URL;
+import java.util.ArrayList;
 
 public class AreaPessoalActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+
+    private TextView mUsername;
+    private TextView mEmail;
+    private TextView mRole;
+    private TextView mNumReports;
+    private TextView mRatioAprovacao;
+    private ListView mList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +68,7 @@ public class AreaPessoalActivity extends AppCompatActivity
             }
         });
 
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -49,7 +77,25 @@ public class AreaPessoalActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+
+
+        mList = (ListView) findViewById(R.id.list);
+
+        final ArrayList<String> arrayList =  new ArrayList<>();
+        arrayList.add("Username: " + sharedPreferences.getString("username", "erro"));
+        arrayList.add("Email: " + sharedPreferences.getString("email", "erro"));
+        arrayList.add("Rácio de aprovação dos reports:" + sharedPreferences.getString("approval_rate", "erro"));
+        arrayList.add("Número de reports efetuados: " + sharedPreferences.getString("numb_reports", "erro"));
+        arrayList.add("Role: " + sharedPreferences.getString("role", "erro"));
+
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, arrayList);
+        mList.setAdapter(arrayAdapter);
+
     }
+
+
 
     @Override
     public void onBackPressed() {
@@ -80,14 +126,18 @@ public class AreaPessoalActivity extends AppCompatActivity
             return true;
         } else if(id == R.id.action_logout){
             //TODO: sair da app
+            SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
+            editor.clear();
+            editor.commit();
             Intent i = new Intent(AreaPessoalActivity.this, LoginActivity.class);
             startActivity(i);
+            finish();
         } else if(id == R.id.action_change){
             //mudar dados
             Intent i = new Intent(AreaPessoalActivity.this, SettingsPessoaisActivity.class);
             startActivity(i);
         } else if(id == R.id.action_acerca){
-            Intent i = new Intent(AreaPessoalActivity.this, AcercaActivity.class);
+            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://anovaleaf.ddns.net"));
             startActivity(i);
         }
 
@@ -108,6 +158,7 @@ public class AreaPessoalActivity extends AppCompatActivity
 
             Intent i = new Intent(AreaPessoalActivity.this, MapsActivity.class);
             startActivity(i);
+            //finish();
 
         } else if (id == R.id.nav_area_pessoal) {
 
@@ -115,6 +166,7 @@ public class AreaPessoalActivity extends AppCompatActivity
 
             Intent i = new Intent(AreaPessoalActivity.this, GruposMainActivity.class);
             startActivity(i);
+            //finish();
 
         } else if (id == R.id.nav_share) {
 
@@ -126,4 +178,7 @@ public class AreaPessoalActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
+
 }

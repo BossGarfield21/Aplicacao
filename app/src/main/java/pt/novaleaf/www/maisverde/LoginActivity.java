@@ -67,6 +67,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Keep track of the login task to ensure we can cancel it if requested.
      */
     private UserLoginTask mAuthTask = null;
+    private UserInfoTask mInfoTask = null;
 
     // UI references.
     private AutoCompleteTextView mEmailView;
@@ -350,7 +351,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 jsonObject.put("password", mPassword);
                 jsonObject.put("username", mEmail);
 
-                URL url = new URL("https://empirical-axon-196102.appspot.com/rest/login/v2");
+                URL url = new URL("https://novaleaf-197719.appspot.com/rest/login");
                 return RequestsREST.doPOST(url, jsonObject);
             } catch (Exception e) {
                 return e.toString();
@@ -376,6 +377,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     editor.putLong("creationData", token.getLong("creationData"));
                     editor.putLong("expirationData", token.getLong("expirationData"));
                     editor.commit();
+                    attemptGetInfo();
                     // TODO: call the main activity (to be implemented) with data in the intent
                     Intent myIntent = new Intent(LoginActivity.this, FeedActivity.class);
                     LoginActivity.this.startActivity(myIntent);
@@ -401,5 +403,102 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
         }
     }
+
+    /**
+     * Attempts to get user info
+     */
+    private void attemptGetInfo() {
+        if (mInfoTask != null) {
+            return;
+        }
+
+        mInfoTask = new UserInfoTask();
+        mInfoTask.execute((Void) null);
+
+    }
+
+    /**
+     * Represents a task used to get user info
+     * the user.
+     */
+    public class UserInfoTask extends AsyncTask<Void, Void, String> {
+
+
+
+        UserInfoTask() {
+
+        }
+
+        /**
+         * Cancel background network operation if we do not have network connectivity.
+         */
+        @Override
+        protected void onPreExecute() {
+            ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Activity.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+            if (networkInfo == null || !networkInfo.isConnected() ||
+                    (networkInfo.getType() != ConnectivityManager.TYPE_WIFI
+                            && networkInfo.getType() != ConnectivityManager.TYPE_MOBILE)) {
+                // If no connectivity, cancel task and update Callback with null data.
+                cancel(true);
+            }
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            try {
+                //TODO: create JSON object with credentials and call doPost
+
+                JSONObject jsonObject = new JSONObject();
+                SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+                jsonObject.put("username", sharedPreferences.getString("username", "erro"));
+                jsonObject.put("tokenID", sharedPreferences.getString("tokenID", "erro"));
+                jsonObject.put("creationData", sharedPreferences.getLong("creationData", 0));
+                jsonObject.put("expirationData", sharedPreferences.getLong("expirationData", 0));
+
+                URL url = new URL("https://novaleaf-197719.appspot.com/rest/users/"+
+                        sharedPreferences.getString("username", "erro"));
+                return RequestsREST.doPOST(url, jsonObject);
+            } catch (Exception e) {
+                return e.toString();
+            }
+        }
+
+
+        @Override
+        protected void onPostExecute(final String result) {
+            mInfoTask = null;
+
+            if (result != null) {
+                JSONObject token = null;
+                try {
+                    // We parse the result
+                    token = new JSONObject(result);
+                    Log.i("TokenAreaPessoal", token.toString());
+                    // TODO: store the token in the SharedPreferences
+
+                    SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
+
+                    editor.putString("email", token.getString("email"));
+                    editor.putString("role", token.getString("role"));
+                    editor.putString("numb_reports", token.getString("numb_reports"));
+                    editor.putString("approval_rate", token.getString("approval_rate"));
+                    editor.commit();
+
+                } catch (JSONException e) {
+                    // WRONG DATA SENT BY THE SERVER
+
+                    Log.e("Authentication", e.toString());
+                }
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            mInfoTask = null;
+
+        }
+    }
+
 }
 
