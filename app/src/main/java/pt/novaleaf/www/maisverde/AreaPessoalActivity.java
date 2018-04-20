@@ -29,6 +29,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -43,11 +44,7 @@ public class AreaPessoalActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
 
-    private TextView mUsername;
-    private TextView mEmail;
-    private TextView mRole;
-    private TextView mNumReports;
-    private TextView mRatioAprovacao;
+
     private ListView mList;
 
     @Override
@@ -78,20 +75,33 @@ public class AreaPessoalActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+
+        ArrayList<String> arrayList =  new ArrayList<>();
+        arrayList.add("As minhas ocorrências");
+        arrayList.add("O meu perfil");
 
 
         mList = (ListView) findViewById(R.id.list);
-
-        final ArrayList<String> arrayList =  new ArrayList<>();
-        arrayList.add("Username: " + sharedPreferences.getString("username", "erro"));
-        arrayList.add("Email: " + sharedPreferences.getString("email", "erro"));
-        arrayList.add("Rácio de aprovação dos reports:" + sharedPreferences.getString("approval_rate", "erro"));
-        arrayList.add("Número de reports efetuados: " + sharedPreferences.getString("numb_reports", "erro"));
-        arrayList.add("Role: " + sharedPreferences.getString("role", "erro"));
-
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, arrayList);
+
         mList.setAdapter(arrayAdapter);
+
+        mList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                switch (i){
+                    case 0:
+                        Intent a = new Intent(AreaPessoalActivity.this, MinhasOcorrenciasActivity.class);
+                        startActivity(a);
+                        return;
+                    case 1:
+                        Intent b = new Intent(AreaPessoalActivity.this, AlterarDadosActivity.class);
+                        startActivity(b);
+                        return;
+                }
+            }
+        });
+
 
     }
 
@@ -134,7 +144,7 @@ public class AreaPessoalActivity extends AppCompatActivity
             finish();
         } else if(id == R.id.action_change){
             //mudar dados
-            Intent i = new Intent(AreaPessoalActivity.this, SettingsPessoaisActivity.class);
+            Intent i = new Intent(AreaPessoalActivity.this, AlterarDadosActivity.class);
             startActivity(i);
         } else if(id == R.id.action_acerca){
             Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://anovaleaf.ddns.net"));

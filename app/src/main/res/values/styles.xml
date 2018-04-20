@@ -10,10 +10,10 @@
         <item name="android:statusBarColor">@color/colorGreen</item>
     </style>
 
-    <style name="AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
-    <style name="PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
-    <style name="EntradaTheme" parent="AppTheme" />
+    <style name="EntradaTheme" parent="AppTheme"/>
 
 </resources>

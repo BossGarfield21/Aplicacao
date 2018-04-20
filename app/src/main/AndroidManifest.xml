@@ -9,8 +9,9 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
-    <uses-feature android:name="android.hardware.camera"
-                  android:required="true" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true"/>
 
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
@@ -85,8 +86,18 @@
             android:name=".CriarOcorrenciaActivity"
             android:label="Criar ocorrência">
         </activity>
-        <activity android:name=".CriarGrupoActivity"
+        <activity
+            android:name=".CriarGrupoActivity"
             android:label="Criar grupo">
+        </activity>
+        <activity
+            android:name=".AlterarDadosActivity"
+            android:label="Perfil"
+            android:parentActivityName=".AreaPessoalActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        </activity>
+        <activity android:name=".MinhasOcorrenciasActivity"
+            android:label="As minhas ocorrências">
         </activity>
     </application>
 
