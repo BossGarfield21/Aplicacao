@@ -26,7 +26,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        android:theme="@style/CustomTheme">
         <activity
             android:name=".EntradaActivity"
             android:theme="@style/EntradaTheme">
@@ -39,22 +39,19 @@
         <activity android:name=".LoginActivity"/>
         <activity
             android:name=".FeedActivity"
-            android:label="Feed"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+            android:label="Feed">
         </activity>
         <activity
             android:name=".AreaPessoalActivity"
             android:label="Área Pessoal"
-            android:parentActivityName=".FeedActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+            android:parentActivityName=".FeedActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="pt.novaleaf.www.maisverde.FeedActivity"/>
         </activity>
         <activity
             android:name=".GruposMainActivity"
-            android:label="Grupos"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+            android:label="Grupos"/>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -69,8 +66,7 @@
 
         <activity
             android:name=".MapsActivity"
-            android:label="Mapa"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+            android:label="Mapa"/>
         <activity
             android:name=".SettingsPessoaisActivity"
             android:label="@string/title_activity_settings_pessoais"
@@ -93,8 +89,7 @@
         <activity
             android:name=".AlterarDadosActivity"
             android:label="Perfil"
-            android:parentActivityName=".AreaPessoalActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+            android:parentActivityName=".AreaPessoalActivity">
         </activity>
         <activity android:name=".MinhasOcorrenciasActivity"
             android:label="As minhas ocorrências">

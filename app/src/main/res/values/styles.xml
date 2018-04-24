@@ -16,4 +16,11 @@
 
     <style name="EntradaTheme" parent="AppTheme"/>
 
+    <style name="CustomTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:statusBarColor">@color/colorGreen</item>
+        <item name="android:colorForeground">@color/colorTextToolbar</item>
+        <item name="android:textColorPrimary">@color/colorTextToolbar</item>
+        <item name="android:windowBackground">@color/colorCustomBack</item>
+    </style>
+
 </resources>
