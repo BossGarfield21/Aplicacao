@@ -91,8 +91,11 @@
             android:label="Perfil"
             android:parentActivityName=".AreaPessoalActivity">
         </activity>
-        <activity android:name=".MinhasOcorrenciasActivity"
+        <activity
+            android:name=".MinhasOcorrenciasActivity"
             android:label="As minhas ocorrências">
+        </activity>
+        <activity android:name=".DetalheOcorrenciaActivity">
         </activity>
     </application>
 

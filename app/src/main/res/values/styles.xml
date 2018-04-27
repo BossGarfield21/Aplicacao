@@ -21,6 +21,7 @@
         <item name="android:colorForeground">@color/colorTextToolbar</item>
         <item name="android:textColorPrimary">@color/colorTextToolbar</item>
         <item name="android:windowBackground">@color/colorCustomBack</item>
+        <item name="colorPrimary">@color/colorToolbar</item>
     </style>
 
 </resources>

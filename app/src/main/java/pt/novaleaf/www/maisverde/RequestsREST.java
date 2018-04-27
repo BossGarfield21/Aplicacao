@@ -84,6 +84,7 @@ public class RequestsREST {
             connection.setChunkedStreamingMode(0);
             connection.setRequestProperty("Accept","application/json");
             connection.setRequestProperty("Content-type","application/json");
+
             // Open communications link (network traffic occurs here).
             out = new BufferedOutputStream(connection.getOutputStream());
 

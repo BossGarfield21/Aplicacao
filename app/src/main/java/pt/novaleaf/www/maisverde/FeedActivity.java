@@ -1,11 +1,15 @@
 package pt.novaleaf.www.maisverde;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.CardView;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -19,19 +23,56 @@ import android.view.MenuItem;
 public class FeedActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private CardView cardView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_menu);
+        setContentView(R.layout.activity_feed);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment fragment = fragmentManager.findFragmentById(R.id.fragmentContainer);
+        if (fragment==null){
+            fragment = OcorrenciaFragment.newInstance(1);
+
+            fragmentManager.beginTransaction()
+                                              .add(R.id.fragmentContainer, fragment)
+                                              .commit();
+        }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(FeedActivity.this, CriarOcorrenciaActivity.class);
-                startActivity(i);
+
+                AlertDialog.Builder alert = new AlertDialog.Builder(FeedActivity.this);
+                alert.setTitle("Criar report");
+                alert
+                        .setMessage("O local do report é a sua localização atual?")
+                        .setCancelable(true)
+                        .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Intent intent = new Intent(FeedActivity.this, CriarOcorrenciaActivity.class);
+                                intent.putExtra("estaLocal", true);
+                                startActivity(intent);
+                            }
+                        })
+                        .setNegativeButton("Não", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Intent intent = new Intent(FeedActivity.this, MapsActivity.class);
+                                intent.putExtra("toast", true);
+                                startActivity(intent);
+                            }
+                        });
+
+                AlertDialog alertDialog = alert.create();
+                alertDialog.show();
+
             }
         });
 
@@ -43,6 +84,10 @@ public class FeedActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+
+        cardView = (CardView) findViewById(R.id.cardView);
+
     }
 
     @Override

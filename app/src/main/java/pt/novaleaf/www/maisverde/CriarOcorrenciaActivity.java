@@ -2,11 +2,13 @@ package pt.novaleaf.www.maisverde;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -24,6 +26,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -41,11 +44,8 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
     private AutoCompleteTextView mTituloView;
     private AutoCompleteTextView mDescricaoView;
     private Button bCriar;
-    private CheckBox estaLocal;
-    private CheckBox outraLocal;
     private double latitude;
     private double longitude;
-    private FusedLocationProviderClient mFusedLocationClient;
 
 
     @Override
@@ -66,51 +66,35 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+        Intent intent = getIntent();
+        final boolean estaLocal = intent.getBooleanExtra("estaLocal", false);
+        if (estaLocal){
+
+            setLocal();
+
+        } else {
+            latitude = intent.getDoubleExtra("lat", -1);
+            longitude = intent.getDoubleExtra("lon", -1);
+
+            Log.i("Main Latitude", String.valueOf(latitude));
+            Log.i("Main Longitude", String.valueOf(longitude));
+        }
+
+
+
+
         mTituloView = (AutoCompleteTextView) findViewById(R.id.titulo);
         mDescricaoView = (AutoCompleteTextView) findViewById(R.id.descricao);
         bCriar = (Button) findViewById(R.id.bCriar);
-        estaLocal = (CheckBox) findViewById(R.id.checkBox);
-        outraLocal = (CheckBox) findViewById(R.id.checkBox2);
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
-
-        estaLocal.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (estaLocal.isChecked()) {
-                    outraLocal.setChecked(false);
-                }
-            }
-        });
-
-        outraLocal.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (outraLocal.isChecked()) {
-                    estaLocal.setChecked(false);
-                }
-            }
-        });
-
-
 
 
         bCriar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (estaLocal.isChecked()){
-                    setLocal();
-                    Log.i("latitude", String.valueOf(latitude));
-                    Log.i("longitude", String.valueOf(longitude));
-                } else if(outraLocal.isChecked()){
-                    //ir ao mapa e seleccionar
-                }
-
                 attemptAddReport();
             }
         });
 
-        setLocal();
 
     }
 
@@ -137,47 +121,26 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
     public void setLocal(){
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
-            int permissionChecked1 = ContextCompat.checkSelfPermission(
-                    this, Manifest.permission.ACCESS_COARSE_LOCATION);
+
             int permissionChecked2 = ContextCompat.checkSelfPermission(
                     this, Manifest.permission.ACCESS_FINE_LOCATION);
-            if (permissionChecked1 != PackageManager.PERMISSION_GRANTED) {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                        Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                    showExplanation("Permission Needed", "Rationale", Manifest.permission.ACCESS_COARSE_LOCATION, 1);
-                } else {
-                    requestPermission(Manifest.permission.ACCESS_COARSE_LOCATION, 1);
-                }
-            }
 
-            if (permissionChecked1 != PackageManager.PERMISSION_GRANTED) {
+            if (permissionChecked2 != PackageManager.PERMISSION_GRANTED) {
                 if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                         Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    showExplanation("Permission Needed", "Rationale", Manifest.permission.ACCESS_FINE_LOCATION, 1);
+                    showExplanation("É necessária esta permissão", "Rationale", Manifest.permission.ACCESS_FINE_LOCATION, 1);
                 } else {
                     requestPermission(Manifest.permission.ACCESS_FINE_LOCATION, 1);
                 }
             }
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            //return;
         }
 
-        mFusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        // Got last known location. In some rare situations this can be null.
-                        if (location != null) {
-                            latitude = location.getLatitude();
-                            longitude = location.getLongitude();
-                        }
-                    }
-                });
+        LocationManager locationManager;
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        Location lastPlace = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        latitude = lastPlace.getLatitude();
+        longitude = lastPlace.getLongitude();
+
     }
 
     private void attemptAddReport() {
@@ -203,11 +166,6 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(descricao) ) {
             mDescricaoView.setError("Descrição vazia");
             focusView = mDescricaoView;
-            cancel = true;
-        }
-
-        if(!estaLocal.isChecked() && !outraLocal.isChecked()){
-            Toast.makeText(CriarOcorrenciaActivity.this, "Escolha um modo de localiazação, por favor", Toast.LENGTH_LONG).show();
             cancel = true;
         }
 
@@ -297,6 +255,12 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
 
             if (result != null) {
                 //JSONObject token = null;
+                SharedPreferences preferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+                SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
+                int newNumReports = preferences.getInt("numReports",0)+1;
+                editor.putString("userReport"+newNumReports, mTitulo);
+                editor.putInt("numReports", newNumReports);
+                editor.commit();
 
                 Intent i = new Intent(CriarOcorrenciaActivity.this, FeedActivity.class);
                 startActivity(i);

@@ -5,7 +5,9 @@
     <color name="colorAccent">#1b711e</color>
     <color name="colorGreen">#103513</color>
     <color name="colorBackGround">#1d6812</color>
-    <color name="primary_material_light">#038008</color>
+    <color name="primary_material_light">#33aa38</color>
     <color name="colorTextToolbar">#000000</color>
-    <color name="colorCustomBack">#abbbaa</color>
+    <color name="colorCustomBack">#dddddd</color>
+    <color name="colorMenu">#7ab57c</color>
+    <color name="colorToolbar">#429844</color>
 </resources>
