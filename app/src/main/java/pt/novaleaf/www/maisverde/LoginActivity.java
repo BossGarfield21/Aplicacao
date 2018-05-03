@@ -360,7 +360,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 jsonObject.put("username", mEmail);
 
                 URL url = new URL("https://novaleaf-197719.appspot.com/rest/login");
-                return RequestsREST.doPOST(url, jsonObject);
+                return RequestsREST.doPOST(url, jsonObject, "");
             } catch (Exception e) {
                 return e.toString();
             }
@@ -372,35 +372,21 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = null;
             showProgress(false);
 
-            if (result != null) {
-                JSONObject token = null;
-                try  {
-                    // We parse the result
-                    token = new JSONObject(result);
-                    Log.i("LoginActivity", token.toString());
-                    // TODO: store the token in the SharedPreferences
-                    SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
-                    editor.putString("username", mEmail);
-                    editor.putString("tokenID", token.getString("tokenID"));
-                    editor.putLong("creationData", token.getLong("creationData"));
-                    editor.putLong("expirationData", token.getLong("expirationData"));
-                    editor.commit();
-                    attemptGetInfo();
-                    attemptGetReports();
-                    // TODO: call the main activity (to be implemented) with data in the intent
-                    Intent myIntent = new Intent(LoginActivity.this, FeedActivity.class);
-                    LoginActivity.this.startActivity(myIntent);
-                    finish();
-
-                } catch (JSONException e) {
-                    // WRONG DATA SENT BY THE SERVER
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(LoginActivity.this);
-                    alertDialogBuilder.setMessage("Credenciais erradas");
-                    AlertDialog alertDialog = alertDialogBuilder.create();
-                    alertDialog.show();
-                    Log.e("Authentication",e.toString());
-                }
-            } else {
+            if (!result.contains("HTTP error code")) {
+                // We parse the result
+                Log.i("LoginActivity", result);
+                // TODO: store the token in the SharedPreferences
+                SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
+                editor.putString("tokenID", result);
+                editor.commit();
+                attemptGetInfo();
+                attemptGetReports();
+                // TODO: call the main activity (to be implemented) with data in the intent
+                Intent myIntent = new Intent(LoginActivity.this, FeedActivity.class);
+                LoginActivity.this.startActivity(myIntent);
+                finish();
+            }else {
+                Log.i("LoginActivity", result);
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
             }
@@ -441,6 +427,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     /**
      * Represents a task used to get user info
+     * Tenta ir buscar a informacao do user e adiciona-a as sharedpreferences
      */
     public class UserInfoTask extends AsyncTask<Void, Void, String> {
 
@@ -470,16 +457,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             try {
                 //TODO: create JSON object with credentials and call doPost
 
-                JSONObject jsonObject = new JSONObject();
                 SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
-                jsonObject.put("username", sharedPreferences.getString("username", "erro"));
-                jsonObject.put("tokenID", sharedPreferences.getString("tokenID", "erro"));
-                jsonObject.put("creationData", sharedPreferences.getLong("creationData", 0));
-                jsonObject.put("expirationData", sharedPreferences.getLong("expirationData", 0));
 
-                URL url = new URL("https://novaleaf-197719.appspot.com/rest/users/"+
+                String token = sharedPreferences.getString("tokenID", "erro");
+
+                URL url = new URL("https://novaleaf-197719.appspot.com/rest/withtoken/users/"+
                         sharedPreferences.getString("username", "erro"));
-                return RequestsREST.doPOST(url, jsonObject);
+                return RequestsREST.doPOST(url, null, token);
             } catch (Exception e) {
                 return e.toString();
             }
@@ -509,7 +493,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 } catch (JSONException e) {
                     // WRONG DATA SENT BY THE SERVER
 
-                    Log.e("Authentication", e.toString());
+                    Log.e("TOKENAREAPESSOAL", e.toString());
                 }
             }
         }
@@ -524,6 +508,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     /**
      * Represents a task used to get user tasks
+     * Tenta ir buscar todos os reports do utilizador, e adiciona-os as sharedpreferences
      */
     public class UserReportsTask extends AsyncTask<Void, Void, String> {
 
@@ -554,13 +539,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
                 JSONObject jsonObject = new JSONObject();
                 SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
-                jsonObject.put("username", sharedPreferences.getString("username", "erro"));
-                jsonObject.put("tokenID", sharedPreferences.getString("tokenID", "erro"));
-                jsonObject.put("creationData", sharedPreferences.getLong("creationData", 0));
-                jsonObject.put("expirationData", sharedPreferences.getLong("expirationData", 0));
 
-                URL url = new URL("https://novaleaf-197719.appspot.com/rest/mapsupport/listmymarkers");
-                return RequestsREST.doPOST(url, jsonObject);
+                String token = sharedPreferences.getString("tokenID", "erro");
+
+                URL url = new URL("https://novaleaf-197719.appspot.com/rest/withtoken/mapsupport/listmymarkers");
+                return RequestsREST.doPOST(url, null, token);
             } catch (Exception e) {
                 return e.toString();
             }

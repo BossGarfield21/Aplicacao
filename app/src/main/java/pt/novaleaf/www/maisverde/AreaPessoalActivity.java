@@ -3,6 +3,7 @@ package pt.novaleaf.www.maisverde;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
@@ -40,11 +41,15 @@ import org.json.JSONObject;
 import java.net.URL;
 import java.util.ArrayList;
 
+/**
+ * Author: Hugo Mochao
+ * Atividade para consultar os dados do utilizador
+ */
 public class AreaPessoalActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
 
-
+    //Lista dos dados
     private ListView mList;
 
     @Override
@@ -76,6 +81,7 @@ public class AreaPessoalActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
+
         ArrayList<String> arrayList =  new ArrayList<>();
         arrayList.add("As minhas ocorrências");
         arrayList.add("O meu perfil");
@@ -86,6 +92,7 @@ public class AreaPessoalActivity extends AppCompatActivity
 
         mList.setAdapter(arrayAdapter);
 
+        //Ver que atividade comecar
         mList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -136,12 +143,31 @@ public class AreaPessoalActivity extends AppCompatActivity
             return true;
         } else if(id == R.id.action_logout){
             //TODO: sair da app
-            SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
-            editor.clear();
-            editor.commit();
-            Intent i = new Intent(AreaPessoalActivity.this, LoginActivity.class);
-            startActivity(i);
-            finish();
+            final android.support.v7.app.AlertDialog.Builder alert = new android.support.v7.app.AlertDialog.Builder(AreaPessoalActivity.this);
+            alert.setTitle("Terminar sessão");
+            alert
+                    .setMessage("Deseja terminar sessão?")
+                    .setCancelable(true)
+                    .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
+                            editor.clear();
+                            editor.commit();
+                            Intent intent = new Intent(AreaPessoalActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    })
+                    .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    });
+
+            android.support.v7.app.AlertDialog alertDialog = alert.create();
+            alertDialog.show();
         } else if(id == R.id.action_change){
             //mudar dados
             Intent i = new Intent(AreaPessoalActivity.this, AlterarDadosActivity.class);

@@ -21,11 +21,17 @@ import org.json.JSONObject;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * Author: Hugo Mochao
+ * Atividade responsavel por mostrar as ocorrencias do utilizador
+ */
 public class MinhasOcorrenciasActivity extends AppCompatActivity {
 
+    //ListView com as ocorrencias
     private ListView mList;
-    private ArrayList<String> arrayList;
+    private List<String> arrayList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +64,7 @@ public class MinhasOcorrenciasActivity extends AppCompatActivity {
 
     }
 
+    //Vai buscar os reports as shared preferences
     private void attemptGetReports() {
 
         SharedPreferences preferences = getSharedPreferences("Prefs", MODE_PRIVATE);

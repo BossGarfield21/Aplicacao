@@ -10,6 +10,11 @@ import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 
+
+/**
+ * Author: Hugo Mochao
+ * Atividade de entrada com a imagem
+ */
 public class EntradaActivity extends AppCompatActivity {
 
     ImageView imageView;
@@ -33,6 +38,9 @@ public class EntradaActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * passa a proxima atividade depois de 4 segundos
+     */
     public void passActivity(){
         Handler mHandler = new Handler();
         mHandler.postDelayed(new Runnable() {

@@ -16,6 +16,7 @@ import android.widget.TextView;
 import pt.novaleaf.www.maisverde.dummy.DummyContent;
 import pt.novaleaf.www.maisverde.dummy.DummyContent.DummyItem;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,14 +33,13 @@ public class OcorrenciaFragment extends Fragment {
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
     private RecyclerView myRecyclerView;
-    private static List<Ocorrencia> list;
+    private static List<Ocorrencia> list =  new ArrayList<>();
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
     public OcorrenciaFragment() {
-        //newInstance(1);
     }
 
     // TODO: Customize parameter initialization
@@ -111,8 +111,8 @@ public class OcorrenciaFragment extends Fragment {
     public static void updateList(){
         Ocorrencia ocorrencia1 = new Ocorrencia("FOGO", R.mipmap.ic_entrada_round);
         Ocorrencia ocorrencia2 = new Ocorrencia("ajuda", R.mipmap.ic_logo_round);
-        list.add(ocorrencia1);
-        list.add(ocorrencia2);
+        list.add(new Ocorrencia("FOGO", R.mipmap.ic_entrada_round));
+        list.add(new Ocorrencia("ajuda", R.mipmap.ic_logo_round));
 
     }
 

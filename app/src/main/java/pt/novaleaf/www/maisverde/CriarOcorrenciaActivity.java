@@ -31,6 +31,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.json.JSONException;
@@ -38,6 +39,13 @@ import org.json.JSONObject;
 
 import java.net.URL;
 
+import static pt.novaleaf.www.maisverde.MapsActivity.markers;
+
+
+/**
+ * Author: Hugo Mochao
+ * Atividade responsavel por criar ocorrencias
+ */
 public class CriarOcorrenciaActivity extends AppCompatActivity {
 
     private ReportTask mReportTask = null;
@@ -66,6 +74,10 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+
+        //Verificar que atividade antecedeu esta, ou maps ou feed
+        //Consoante a atividade proceder corretamente:
+        //Se veio do feed, quer dizer que nao e preciso ir ao mapa
         Intent intent = getIntent();
         final boolean estaLocal = intent.getBooleanExtra("estaLocal", false);
         if (estaLocal){
@@ -98,6 +110,7 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
 
     }
 
+    //Pedir permissoes
     private void showExplanation(String title,
                                  String message,
                                  final String permission,
@@ -118,6 +131,10 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
                 new String[]{permissionName}, permissionRequestCode);
     }
 
+    /**
+     * Ir buscar o ultimo lugar conhecido do GPS
+     * Verifica as permissoes
+     */
     public void setLocal(){
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -143,6 +160,10 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
 
     }
 
+
+    /**
+     * Tentativa de adicionar ocorrencia
+     */
     private void attemptAddReport() {
         if (mReportTask != null) {
             return;
@@ -217,12 +238,9 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
             try {
                 //TODO: create JSON object with credentials and call doPost
 
-                JSONObject token = new JSONObject();
+
                 SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
-                token.put("username", sharedPreferences.getString("username", "erro"));
-                token.put("tokenID", sharedPreferences.getString("tokenID", "erro"));
-                token.put("creationData", sharedPreferences.getLong("creationData", 0));
-                token.put("expirationData", sharedPreferences.getLong("expirationData", 0));
+                String token = sharedPreferences.getString("tokenID", "erro");
 
                 JSONObject marker = new JSONObject();
                 marker.put("name", mTitulo);
@@ -234,14 +252,11 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
 
                 marker.put("coordinates", coordinates);
 
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("marker", marker);
-                jsonObject.put("token", token);
 
-                Log.i("objeto", jsonObject.toString());
+                Log.i("objeto", marker.toString());
 
-                URL url = new URL("https://novaleaf-197719.appspot.com/rest/mapsupport/addmarker");
-                return RequestsREST.doPOST(url, jsonObject);
+                URL url = new URL("https://novaleaf-197719.appspot.com/rest/withtoken/mapsupport/addmarker");
+                return RequestsREST.doPOST(url, marker, token);
             } catch (Exception e) {
                 Log.i("ERRO", e.toString());
                 return e.toString();
@@ -261,6 +276,8 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
                 editor.putString("userReport"+newNumReports, mTitulo);
                 editor.putInt("numReports", newNumReports);
                 editor.commit();
+                LatLng position = new LatLng(latitude, longitude);
+                markers.put(position, mTitulo);
 
                 Intent i = new Intent(CriarOcorrenciaActivity.this, FeedActivity.class);
                 startActivity(i);

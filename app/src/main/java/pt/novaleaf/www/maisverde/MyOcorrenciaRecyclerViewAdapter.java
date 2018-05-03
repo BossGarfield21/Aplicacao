@@ -6,17 +6,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import pt.novaleaf.www.maisverde.OcorrenciaFragment.OnListFragmentInteractionListener;
-import pt.novaleaf.www.maisverde.dummy.DummyContent.DummyItem;
 
 import java.util.List;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
+ * {@link RecyclerView.Adapter} that can display a {@link Ocorrencia} and makes a call to the
  * specified {@link OnListFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
+ * Adaptador para o recycler view
  */
 public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcorrenciaRecyclerViewAdapter.ViewHolder> {
 
@@ -36,7 +36,7 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.imagem.setImageResource(mValues.get(position).getImgId());
         holder.titulo.setText(mValues.get(position).getTitulo());
 
@@ -46,7 +46,7 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    //mListener.onListFragmentInteraction(holder.mItem);
+                    mListener.onListFragmentInteraction(mValues.get(position));
                 }
             }
         });
@@ -60,13 +60,13 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
     public class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView imagem;
         public TextView titulo;
-        public FrameLayout mFrame;
+        public RelativeLayout mFrame;
 
         public ViewHolder(View v){
             super(v);
             imagem = (ImageView) v.findViewById(R.id.image);
             titulo = (TextView) v.findViewById(R.id.content);
-            mFrame = (FrameLayout) v.findViewById(R.id.frame);
+            mFrame = (RelativeLayout) v.findViewById(R.id.frame);
         }
     }
 }

@@ -14,6 +14,10 @@ public class Ocorrencia {
 
     public static final List<Ocorrencia> items = new ArrayList<>();
 
+    public Ocorrencia(){
+
+    }
+
     public Ocorrencia(String tit, int img){
         titulo = tit;
         imgId = img;

@@ -64,12 +64,13 @@ public class RequestsREST {
 
     }
 
-    public static String doPOST(URL url, JSONObject data) throws IOException {
+    public static String doPOST(URL url, JSONObject data, String token) throws IOException {
 
         InputStream stream = null;
         OutputStream out = null;
         HttpURLConnection connection = null;
         String result = null;
+        String stringToken = null;
         try {
             connection = (HttpURLConnection) url.openConnection();
             // Timeout for reading InputStream arbitrarily set to 10000ms.
@@ -84,21 +85,27 @@ public class RequestsREST {
             connection.setChunkedStreamingMode(0);
             connection.setRequestProperty("Accept","application/json");
             connection.setRequestProperty("Content-type","application/json");
+            if (!token.equals(""))
+                connection.setRequestProperty("Authorization", token);
+
 
             // Open communications link (network traffic occurs here).
             out = new BufferedOutputStream(connection.getOutputStream());
 
-            out.write(data.toString().getBytes());
-            out.flush();
+            if (data!=null) {
+                out.write(data.toString().getBytes());
+                out.flush();
+            }
             int responseCode = connection.getResponseCode();
             if (responseCode != HttpsURLConnection.HTTP_OK) {
-                throw new IOException("HTTP error code: " + responseCode);
+                return "HTTP error code: " + responseCode;
             }
             // Retrieve the response body as an InputStream.
+            stringToken = connection.getHeaderField("Authorization");
             stream = connection.getInputStream();
             if (stream != null) {
                 // Converts Stream to String with max length of 1K.
-                result = readStream(stream, 1024);
+                result = readStream(stream, 1024*5);
             }
         } finally {
             // Close streams and disconnect HTTP connection.
@@ -106,7 +113,10 @@ public class RequestsREST {
             if (stream != null) stream.close();
             if (connection != null) connection.disconnect();
         }
-        Log.i("cx", result);
+
+        if (token.equals(""))
+            return stringToken;
+
         return result;
 
     }

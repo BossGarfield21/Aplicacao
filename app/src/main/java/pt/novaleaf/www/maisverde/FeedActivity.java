@@ -19,11 +19,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
+
+/**
+ * Author: Hugo Mochao
+ * Atividade do feed de ocorrencias
+ * Implementa um cardview
+ */
 
 public class FeedActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, OcorrenciaFragment.OnListFragmentInteractionListener {
 
     private CardView cardView;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,37 +53,9 @@ public class FeedActivity extends AppCompatActivity
         }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        fab.setVisibility(View.GONE);
 
-                AlertDialog.Builder alert = new AlertDialog.Builder(FeedActivity.this);
-                alert.setTitle("Criar report");
-                alert
-                        .setMessage("O local do report é a sua localização atual?")
-                        .setCancelable(true)
-                        .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                Intent intent = new Intent(FeedActivity.this, CriarOcorrenciaActivity.class);
-                                intent.putExtra("estaLocal", true);
-                                startActivity(intent);
-                            }
-                        })
-                        .setNegativeButton("Não", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                Intent intent = new Intent(FeedActivity.this, MapsActivity.class);
-                                intent.putExtra("toast", true);
-                                startActivity(intent);
-                            }
-                        });
 
-                AlertDialog alertDialog = alert.create();
-                alertDialog.show();
-
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -119,15 +100,63 @@ public class FeedActivity extends AppCompatActivity
             return true;
         } else if(id == R.id.action_logout){
             //TODO: sair da app
-            SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
-            editor.clear();
-            editor.commit();
-            Intent i = new Intent(FeedActivity.this, LoginActivity.class);
-            startActivity(i);
-            finish();
+
+            final AlertDialog.Builder alert = new AlertDialog.Builder(FeedActivity.this);
+            alert.setTitle("Terminar sessão");
+            alert
+                    .setMessage("Deseja terminar sessão?")
+                    .setCancelable(true)
+                    .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
+                            editor.clear();
+                            editor.commit();
+                            Intent intent = new Intent(FeedActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    })
+                    .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    });
+
+            AlertDialog alertDialog = alert.create();
+            alertDialog.show();
+
+
+
         } else if(id == R.id.action_acerca){
             Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://anovaleaf.ddns.net"));
             startActivity(i);
+        } else if(id == R.id.novaOcorrencia){
+            AlertDialog.Builder alert = new AlertDialog.Builder(FeedActivity.this);
+            alert.setTitle("Criar report");
+            alert
+                    .setMessage("O local do report é a sua localização atual?")
+                    .setCancelable(true)
+                    .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Intent intent = new Intent(FeedActivity.this, CriarOcorrenciaActivity.class);
+                            intent.putExtra("estaLocal", true);
+                            startActivity(intent);
+                        }
+                    })
+                    .setNegativeButton("Não", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Intent intent = new Intent(FeedActivity.this, MapsActivity.class);
+                            intent.putExtra("toast", true);
+                            startActivity(intent);
+                        }
+                    });
+
+            AlertDialog alertDialog = alert.create();
+            alertDialog.show();
         }
 
         return super.onOptionsItemSelected(item);
@@ -165,5 +194,10 @@ public class FeedActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onListFragmentInteraction(Ocorrencia item) {
+        Toast.makeText(FeedActivity.this, "Clicou no " + item.getTitulo(), Toast.LENGTH_SHORT).show();
     }
 }

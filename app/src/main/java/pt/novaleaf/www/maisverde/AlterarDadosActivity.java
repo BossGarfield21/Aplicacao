@@ -28,6 +28,12 @@ import org.json.JSONObject;
 import java.net.URL;
 import java.util.ArrayList;
 
+
+/**
+ * Author: Hugo Mochao
+ * Atividade que serve para modificar os dados de um utilizador
+ */
+
 public class AlterarDadosActivity extends AppCompatActivity {
 
     private String email;
@@ -64,6 +70,7 @@ public class AlterarDadosActivity extends AppCompatActivity {
         mList = (ListView) findViewById(R.id.myList);
         email = sharedPreferences.getString("email", "erro");
 
+        //Ir buscar a informacao do utilizador
         arrayList = new ArrayList<>();
         arrayList.add("Username: " + sharedPreferences.getString("username", "erro"));
         arrayList.add("Email: " + email);
@@ -80,6 +87,7 @@ public class AlterarDadosActivity extends AppCompatActivity {
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, arrayList);
         mList.setAdapter(arrayAdapter);
 
+        //Alterar a informacao com um longo clique
         mList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -115,6 +123,15 @@ public class AlterarDadosActivity extends AppCompatActivity {
 
     }
 
+
+    /**
+     *
+     * Mostrar o dialog correspondente a alteracao de campo
+     *
+     * @param titulo
+     * @param mensagem
+     * @param index
+     */
     public void setDialog(String titulo, String mensagem, final int index) {
 
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(AlterarDadosActivity.this);
@@ -273,12 +290,9 @@ public class AlterarDadosActivity extends AppCompatActivity {
             try {
                 //TODO: create JSON object with credentials and call doPost
 
-                JSONObject token = new JSONObject();
+
                 SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
-                token.put("username", sharedPreferences.getString("username", "erro"));
-                token.put("tokenID", sharedPreferences.getString("tokenID", "erro"));
-                token.put("creationData", sharedPreferences.getLong("creationData", 0));
-                token.put("expirationData", sharedPreferences.getLong("expirationData", 0));
+                String token =  sharedPreferences.getString("tokenID", "erro");
 
                 JSONObject profileInfo = new JSONObject();
                 profileInfo.put("email", mEmail);
@@ -289,13 +303,12 @@ public class AlterarDadosActivity extends AppCompatActivity {
                 profileInfo.put("mobile_phone", mMobile_phone);
                 profileInfo.put("postalcode", mPostalcode);
 
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("profileInfo", profileInfo);
-                jsonObject.put("token", token);
-                Log.i("profile info", jsonObject.toString());
+
+
+                Log.i("profile info", profileInfo.toString());
 
                 URL url = new URL("https://novaleaf-197719.appspot.com/rest/users/complete_profile");
-                return RequestsREST.doPOST(url, jsonObject);
+                return RequestsREST.doPOST(url, profileInfo, token);
             } catch (Exception e) {
                 Log.i("erro", e.toString());
                 return e.toString();

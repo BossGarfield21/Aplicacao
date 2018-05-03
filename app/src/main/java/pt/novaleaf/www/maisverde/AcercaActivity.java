@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 
 public class AcercaActivity extends AppCompatActivity {
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

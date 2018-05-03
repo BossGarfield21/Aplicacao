@@ -178,7 +178,7 @@ public class RegisterActivity extends AppCompatActivity {
 
 
                 URL url = new URL("https://novaleaf-197719.appspot.com/rest/register");
-                return RequestsREST.doPOST(url, jsonObject);
+                return RequestsREST.doPOST(url, jsonObject, "");
 
 
             } catch (Exception e) {

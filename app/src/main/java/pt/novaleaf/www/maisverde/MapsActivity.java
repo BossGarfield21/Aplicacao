@@ -2,6 +2,7 @@ package pt.novaleaf.www.maisverde;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,7 +13,10 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -39,11 +43,20 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -56,6 +69,8 @@ public class MapsActivity extends AppCompatActivity
     LocationManager locationManager;
     LocationListener locationListener;
     Location lastKnownLocation;
+    getMarkersTask mMarkersTask = null;
+    public static Map<LatLng, String> markers = new HashMap<>();
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -91,6 +106,7 @@ public class MapsActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        getMarkers();
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setVisibility(View.GONE);
 
@@ -116,11 +132,6 @@ public class MapsActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-    }
-
-    //TODO: ver que marcadores estao nesta area
-    public void updateMarkers(Double latitude, Double longitude){
-
     }
 
 
@@ -153,12 +164,31 @@ public class MapsActivity extends AppCompatActivity
             return true;
         } else if(id == R.id.action_logout){
             //TODO: revogar token
-            SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
-            editor.clear();
-            editor.commit();
-            Intent i = new Intent(MapsActivity.this, LoginActivity.class);
-            startActivity(i);
-            finish();
+            final AlertDialog.Builder alert = new AlertDialog.Builder(MapsActivity.this);
+            alert.setTitle("Terminar sessão");
+            alert
+                    .setMessage("Deseja terminar sessão?")
+                    .setCancelable(true)
+                    .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
+                            editor.clear();
+                            editor.commit();
+                            Intent intent = new Intent(MapsActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    })
+                    .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    });
+
+            AlertDialog alertDialog = alert.create();
+            alertDialog.show();
         } else if(id == R.id.action_acerca){
             Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://anovaleaf.ddns.net"));
             startActivity(i);
@@ -323,8 +353,142 @@ public class MapsActivity extends AppCompatActivity
         mMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
             @Override
             public void onCameraMove() {
-                //updateMarkers();
+                LatLng botLeft = mMap.getProjection().getVisibleRegion().nearLeft;
+                LatLng topRight = mMap.getProjection().getVisibleRegion().farRight;
+                updateMarkers(botLeft, topRight);
             }
         });
     }
+
+    //TODO: ver que marcadores estao nesta area
+    public void getMarkers(){
+
+
+        mMarkersTask = new getMarkersTask();
+        mMarkersTask.execute((Void) null);
+
+    }
+
+    public void updateMarkers(LatLng botLeft, LatLng topRight){
+
+        for (LatLng latLng : markers.keySet()){
+            if(latLng.latitude>=botLeft.latitude && latLng.longitude>=botLeft.longitude
+                    && latLng.latitude<=topRight.latitude && latLng.longitude <= topRight.longitude) {
+                mMap.addMarker(new MarkerOptions().position(latLng).title(markers.get(latLng)));
+                markers.remove(latLng);
+            }
+        }
+
+
+    }
+
+
+    public class getMarkersTask extends AsyncTask<Void, Void, String> {
+
+
+        /**
+        private final Double mLatBotLeft;
+        private final Double mLonBotLeft;
+        private final Double mLatTopRight;
+        private final Double mLonTopRight;
+         */
+
+        getMarkersTask() {
+            /**
+            mLonBotLeft = botLeft.longitude;
+            mLatBotLeft = botLeft.latitude;
+            mLonTopRight = topRight.longitude;
+            mLatTopRight = topRight.latitude;*/
+        }
+
+        /**
+         * Cancel background network operation if we do not have network connectivity.
+         */
+        @Override
+        protected void onPreExecute() {
+            ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Activity.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+            if (networkInfo == null || !networkInfo.isConnected() ||
+                    (networkInfo.getType() != ConnectivityManager.TYPE_WIFI
+                            && networkInfo.getType() != ConnectivityManager.TYPE_MOBILE)) {
+                // If no connectivity, cancel task and update Callback with null data.
+                cancel(true);
+            }
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            try {
+                //TODO: create JSON object with credentials and call doPost
+
+                //JSONObject botLeft = new JSONObject();
+                //JSONObject topRight = new JSONObject();
+                //JSONObject jsonObject = new JSONObject();
+                SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+
+                String token = sharedPreferences.getString("tokenID", "erro");
+                /*
+                botLeft.put("latitude", mLatBotLeft);
+                botLeft.put("longitude", mLonBotLeft);
+                topRight.put("latitude", mLatTopRight);
+                topRight.put("longitude", mLonTopRight);
+                jsonObject.put("bottomLeft", botLeft);
+                jsonObject.put("topRight", topRight);
+                */
+                URL url = new URL("https://novaleaf-197719.appspot.com/rest/withtoken/mapsupport/list_all_markers");
+                return RequestsREST.doPOST(url, null, token);
+            } catch (Exception e) {
+                return e.toString();
+            }
+        }
+
+
+        @Override
+        protected void onPostExecute(final String result) {
+            mMarkersTask = null;
+
+            if (result != null) {
+                JSONArray token = null;
+                try {
+                    // We parse the result
+                    Log.i("TOKENMARKERS", result);
+
+                    token = new JSONArray(result);
+                    Log.i("TOKENMARKERS", token.toString());
+                    // TODO: store the token in the SharedPreferences
+
+                    SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
+
+                    for (int i = 0; i< token.length(); i++){
+                        JSONObject marker = token.getJSONObject(i);
+                        Double lat = marker.getJSONObject("coordinates").getDouble("latitude");
+                        Double lon = marker.getJSONObject("coordinates").getDouble("longitude");
+                        String titulo = marker.getString("name");
+                        String descricao = marker.getString("description");
+
+                        LatLng position = new LatLng(lat, lon);
+                        if (!markers.keySet().contains(position)) {
+                            markers.put(position, titulo);
+                        }
+
+                    }
+
+
+                } catch (JSONException e) {
+                    // WRONG DATA SENT BY THE SERVER
+
+                    Log.e("Authentication", e.toString());
+                }
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            mMarkersTask = null;
+
+        }
+    }
+
+
+
 }
