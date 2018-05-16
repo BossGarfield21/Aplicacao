@@ -190,7 +190,34 @@ public class AreaPessoalActivity extends AppCompatActivity
             Intent i = new Intent(AreaPessoalActivity.this, FeedActivity.class);
             startActivity(i);
             //finish();
-        } else if (id == R.id.nav_mapa) {
+        } else if(id == R.id.nav_adicionar_report){
+
+            android.support.v7.app.AlertDialog.Builder alert = new android.support.v7.app.AlertDialog.Builder(AreaPessoalActivity.this);
+            alert.setTitle("Criar report");
+            alert
+                    .setMessage("O local do report é a sua localização atual?")
+                    .setCancelable(true)
+                    .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Intent intent = new Intent(AreaPessoalActivity.this, CriarOcorrenciaActivity.class);
+                            intent.putExtra("estaLocal", true);
+                            startActivity(intent);
+                        }
+                    })
+                    .setNegativeButton("Não", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Intent intent = new Intent(AreaPessoalActivity.this, MapsActivity.class);
+                            intent.putExtra("toast", true);
+                            startActivity(intent);
+                        }
+                    });
+
+            android.support.v7.app.AlertDialog alertDialog = alert.create();
+            alertDialog.show();
+
+        }else if (id == R.id.nav_mapa) {
 
             Intent i = new Intent(AreaPessoalActivity.this, MapsActivity.class);
             startActivity(i);

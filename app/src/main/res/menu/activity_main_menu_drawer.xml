@@ -7,10 +7,15 @@
         <item
             android:id="@+id/nav_feed"
             android:icon="@mipmap/ic_feed_foreground"
-            android:title="Feed"/><item
-        android:id="@+id/nav_mapa"
-        android:icon="@android:drawable/ic_dialog_map"
-        android:title="Mapa"/>
+            android:title="Feed"/>
+        <item
+            android:id="@+id/nav_adicionar_report"
+            android:icon="@drawable/ic_add_location_black_24dp"
+            android:title="Adicionar Ocorrência"/>
+        <item
+            android:id="@+id/nav_mapa"
+            android:icon="@android:drawable/ic_dialog_map"
+            android:title="Mapa"/>
         <item
             android:id="@+id/nav_grupos"
             android:icon="@mipmap/ic_foreground_group_black"
@@ -18,7 +23,7 @@
         <item
             android:id="@+id/nav_area_pessoal"
             android:icon="@drawable/ic_menu_manage"
-            android:title="Àrea Pessoal"/>
+            android:title="Área Pessoal"/>
     </group>
 
     <item android:title="Divulga a app!">

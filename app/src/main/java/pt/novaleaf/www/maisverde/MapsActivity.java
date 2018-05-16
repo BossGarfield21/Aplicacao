@@ -106,15 +106,49 @@ public class MapsActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
+        if (Build.VERSION.SDK_INT < 23) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10, 30, locationListener);
+
+            else {
+
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+
+            }
+        } else {
+
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10, 30, locationListener);
+
+                lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+                centerMapOnLocation(lastKnownLocation);
+
+            } else {
+
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+
+            }
+
+
+        }
+
+
         getMarkers();
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setVisibility(View.GONE);
-
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                novaOcorrencia();
+            }
+        });
         Intent i = getIntent();
         boolean toast = i.getBooleanExtra("toast", false);
 
         if (toast)
-            Toast.makeText(this, "Pressione no local pretendido", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Pressionar no local pretendido", Toast.LENGTH_LONG).show();
 
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -209,7 +243,11 @@ public class MapsActivity extends AppCompatActivity
             startActivity(i);
             finish();
 
-        } else if (id == R.id.nav_area_pessoal) {
+        } else if(id == R.id.nav_adicionar_report){
+
+            novaOcorrencia();
+
+        }else if (id == R.id.nav_area_pessoal) {
             Intent i = new Intent(MapsActivity.this, AreaPessoalActivity.class);
             startActivity(i);
             finish();
@@ -232,6 +270,31 @@ public class MapsActivity extends AppCompatActivity
     }
 
 
+    public void novaOcorrencia(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(MapsActivity.this);
+        alert.setTitle("Criar report");
+        alert
+                .setMessage("O local do report é a sua localização atual?")
+                .setCancelable(true)
+                .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent intent = new Intent(MapsActivity.this, CriarOcorrenciaActivity.class);
+                        intent.putExtra("estaLocal", true);
+                        startActivity(intent);
+                    }
+                })
+                .setNegativeButton("Escolher no mapa", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                        Toast.makeText(MapsActivity.this, "Pressionar no local pretendido", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        AlertDialog alertDialog = alert.create();
+        alertDialog.show();
+    }
 
     /**
      * Manipulates the map once available.
@@ -246,6 +309,7 @@ public class MapsActivity extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        mMap.getUiSettings().setMapToolbarEnabled(false);
 
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
@@ -272,28 +336,7 @@ public class MapsActivity extends AppCompatActivity
             }
         };
 
-        if (Build.VERSION.SDK_INT < 23) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10, 30, locationListener);
 
-        } else {
-
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10, 30, locationListener);
-
-                    lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-                    centerMapOnLocation(lastKnownLocation);
-
-                } else {
-
-                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-
-                }
-
-
-            }
 
 
 
@@ -371,16 +414,17 @@ public class MapsActivity extends AppCompatActivity
 
     public void updateMarkers(LatLng botLeft, LatLng topRight){
 
+        List<LatLng> list = new ArrayList<>();
         for (LatLng latLng : markers.keySet()){
             if(latLng.latitude>=botLeft.latitude && latLng.longitude>=botLeft.longitude
                     && latLng.latitude<=topRight.latitude && latLng.longitude <= topRight.longitude) {
                 mMap.addMarker(new MarkerOptions().position(latLng).title(markers.get(latLng)));
-                markers.remove(latLng);
-            }
+                list.add(latLng);}
         }
-
+        markers.keySet().removeAll(list);
 
     }
+
 
 
     public class getMarkersTask extends AsyncTask<Void, Void, String> {
@@ -435,8 +479,8 @@ public class MapsActivity extends AppCompatActivity
                 jsonObject.put("bottomLeft", botLeft);
                 jsonObject.put("topRight", topRight);
                 */
-                URL url = new URL("https://novaleaf-197719.appspot.com/rest/withtoken/mapsupport/list_all_markers");
-                return RequestsREST.doPOST(url, null, token);
+                URL url = new URL("https://novaleaf-197719.appspot.com/rest/withtoken/mapsupport/listallmarkers");
+                return RequestsREST.doGET(url, token);
             } catch (Exception e) {
                 return e.toString();
             }
@@ -488,6 +532,8 @@ public class MapsActivity extends AppCompatActivity
 
         }
     }
+
+
 
 
 

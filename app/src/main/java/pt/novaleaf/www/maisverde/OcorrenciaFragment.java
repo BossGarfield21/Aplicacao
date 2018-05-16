@@ -13,9 +13,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import pt.novaleaf.www.maisverde.dummy.DummyContent;
-import pt.novaleaf.www.maisverde.dummy.DummyContent.DummyItem;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -128,7 +125,13 @@ public class OcorrenciaFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(Ocorrencia item);
+        void onLikeInteraction(Ocorrencia item);
+
+        void onCommentInteraction(Ocorrencia item);
+
+        void onFavoritoInteraction(Ocorrencia item);
+
+        void onImagemInteraction(Ocorrencia item);
     }
 
 }

@@ -7,8 +7,6 @@
     android:name="pt.novaleaf.www.maisverde.OcorrenciaFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
     app:layoutManager="LinearLayoutManager"
     tools:context="pt.novaleaf.www.maisverde.OcorrenciaFragment"
     tools:listitem="@layout/fragment_ocorrencia"/>

@@ -11,6 +11,8 @@ public class Ocorrencia {
 
     String titulo;
     int imgId;
+    boolean liked;
+    boolean favorito;
 
     public static final List<Ocorrencia> items = new ArrayList<>();
 
@@ -21,6 +23,8 @@ public class Ocorrencia {
     public Ocorrencia(String tit, int img){
         titulo = tit;
         imgId = img;
+        favorito = false;
+        liked = false;
     }
 
     public String getTitulo(){
@@ -29,5 +33,22 @@ public class Ocorrencia {
 
     public int getImgId(){
         return imgId;
+    }
+
+
+    public void like(){
+        liked = !liked;
+    }
+
+    public void favorito(){
+        favorito = !favorito;
+    }
+
+    public boolean isFavorito(){
+        return favorito;
+    }
+
+    public boolean isLiked() {
+        return liked;
     }
 }

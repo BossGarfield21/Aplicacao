@@ -42,6 +42,7 @@ public class FeedActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
 
+
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment fragment = fragmentManager.findFragmentById(R.id.fragmentContainer);
         if (fragment==null){
@@ -84,7 +85,7 @@ public class FeedActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main_menu, menu);
+        getMenuInflater().inflate(R.menu.feed_menu, menu);
         return true;
     }
 
@@ -132,7 +133,25 @@ public class FeedActivity extends AppCompatActivity
         } else if(id == R.id.action_acerca){
             Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://anovaleaf.ddns.net"));
             startActivity(i);
-        } else if(id == R.id.novaOcorrencia){
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_mapa) {
+
+            Intent i = new Intent(FeedActivity.this, MapsActivity.class);
+            startActivity(i);
+            //finish();
+
+        } else if(id == R.id.nav_adicionar_report){
+
             AlertDialog.Builder alert = new AlertDialog.Builder(FeedActivity.this);
             alert.setTitle("Criar report");
             alert
@@ -157,22 +176,6 @@ public class FeedActivity extends AppCompatActivity
 
             AlertDialog alertDialog = alert.create();
             alertDialog.show();
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_mapa) {
-
-            Intent i = new Intent(FeedActivity.this, MapsActivity.class);
-            startActivity(i);
-            //finish();
 
         } else if (id == R.id.nav_area_pessoal) {
             Intent i = new Intent(FeedActivity.this, AreaPessoalActivity.class);
@@ -196,8 +199,27 @@ public class FeedActivity extends AppCompatActivity
         return true;
     }
 
+
     @Override
-    public void onListFragmentInteraction(Ocorrencia item) {
-        Toast.makeText(FeedActivity.this, "Clicou no " + item.getTitulo(), Toast.LENGTH_SHORT).show();
+    public void onLikeInteraction(Ocorrencia item) {
+
+    }
+
+    @Override
+    public void onCommentInteraction(Ocorrencia item) {
+        //Toast.makeText(FeedActivity.this, "IR PARA A PAGINA DOS COMENTARIOS", Toast.LENGTH_SHORT).show();
+
+        Intent i = new Intent(FeedActivity.this, ComentariosActivity.class);
+        startActivity(i);
+    }
+
+    @Override
+    public void onFavoritoInteraction(Ocorrencia item) {
+    }
+
+    @Override
+    public void onImagemInteraction(Ocorrencia item) {
+        Toast.makeText(FeedActivity.this, "IR PARA A PAGINA DA OCORRENCIA", Toast.LENGTH_SHORT).show();
+
     }
 }

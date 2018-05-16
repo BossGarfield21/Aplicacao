@@ -16,6 +16,7 @@
         android:id="@+id/imageLogo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
         app:srcCompat="@mipmap/ic_novaleaf_foreground"/>
 
     <ProgressBar
@@ -39,7 +40,9 @@
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:focusableInTouchMode="true">
 
                 <AutoCompleteTextView
                     android:id="@+id/email"
@@ -67,7 +70,7 @@
                     android:inputType="textPassword"
                     android:maxLines="1"
                     android:singleLine="true"
-                    android:text="admin"/>
+                    android:text="adminadmin"/>
 
             </android.support.design.widget.TextInputLayout>
 

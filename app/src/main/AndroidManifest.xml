@@ -40,6 +40,16 @@
         <activity
             android:name=".FeedActivity"
             android:label="Feed">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH"/>
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value="pt.novaleaf.www.maisverde.FeedActivity"/>
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable"/>
         </activity>
         <activity
             android:name=".AreaPessoalActivity"
@@ -96,6 +106,13 @@
             android:label="As minhas ocorrências">
         </activity>
         <activity android:name=".DetalheOcorrenciaActivity">
+        </activity>
+        <activity
+            android:name=".AlterarPassActivity"
+            android:label="Mudar password">
+        </activity>
+        <activity android:name=".ComentariosActivity"
+                  android:label="Comentários"  >
         </activity>
     </application>
 

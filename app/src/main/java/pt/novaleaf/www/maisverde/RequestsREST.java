@@ -23,7 +23,7 @@ import java.net.URL;
 
 public class RequestsREST {
 
-    public static String doGET(URL url) throws IOException {
+    public static String doGET(URL url, String token) throws IOException {
 
         InputStream stream = null;
         HttpURLConnection connection = null;
@@ -36,6 +36,8 @@ public class RequestsREST {
             connection.setConnectTimeout(10000);
             // For this use case, set HTTP method to GET.
             connection.setRequestMethod("GET");
+            //Header authorization with the token
+            connection.setRequestProperty("Authorization", token);
             // Already true by default but setting just in case; needs to be true since this request
             // is carrying an input (response) body.
             connection.setDoInput(true);
@@ -49,7 +51,7 @@ public class RequestsREST {
             stream = connection.getInputStream();
             if (stream != null) {
                 // Converts Stream to String with max length of 1024.
-                result = readStream(stream, 1024);
+                result = readStream(stream, 1024*5);
             }
         } finally {
             // Close Stream and disconnect HTTPS connection.

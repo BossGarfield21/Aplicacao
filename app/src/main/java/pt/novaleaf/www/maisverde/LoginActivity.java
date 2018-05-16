@@ -378,6 +378,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 // TODO: store the token in the SharedPreferences
                 SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
                 editor.putString("tokenID", result);
+                editor.putString("username", mEmail);
+                editor.putString("password", mPassword);
                 editor.commit();
                 attemptGetInfo();
                 attemptGetReports();
@@ -463,7 +465,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
                 URL url = new URL("https://novaleaf-197719.appspot.com/rest/withtoken/users/"+
                         sharedPreferences.getString("username", "erro"));
-                return RequestsREST.doPOST(url, null, token);
+                return RequestsREST.doGET(url, token);
             } catch (Exception e) {
                 return e.toString();
             }
@@ -478,6 +480,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 JSONObject token = null;
                 try {
                     // We parse the result
+                    Log.i("TokenAreaPessoal", result);
                     token = new JSONObject(result);
                     Log.i("TokenAreaPessoal", token.toString());
                     // TODO: store the token in the SharedPreferences
@@ -492,7 +495,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
                 } catch (JSONException e) {
                     // WRONG DATA SENT BY THE SERVER
-
+                    Log.e("TOKENAREAPESSOAL", result);
                     Log.e("TOKENAREAPESSOAL", e.toString());
                 }
             }
@@ -543,7 +546,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 String token = sharedPreferences.getString("tokenID", "erro");
 
                 URL url = new URL("https://novaleaf-197719.appspot.com/rest/withtoken/mapsupport/listmymarkers");
-                return RequestsREST.doPOST(url, null, token);
+                return RequestsREST.doGET(url, token);
             } catch (Exception e) {
                 return e.toString();
             }

@@ -64,7 +64,7 @@
                     android:inputType="textPassword"
                     android:maxLines="1"
                     android:singleLine="true"
-                    android:hint="@string/prompt_password"/>
+                    android:hint="Password"/>
 
             </android.support.design.widget.TextInputLayout>
 

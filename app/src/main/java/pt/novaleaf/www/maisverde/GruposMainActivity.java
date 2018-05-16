@@ -48,9 +48,12 @@ public class GruposMainActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+        ;
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+
     }
 
     @Override
@@ -59,6 +62,7 @@ public class GruposMainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
+
             super.onBackPressed();
         }
     }
@@ -125,7 +129,34 @@ public class GruposMainActivity extends AppCompatActivity
             Intent i = new Intent(GruposMainActivity.this, FeedActivity.class);
             startActivity(i);
             //finish();
-        } else if (id == R.id.nav_mapa) {
+        } else if(id == R.id.nav_adicionar_report){
+
+            AlertDialog.Builder alert = new AlertDialog.Builder(GruposMainActivity.this);
+            alert.setTitle("Criar report");
+            alert
+                    .setMessage("O local do report é a sua localização atual?")
+                    .setCancelable(true)
+                    .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Intent intent = new Intent(GruposMainActivity.this, CriarOcorrenciaActivity.class);
+                            intent.putExtra("estaLocal", true);
+                            startActivity(intent);
+                        }
+                    })
+                    .setNegativeButton("Não", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Intent intent = new Intent(GruposMainActivity.this, MapsActivity.class);
+                            intent.putExtra("toast", true);
+                            startActivity(intent);
+                        }
+                    });
+
+            AlertDialog alertDialog = alert.create();
+            alertDialog.show();
+
+        }else if (id == R.id.nav_mapa) {
             Intent i = new Intent(GruposMainActivity.this, MapsActivity.class);
             startActivity(i);
             //finish();

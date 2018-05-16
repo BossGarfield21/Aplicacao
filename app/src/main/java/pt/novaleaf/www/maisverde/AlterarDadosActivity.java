@@ -83,9 +83,44 @@ public class AlterarDadosActivity extends AppCompatActivity {
         arrayList.add("Código Postal: " + sharedPreferences.getString("postalcode", "ainda não definido"));
         arrayList.add("Telefone: " + sharedPreferences.getString("telephone", "ainda não definido"));
         arrayList.add("Telemovel: " + sharedPreferences.getString("mobile_phone", "ainda não definido"));
+        arrayList.add("Mudar a password");
 
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, arrayList);
         mList.setAdapter(arrayAdapter);
+
+        mList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                switch (i){
+                    case 10:
+                        AlertDialog.Builder changepass = new AlertDialog.Builder(AlterarDadosActivity.this);
+                        changepass.setTitle("Mudar password");
+                        changepass
+                                .setMessage("Quer mudar a password?")
+                                .setCancelable(true)
+                                .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        Intent intent = new Intent(AlterarDadosActivity.this, AlterarPassActivity.class);
+                                        startActivity(intent);
+                                    }
+                                })
+                                .setNegativeButton("Não", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        dialogInterface.dismiss();
+                                    }
+                                });
+
+                        AlertDialog alertDialog = changepass.create();
+                        alertDialog.show();
+                        return;
+                    default:
+                        return;
+                }
+            }
+        });
 
         //Alterar a informacao com um longo clique
         mList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -304,10 +339,10 @@ public class AlterarDadosActivity extends AppCompatActivity {
                 profileInfo.put("postalcode", mPostalcode);
 
 
-
                 Log.i("profile info", profileInfo.toString());
 
                 URL url = new URL("https://novaleaf-197719.appspot.com/rest/users/complete_profile");
+
                 return RequestsREST.doPOST(url, profileInfo, token);
             } catch (Exception e) {
                 Log.i("erro", e.toString());
