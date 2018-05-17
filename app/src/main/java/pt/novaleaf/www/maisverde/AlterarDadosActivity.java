@@ -1,28 +1,20 @@
 package pt.novaleaf.www.maisverde;
 
 import android.app.Activity;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.Toast;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URL;
@@ -37,24 +29,27 @@ import java.util.ArrayList;
 public class AlterarDadosActivity extends AppCompatActivity {
 
     private String email;
-    ArrayList<String> arrayList;
-    ListView mList;
-    SharedPreferences sharedPreferences;
+    public static ArrayList<PerfilItem> arrayList;
+    public static RecyclerView mRecyclerViewPerfil;
+    public static MyPerfilRecyclerViewAdapter adapter;
+    public static SharedPreferences sharedPreferences;
     private UserAlteraTask mAlteraTask = null;
-    private boolean changed = false;
+    public static boolean changed = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alterar_dados);
 
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (changed)
+                if (changed) {
+                    changed = false;
                     attemptSendData();
+                }
                 finish();
             }
         });
@@ -67,28 +62,35 @@ public class AlterarDadosActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
 
 
-        mList = (ListView) findViewById(R.id.myList);
+        mRecyclerViewPerfil = (RecyclerView) findViewById(R.id.myList);
         email = sharedPreferences.getString("email", "erro");
 
         //Ir buscar a informacao do utilizador
         arrayList = new ArrayList<>();
-        arrayList.add("Username: " + sharedPreferences.getString("username", "erro"));
-        arrayList.add("Email: " + email);
-        arrayList.add("Rácio de aprovação dos reports:" + sharedPreferences.getString("approval_rate", "erro"));
-        arrayList.add("Número de reports efetuados: " + sharedPreferences.getString("numb_reports", "erro"));
+        arrayList.add(new PerfilItem("Username", sharedPreferences.getString("username", "erro")));
+        arrayList.add(new PerfilItem("Email", email));
+        arrayList.add(new PerfilItem("Rácio de aprovação dos reports", sharedPreferences.getString("approval_rate", "erro")));
+        arrayList.add(new PerfilItem("Número de reports efetuados", sharedPreferences.getString("numb_reports", "erro")));
         //arrayList.add("Role: " + sharedPreferences.getString("role", "erro"));
-        arrayList.add("Morada principal: " + sharedPreferences.getString("firstaddress", "ainda não definida"));
-        arrayList.add("Morada complementar: " + sharedPreferences.getString("complementaryaddress", "ainda não definida"));
-        arrayList.add("Localidade: " + sharedPreferences.getString("locality", "ainda não definida"));
-        arrayList.add("Código Postal: " + sharedPreferences.getString("postalcode", "ainda não definido"));
-        arrayList.add("Telefone: " + sharedPreferences.getString("telephone", "ainda não definido"));
-        arrayList.add("Telemovel: " + sharedPreferences.getString("mobile_phone", "ainda não definido"));
-        arrayList.add("Mudar a password");
+        arrayList.add(new PerfilItem("Morada principal", sharedPreferences.getString("firstaddress", "ainda não definida")));
+        arrayList.add(new PerfilItem("Morada complementar", sharedPreferences.getString("complementaryaddress", "ainda não definida")));
+        arrayList.add(new PerfilItem("Localidade", sharedPreferences.getString("locality", "ainda não definida")));
+        arrayList.add(new PerfilItem("Código Postal", sharedPreferences.getString("postalcode", "ainda não definido")));
+        arrayList.add(new PerfilItem("Telefone", sharedPreferences.getString("telephone", "ainda não definido")));
+        arrayList.add(new PerfilItem("Telemovel", sharedPreferences.getString("mobile_phone", "ainda não definido")));
+        arrayList.add(new PerfilItem("Mudar a password", ""));
 
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, arrayList);
-        mList.setAdapter(arrayAdapter);
+        adapter = new MyPerfilRecyclerViewAdapter(this, arrayList);
+        mRecyclerViewPerfil.setLayoutManager(new LinearLayoutManager(this));
 
-        mList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mRecyclerViewPerfil.setAdapter(adapter);
+
+       //
+
+    }
+/**
+
+        mRecyclerViewPerfil.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
@@ -123,7 +125,7 @@ public class AlterarDadosActivity extends AppCompatActivity {
         });
 
         //Alterar a informacao com um longo clique
-        mList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        mRecyclerViewPerfil.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
 
@@ -166,7 +168,7 @@ public class AlterarDadosActivity extends AppCompatActivity {
      * @param titulo
      * @param mensagem
      * @param index
-     */
+     *
     public void setDialog(String titulo, String mensagem, final int index) {
 
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(AlterarDadosActivity.this);
@@ -225,7 +227,7 @@ public class AlterarDadosActivity extends AppCompatActivity {
                         arrayList.remove(index);
                         arrayList.add(index, finalNomeCampo + campo);
                         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(AlterarDadosActivity.this, android.R.layout.simple_list_item_1, arrayList);
-                        mList.setAdapter(arrayAdapter);
+                        mRecyclerViewPerfil.setAdapter(arrayAdapter);
                         SharedPreferences.Editor ed =sharedPreferences.edit();
                         ed.putString(finalTipo, campo);
                         ed.commit();
@@ -241,7 +243,7 @@ public class AlterarDadosActivity extends AppCompatActivity {
 
         alertDialog.show();
     }
-
+*/
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -355,10 +357,13 @@ public class AlterarDadosActivity extends AppCompatActivity {
         protected void onPostExecute(final String result) {
             mAlteraTask = null;
 
-            if (result != null) {
+            if (!result.contains("HTTP error")) {
                     // We parse the result
 
-                    Log.i("AlterarDados", result);
+                Log.i("AlterarDados", "sucesso");
+            } else{
+                changed = true;
+                Log.i("AlterarDados", result);
             }
         }
 

@@ -88,7 +88,7 @@ public class MyComentariosRecyclerViewAdapter extends RecyclerView.Adapter {
             }
         }
 
-        private class SentMessageHolder extends RecyclerView.ViewHolder {
+        class SentMessageHolder extends RecyclerView.ViewHolder {
             TextView messageText, timeText;
 
             SentMessageHolder(View itemView) {
@@ -162,8 +162,5 @@ public class MyComentariosRecyclerViewAdapter extends RecyclerView.Adapter {
             }
         }
 
-
-
-
-    }
+}
 

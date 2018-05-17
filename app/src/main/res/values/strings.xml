@@ -101,4 +101,20 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="title_activity_minhas_ocorrencias">MinhasOcorrenciasActivity</string>
+    <string name="titulo">Título</string>
+    <string name="descricao">Descrição</string>
+    <string name="criar">CRIAR</string>
+    <string name="nome_aplicacao">+VERDE</string>
+    <string name="slogan_aplicacao">Menos vermelho, +Verde!</string>
+    <string name="username">Username</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirme a Password</string>
+    <string name="email">Email</string>
+    <string name="registar">Registar</string>
+    <string name="image_report">imageReport</string>
+    <string name="gosto">Gosto</string>
+    <string name="favorito">Favorito</string>
+    <string name="comentar">Comentar</string>
 </resources>
