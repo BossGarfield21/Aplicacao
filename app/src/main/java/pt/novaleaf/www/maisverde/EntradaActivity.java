@@ -24,15 +24,6 @@ public class EntradaActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_entrada);
 
-        imageView = findViewById(R.id.mImage);
-
-        RotateAnimation rotate = new RotateAnimation(0, 180*20, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        rotate.setDuration(5000*20);
-        rotate.setInterpolator(new LinearInterpolator());
-
-        imageView.startAnimation(rotate);
-
-
         passActivity();
 
     }

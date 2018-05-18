@@ -14,7 +14,9 @@
 
     <style name="PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
-    <style name="EntradaTheme" parent="AppTheme"/>
+    <style name="EntradaTheme" parent="AppTheme">
+        <item name="colorPrimaryDark">@color/snow</item>
+    </style>
 
     <style name="CustomTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:statusBarColor">@color/colorGreen</item>

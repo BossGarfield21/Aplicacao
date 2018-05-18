@@ -29,7 +29,7 @@
         android:theme="@style/CustomTheme">
         <activity
             android:name=".EntradaActivity"
-            android:theme="@style/EntradaTheme">
+            android:theme="@style/Entrada3">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

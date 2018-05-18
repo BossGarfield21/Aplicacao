@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="NewEntrada" parent="EntradaTheme" >
+        <item name="colorPrimary">@color/snow</item>
+        <item name="android:windowBackground">@color/charcoal</item>
+    </style>
+
+    <style name="Entrada3" parent="Theme.AppCompat.NoActionBar" >
+        <item name="android:windowBackground">@color/charcoal</item>
+        <item name="android:statusBarColor">@color/Hunter_Green</item>
+    </style>
+</resources>
