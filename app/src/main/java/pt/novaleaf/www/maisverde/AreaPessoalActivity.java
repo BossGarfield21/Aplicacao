@@ -55,8 +55,8 @@ public class AreaPessoalActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_area_pessoal);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setContentView(R.layout.activity_profile);
+       /* Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         FloatingActionButton floatingActionButton = (FloatingActionButton) findViewById(R.id.fab);
         floatingActionButton.setVisibility(View.GONE);
@@ -80,7 +80,7 @@ public class AreaPessoalActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-
+/*
 
         ArrayList<String> arrayList =  new ArrayList<>();
         arrayList.add("As minhas ocorrências");
@@ -109,7 +109,7 @@ public class AreaPessoalActivity extends AppCompatActivity
             }
         });
 
-
+*/
     }
 
 
