@@ -41,7 +41,7 @@
             android:focusableInTouchMode="true">
 
             <AutoCompleteTextView
-                android:id="@+id/email"
+                android:id="@+id/username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto_light"
@@ -97,14 +97,14 @@
 
 
         <TextView
-            android:id="@+id/link_signup"
+            android:id="@+id/registar_textView"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
             android:layout_marginTop="24dp"
             android:fontFamily="@font/roboto_light"
             android:gravity="center"
-            android:text="No account yet? Create one"
+            android:text="Ainda não tem conta? Registe-se!"
             android:textSize="16dip" />
 
     </LinearLayout>

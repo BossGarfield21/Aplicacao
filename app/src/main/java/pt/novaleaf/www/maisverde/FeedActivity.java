@@ -188,6 +188,8 @@ public class FeedActivity extends AppCompatActivity
             startActivity(i);
             //finish();
 
+        } else if (id == R.id.nav_feedback) {
+
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {

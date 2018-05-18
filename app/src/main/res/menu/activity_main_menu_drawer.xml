@@ -29,6 +29,10 @@
     <item android:title="Divulga a app!">
         <menu>
             <item
+                android:id="@+id/nav_feedback"
+                android:icon="@drawable/ic_feedback_black_24dp"
+                android:title="Envia-nos a tua opinião!"/>
+            <item
                 android:id="@+id/nav_share"
                 android:icon="@drawable/ic_menu_share"
                 android:title="Partilha"/>
