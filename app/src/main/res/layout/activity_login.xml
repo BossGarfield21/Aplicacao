@@ -48,14 +48,15 @@
                 android:hint="Username"
                 android:maxLines="1"
                 android:singleLine="true"
+                android:text="admin"
                 android:textColor="@color/charcoal"
-                android:textColorHighlight="@color/charcoal"
 
+                android:textColorHighlight="@color/charcoal"
                 android:textColorHint="@color/charcoal"
                 android:textColorLink="@color/charcoal"
                 android:textSize="18sp"
                 android:theme="@style/InputTextCustom"
-                android:typeface="normal" />
+                android:typeface="normal"/>
 
         </android.support.design.widget.TextInputLayout>
 
@@ -75,14 +76,15 @@
                 android:hint="Password"
                 android:maxLines="1"
                 android:singleLine="true"
+                android:text="adminadmin"
                 android:textColor="@color/charcoal"
+                android:inputType="textPassword"
                 android:textColorHighlight="@color/charcoal"
-
                 android:textColorHint="@color/charcoal"
                 android:textColorLink="@color/charcoal"
                 android:textSize="18sp"
                 android:theme="@style/InputTextCustom"
-                android:typeface="normal" />
+                android:typeface="normal"/>
         </android.support.design.widget.TextInputLayout>
 
         <Button
