@@ -178,7 +178,7 @@ public class FeedActivity extends AppCompatActivity
             alertDialog.show();
 
         } else if (id == R.id.nav_area_pessoal) {
-            Intent i = new Intent(FeedActivity.this, AreaPessoalActivity.class);
+            Intent i = new Intent(FeedActivity.this, AlterarDadosActivity.class);
             startActivity(i);
             //finish();
 

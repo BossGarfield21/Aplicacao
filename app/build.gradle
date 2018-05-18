@@ -38,5 +38,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     implementation 'com.sun.mail:android-mail:1.6.0'
     implementation 'com.sun.mail:android-activation:1.6.0'
+    implementation 'de.hdodenhof:circleimageview:2.2.0'
 
 }
