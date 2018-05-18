@@ -71,10 +71,18 @@
                 android:id="@+id/password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_light"
                 android:hint="Password"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textColor="@color/charcoal"
+                android:textColorHighlight="@color/charcoal"
+
+                android:textColorHint="@color/charcoal"
+                android:textColorLink="@color/charcoal"
+                android:textSize="18sp"
                 android:theme="@style/InputTextCustom"
-                android:inputType="textPassword"
-                android:textSize="18sp" />
+                android:typeface="normal" />
         </android.support.design.widget.TextInputLayout>
 
         <Button
