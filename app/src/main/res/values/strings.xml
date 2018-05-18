@@ -107,8 +107,6 @@
     <string name="nome_aplicacao">+VERDE</string>
     <string name="slogan_aplicacao">Menos vermelho, +Verde!</string>
     <string name="username">Username</string>
-    <string name="username">Username</string>
-    <string name="password">Password</string>
     <string name="password">Password</string>
     <string name="confirm_password">Confirme a Password</string>
     <string name="email">Email</string>
@@ -117,4 +115,7 @@
     <string name="gosto">Gosto</string>
     <string name="favorito">Favorito</string>
     <string name="comentar">Comentar</string>
+    <string name="error_diffenrent_passwords">Passwords não coincidem</string>
+    <string name="VOLUNTEER">volunteer</string>
+    <string name="doLogin">Entrar</string>
 </resources>

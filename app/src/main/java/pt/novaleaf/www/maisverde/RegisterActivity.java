@@ -20,30 +20,32 @@ import org.json.JSONObject;
 
 import java.net.URL;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 
 public class RegisterActivity extends AppCompatActivity {
+    private static final int PASSWORD_MIN_LENGTH = 6;
+    private static final String REGISTER_URL = "https://novaleaf-197719.appspot.com/rest/register";
     private UserRegisterTask mAuthTask = null;
-    private EditText mEmailView;
-    private EditText mUsernameView;
-    private EditText mPasswordView;
-    private EditText mPassConfirmView;
-    private Button bRegistar;
+
+
+    @BindView(R.id.input_usrnamename) EditText _nameText;
+    @BindView(R.id.input_email) EditText _emailText;
+    @BindView(R.id.input_password) EditText _passwordText;
+    @BindView(R.id.input_password_confirmation) EditText _passwordConfirmation;
+    @BindView(R.id.btn_signup) Button _signupButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+        ButterKnife.bind(this);
 
-        mUsernameView = (EditText) findViewById(R.id.username);
-        mEmailView = (EditText) findViewById(R.id.email);
-        mPasswordView = (EditText) findViewById(R.id.password);
-        mPassConfirmView = (EditText) findViewById(R.id.passwordConfirm);
-        bRegistar = (Button) findViewById(R.id.registar_button);
+        _signupButton.setOnClickListener(new View.OnClickListener() {
 
-        bRegistar.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
                 attemptRegister();
             }
         });
@@ -57,48 +59,48 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         // Reset errors.
-        mEmailView.setError(null);
-        mPasswordView.setError(null);
-        mUsernameView.setError(null);
-        mPassConfirmView.setError(null);
+        _emailText.setError(null);
+        _passwordText.setError(null);
+        _nameText.setError(null);
+        _passwordConfirmation.setError(null);
 
-        // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
-        String password = mPasswordView.getText().toString();
-        String passwordConf = mPassConfirmView.getText().toString();
-        String username = mUsernameView.getText().toString();
+        // Store values at the time of the register attempt.
+        String email = _emailText.getText().toString();
+        String password = _passwordText.getText().toString();
+        String passwordConf = _passwordConfirmation.getText().toString();
+        String username = _nameText.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
         if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            focusView = mPasswordView;
+            _passwordText.setError(getString(R.string.error_invalid_password));
+            focusView = _passwordText;
             cancel = true;
         }
 
         if (!password.equals(passwordConf)) {
-            mPassConfirmView.setError("Password diferentes");
-            focusView = mPassConfirmView;
+            _passwordConfirmation.setError(getString(R.string.error_diffenrent_passwords));
+            focusView = _passwordConfirmation;
             cancel = true;
         }
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
+            _emailText.setError(getString(R.string.error_field_required));
+            focusView = _emailText;
             cancel = true;
         } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
+            _emailText.setError(getString(R.string.error_invalid_email));
+            focusView = _emailText;
             cancel = true;
         }
 
         //check for a valid username
         if (TextUtils.isEmpty(username)) {
-            mUsernameView.setError(getString(R.string.error_field_required));
-            focusView = mUsernameView;
+            _nameText.setError(getString(R.string.error_field_required));
+            focusView = _nameText;
             cancel = true;
         }
 
@@ -116,13 +118,15 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
+
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
     private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
-        return password.length() > 4;
+        if(password.length() < PASSWORD_MIN_LENGTH)
+            return false;
+
+        return true;
     }
 
     /**
@@ -138,14 +142,13 @@ public class RegisterActivity extends AppCompatActivity {
         private final String mRole;
 
 
-
         UserRegisterTask(String email, String password, String username,
                           String passwordConfirm) {
             mEmail = email;
             mPassword = password;
             mPasswordConfirm = passwordConfirm;
             mUsername = username;
-            mRole = "volunteer";
+            mRole = getString(R.string.VOLUNTEER);
         }
 
         /**
@@ -166,18 +169,15 @@ public class RegisterActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(Void... params) {
             try {
-                //TODO: create JSON object with credentials and call doPost
-
                 JSONObject jsonObject = new JSONObject();
 
                 jsonObject.put("username", mUsername);
                 jsonObject.put("password", mPassword);
+                jsonObject.put("confirmation_password", mPasswordConfirm);
                 jsonObject.put("email", mEmail);
                 jsonObject.put("role", mRole);
-                jsonObject.put("confirmation_password", mPasswordConfirm);
 
-
-                URL url = new URL("https://novaleaf-197719.appspot.com/rest/register");
+                URL url = new URL(REGISTER_URL);
                 return RequestsREST.doPOST(url, jsonObject, "");
 
 
@@ -204,8 +204,8 @@ public class RegisterActivity extends AppCompatActivity {
                 finish();
 
             } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
+                _passwordText.setError(getString(R.string.error_incorrect_password));
+                _passwordText.requestFocus();
             }
         }
 

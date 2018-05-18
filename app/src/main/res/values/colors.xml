@@ -10,4 +10,9 @@
     <color name="colorCustomBack">#dddddd</color>
     <color name="colorMenu">#7ab57c</color>
     <color name="colorToolbar">#429844</color>
+    <color name="loginColor">#5ae55a</color>
+    <color name="snow">#FFFAFA</color>
+    <color name="honey_dew">#F0FFF0</color>
+    <color name="Hunter_Green">#35b235</color>
+    <color name="charcoal">#36454f</color>
 </resources>

@@ -3,8 +3,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Context;
 import android.content.CursorLoader;
@@ -34,6 +32,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -44,7 +43,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -57,14 +60,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
+    private static final int PASSWORD_MIN_LENGTH = 6;
 
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
+
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
@@ -74,11 +72,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
 
     // UI references.
-    private AutoCompleteTextView mEmailView;
-    private EditText mPasswordView;
-    private View mProgressView;
-    private View mLoginFormView;
-    private ImageView mLogoView;
+    @BindView(R.id.email) AutoCompleteTextView  _emailText;
+    @BindView(R.id.password) EditText _passwordText;
+    @BindView(R.id.btn_login) Button _loginButton;
+    @BindView(R.id.link_signup) TextView _signupLink;
+    @BindView(R.id.login_progress) ProgressBar login_progress;
+    @BindView(R.id.login_form) View mLoginFormView;
+    @BindView(R.id.imageLogo)  ImageView mLogoView;
     private Context mContext;
 
     @Override
@@ -86,44 +86,28 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-        populateAutoComplete();
+        ButterKnife.bind(this);
 
-        mPasswordView = (EditText) findViewById(R.id.password);
-        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        _loginButton.setOnClickListener(new View.OnClickListener() {
+
             @Override
-            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == R.id.email || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
-                    return true;
-                }
-                return false;
+            public void onClick(View v) {
+                login();
             }
         });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
+        _signupLink.setOnClickListener(new View.OnClickListener() {
+
             @Override
-            public void onClick(View view) {
-                attemptLogin();
+            public void onClick(View v) {
+               register();
             }
         });
 
-        Button mRegisterButton = (Button) findViewById(R.id.registar_button);
-        mRegisterButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                registar();
-            }
-        });
-
-        mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
-        mLogoView = findViewById(R.id.imageLogo);
         mContext = this;
     }
 
-    private void registar(){
+    private void register(){
         Intent myIntent = new Intent(LoginActivity.this, RegisterActivity.class);
         LoginActivity.this.startActivity(myIntent);
     }
@@ -144,7 +128,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             return true;
         }
         if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-            Snackbar.make(mEmailView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
+            Snackbar.make(_emailText, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
                     .setAction(android.R.string.ok, new View.OnClickListener() {
                         @Override
                         @TargetApi(Build.VERSION_CODES.M)
@@ -177,37 +161,37 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
-    private void attemptLogin() {
+    private void login() {
         if (mAuthTask != null) {
             return;
         }
 
         // Reset errors.
-        mEmailView.setError(null);
-        mPasswordView.setError(null);
+        _emailText.setError(null);
+        _passwordText.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
-        String password = mPasswordView.getText().toString();
+        String email = _emailText.getText().toString();
+        String password = _passwordText.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
         if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            focusView = mPasswordView;
+            _passwordText.setError(getString(R.string.error_invalid_password));
+            focusView = _passwordText;
             cancel = true;
         }
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
+            _emailText.setError(getString(R.string.error_field_required));
+            focusView = _emailText;
             cancel = true;
         } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
+            _emailText.setError(getString(R.string.error_invalid_email));
+            focusView = _emailText;
             cancel = true;
         }
 
@@ -225,15 +209,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
-        return true;
-        //       return email.contains("@");
+
+        return  email.length() > 0;
     }
 
     private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
+        if(password.length() < PASSWORD_MIN_LENGTH)
+            return false;
+
         return true;
-        //       return password.length() > 4;
     }
 
     /**
@@ -257,18 +241,18 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 }
             });
 
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
+            login_progress.setVisibility(show ? View.VISIBLE : View.GONE);
+            login_progress.animate().setDuration(shortAnimTime).alpha(
                     show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                    login_progress.setVisibility(show ? View.VISIBLE : View.GONE);
                 }
             });
         } else {
             // The ViewPropertyAnimator APIs are not available, so simply show
             // and hide the relevant UI components.
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            login_progress.setVisibility(show ? View.VISIBLE : View.GONE);
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
             mLogoView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
@@ -308,7 +292,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 new ArrayAdapter<>(LoginActivity.this,
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
-        mEmailView.setAdapter(adapter);
+        _emailText.setAdapter(adapter);
     }
 
 
@@ -389,8 +373,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 finish();
             }else {
                 Log.i("LoginActivity", result);
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
+                _passwordText.setError(getString(R.string.error_incorrect_password));
+                _passwordText.requestFocus();
             }
         }
 
