@@ -31,51 +31,95 @@
                 android:layout_marginStart="@dimen/activity_horizontal_margin"
                 android:scaleType="center"
                 app:srcCompat="@mipmap/ic_logo_round"/>
+        <LinearLayout
+            android:id="@+id/user"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/userName"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:layout_marginStart="@dimen/activity_horizontal_margin"
                 android:gravity="center_vertical"
                 android:text="bombeirotuga"
-                android:textSize="20sp"/>
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/time"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/activity_horizontal_margin"
                 android:layout_weight="1"
-                android:text="HH:MM\nDD/MM/AAAA"/>
+                android:text="HH:MM\nDD/MM/AAAA" />
         </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="bottom|center_horizontal"
+                    android:text="Risco calculado" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="IMAGEM / BARRA /  CENA BONITA " />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/information"
+            android:layout_marginTop="2dp"
+            android:background="#849d9d9d" />
+
+        <TextView
+            android:id="@+id/tituloReport"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/information"
+            android:layout_gravity="bottom"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="2dp"
+            android:fontFamily="@font/roboto"
+            android:text="TITULO DA OCORRENCIA"
+            android:textColor="@color/colorTextToolbar"
+            android:textSize="20sp" />
 
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="false"
-            android:layout_below="@+id/information"
+            android:layout_below="@+id/tituloReport"
+            android:layout_above="@+id/lin"
             android:elevation="10dp">
-                <ImageView
+
+            <ImageView
                 android:id="@+id/imageReport"
                 android:layout_width="match_parent"
                 android:layout_height="240dp"
-                android:background="@mipmap/ic_logo_foreground"
+                android:background="@mipmap/ic_launcher"
                 android:contentDescription="@string/image_report"
-                android:scaleType="centerCrop"/>
+                android:scaleType="centerCrop" />
 
-            <TextView
-                android:id="@+id/tituloReport"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_above="@+id/lin"
-                android:layout_alignParentStart="true"
-                android:layout_marginStart="16dp"
-                android:layout_gravity="bottom"
-                android:text="TITULO DA OCORRENCIA"
-                android:textColor="@color/colorTextToolbar"
-                android:textSize="20sp"/>
+
         </android.support.v7.widget.CardView>
 
         <LinearLayout
@@ -84,16 +128,22 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_below="@+id/cardView"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
             android:clickable="false"
             android:orientation="vertical">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#849d9d9d" />
 
             <LinearLayout
                 android:id="@+id/linearInfo"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:clickable="true"
-                android:orientation="horizontal"
-                android:focusable="true">
+                android:focusable="true"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/likes"
@@ -104,7 +154,7 @@
                     android:alpha="0.5"
                     android:gravity="start|center_vertical"
                     android:text="0 likes"
-                    android:textAppearance="?attr/textAppearanceListItem"/>
+                    android:textAppearance="?attr/textAppearanceListItem" />
 
                 <TextView
                     android:id="@+id/comentarios"
@@ -115,13 +165,13 @@
                     android:alpha="0.5"
                     android:gravity="end|center_vertical"
                     android:text="0 comentários"
-                    android:textAppearance="?attr/textAppearanceListItem"/>
+                    android:textAppearance="?attr/textAppearanceListItem" />
             </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="#849d9d9d"/>
+                android:background="#849d9d9d" />
 
             <LinearLayout
                 android:id="@+id/linearLayout"
@@ -130,8 +180,8 @@
                 android:layout_gravity="bottom"
                 android:layout_marginBottom="8dp"
                 android:layout_marginTop="8dp"
-                android:orientation="horizontal"
-                android:baselineAligned="false">
+                android:baselineAligned="false"
+                android:orientation="horizontal">
 
                 <LinearLayout
                     android:id="@+id/linearGosto"
@@ -139,8 +189,8 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:clickable="true"
-                    android:orientation="horizontal"
-                    android:focusable="true">
+                    android:focusable="true"
+                    android:orientation="horizontal">
 
                     <ImageButton
                         android:id="@+id/imageGosto"
@@ -150,8 +200,8 @@
                         android:layout_marginStart="@dimen/activity_horizontal_margin"
                         android:alpha="0.6"
                         android:background="@android:color/transparent"
-                        app:srcCompat="@drawable/ic_thumb_up_black_24dp"
-                        android:contentDescription="TODO"/>
+                        android:contentDescription="TODO"
+                        app:srcCompat="@drawable/ic_arrow_upward_black_24dp" />
 
                     <TextView
                         android:id="@+id/textGosto"
@@ -160,8 +210,8 @@
                         android:layout_marginStart="5dp"
                         android:alpha="0.5"
                         android:gravity="bottom|start"
-                        android:text="@string/gosto"
-                        android:textAppearance="?attr/textAppearanceListItem"/>
+                        android:text="Upvote"
+                        android:textAppearance="?attr/textAppearanceListItem" />
 
                 </LinearLayout>
 
@@ -171,18 +221,18 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:clickable="true"
-                    android:orientation="horizontal"
-                    android:focusable="true">
+                    android:focusable="true"
+                    android:orientation="horizontal">
 
                     <ImageButton
                         android:id="@+id/imageFavorito"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:layout_marginStart="5dp"
+                        android:layout_marginStart="7dp"
                         android:alpha="0.6"
                         android:background="@android:color/transparent"
-                        app:srcCompat="@drawable/ic_favorite_border_black_24dp"
-                        android:contentDescription="TODO"/>
+                        android:contentDescription="TODO"
+                        app:srcCompat="@drawable/ic_favorite_border_black_24dp" />
 
                     <TextView
                         android:id="@+id/textFavorito"
@@ -192,7 +242,7 @@
                         android:alpha="0.5"
                         android:gravity="bottom|start"
                         android:text="@string/favorito"
-                        android:textAppearance="?attr/textAppearanceListItem"/>
+                        android:textAppearance="?attr/textAppearanceListItem" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -201,17 +251,18 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:clickable="true"
-                    android:orientation="horizontal"
-                    android:focusable="true">
+                    android:focusable="true"
+                    android:orientation="horizontal">
 
                     <ImageButton
                         android:id="@+id/imageComentar"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
+                        android:layout_marginStart="8dp"
                         android:alpha="0.6"
                         android:background="@android:color/transparent"
-                        app:srcCompat="@drawable/ic_insert_comment_black_24dp"
-                        android:contentDescription="TODO"/>
+                        android:contentDescription="TODO"
+                        app:srcCompat="@drawable/ic_insert_comment_black_24dp" />
 
                     <TextView
                         android:id="@+id/textComentar"
@@ -220,9 +271,9 @@
                         android:layout_marginEnd="@dimen/activity_horizontal_margin"
                         android:layout_marginStart="5dp"
                         android:alpha="0.5"
-                        android:gravity="bottom|start"
+                        android:gravity="bottom"
                         android:text="@string/comentar"
-                        android:textAppearance="?attr/textAppearanceListItem"/>
+                        android:textAppearance="?attr/textAppearanceListItem" />
                 </LinearLayout>
 
             </LinearLayout>
