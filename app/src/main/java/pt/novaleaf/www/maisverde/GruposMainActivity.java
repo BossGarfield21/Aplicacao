@@ -162,7 +162,7 @@ public class GruposMainActivity extends AppCompatActivity
             //finish();
 
         } else if (id == R.id.nav_area_pessoal) {
-            Intent i = new Intent(GruposMainActivity.this, AreaPessoalActivity.class);
+            Intent i = new Intent(GruposMainActivity.this, AlterarDadosActivity.class);
             startActivity(i);
             //finish();
 

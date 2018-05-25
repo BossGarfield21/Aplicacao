@@ -1,7 +1,11 @@
 package pt.novaleaf.www.maisverde;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Rect;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -9,12 +13,25 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.android.volley.NetworkResponse;
+import com.android.volley.ParseError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 
 
@@ -37,6 +54,7 @@ public class RegisterActivity extends AppCompatActivity {
         mPasswordView = (EditText) findViewById(R.id.input_password);
         mPassConfirmView = (EditText) findViewById(R.id.input_password_confirmation);
         bRegistar = (Button) findViewById(R.id.btn_signup);
+
 
         bRegistar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,10 +124,57 @@ public class RegisterActivity extends AppCompatActivity {
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            mAuthTask = new UserRegisterTask(email, password, username, passwordConf);
-            mAuthTask.execute((Void) null);
+
+            volleyRegister(email, password, username, passwordConf);
+            //mAuthTask = new UserRegisterTask(email, password, username, passwordConf);
+            //mAuthTask.execute((Void) null);
         }
 
+    }
+
+    private void volleyRegister(String email, String password, String username, String passwordConf) {
+
+        try {
+            JSONObject jsonObject = new JSONObject();
+
+            jsonObject.put("username", username);
+            Log.e("User", username);
+            Log.e("Pass", password);
+            Log.e("Passconf", passwordConf);
+            Log.e("Email", email);
+            jsonObject.put("password", password);
+            jsonObject.put("confirmation_password", passwordConf);
+            jsonObject.put("email", email);
+            jsonObject.put("role", "volunteer");
+
+            String url = "https://novaleaf-197719.appspot.com/rest/register";
+            final ProgressDialog pDialog = new ProgressDialog(this);
+            pDialog.setMessage("Loading...");
+            pDialog.show();
+            final SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
+
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject,
+                    new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    Log.i("RegisterActivity", response.toString());
+                    // TODO: call the main activity (to be implemented) with data in the intent
+                    pDialog.dismiss();
+                    Intent myIntent = new Intent(RegisterActivity.this, LoginActivity.class);
+                    RegisterActivity.this.startActivity(myIntent);
+                    finish();
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    VolleyLog.d("ERRO REGISTO", error.getMessage());
+                    pDialog.dismiss();
+                }
+            });
+            AppController.getInstance().addToRequestQueue(jsonObjectRequest, "registo");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private boolean isEmailValid(String email) {

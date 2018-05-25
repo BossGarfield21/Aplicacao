@@ -219,7 +219,7 @@ public class MapsActivity extends AppCompatActivity
             novaOcorrencia();
 
         }else if (id == R.id.nav_area_pessoal) {
-            Intent i = new Intent(MapsActivity.this, AreaPessoalActivity.class);
+            Intent i = new Intent(MapsActivity.this, AlterarDadosActivity.class);
             startActivity(i);
             finish();
 

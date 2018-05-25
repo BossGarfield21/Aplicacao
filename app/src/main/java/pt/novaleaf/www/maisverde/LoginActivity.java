@@ -4,6 +4,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -34,14 +35,28 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.ParseError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
 
 
 import static android.Manifest.permission.READ_CONTACTS;
@@ -209,10 +224,127 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
+            //showProgress(true);
+
+            loginVolley(email, password);
+            //mAuthTask = new UserLoginTask(email, password);
+            //mAuthTask.execute((Void) null);
         }
+    }
+
+    private void loginVolley(final String email, final String password) {
+
+        String tag_json_obj = "json_obj_req";
+        String url = "https://novaleaf-197719.appspot.com/rest/login";
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+
+            jsonObject.put("password", password);
+
+        jsonObject.put("username", email);
+
+        final ProgressDialog pDialog = new ProgressDialog(this);
+        pDialog.setMessage("Loading...");
+        pDialog.show();
+        final SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        editor.putString("username", email);
+                        editor.putString("password", password);
+                        editor.commit();
+                        voleyGetInfo();
+                        // TODO: call the main activity (to be implemented) with data in the intent
+                        Intent myIntent = new Intent(LoginActivity.this, FeedActivity.class);
+                        pDialog.hide();
+                        LoginActivity.this.startActivity(myIntent);
+                        finish();
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("erroLOGIN", "Error: " + error.getMessage());
+                // hide the progress dialog
+                pDialog.hide();
+            }
+        }){
+            @Override
+            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+                try {
+                    String jsonString = new String(response.data,
+                            HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
+                    JSONObject jsonResponse = new JSONObject(response.headers);
+                    //jsonResponse.put("headers", new JSONObject(response.headers));
+                    Log.d("YA BINA", jsonResponse.getString("Authorization"));
+                    editor.putString("tokenID", jsonResponse.getString("Authorization"));
+                    return Response.success(jsonResponse,
+                            HttpHeaderParser.parseCacheHeaders(response));
+                } catch (UnsupportedEncodingException e) {
+                    return Response.error(new ParseError(e));
+                } catch (JSONException je) {
+                    return Response.error(new ParseError(je));
+                }
+            }
+        };
+        AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void voleyGetInfo() {
+
+
+
+        SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/users/profileinfo?user="+
+                sharedPreferences.getString("username", "erro");
+        final String token = sharedPreferences.getString("tokenID", "erro");
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+                Log.i("TokenAreaPessoal", response.toString());
+                //Log.i("TokenAreaPessoal", token.toString());
+                // TODO: store the token in the SharedPreferences
+
+                SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
+                try {
+                    editor.putString("email", response.getString("email"));
+                    editor.putString("role", response.getString("role"));
+                    editor.putString("numb_reports", response.getString("numb_reports"));
+                    editor.putString("approval_rate", response.getString("approval_rate"));
+                    editor.putString("name", response.getString("name"));
+                    editor.putString("locality", response.getString("locality"));
+                    editor.putString("firstadd", response.getString("firstadd"));
+                    editor.putString("secondadd", response.getString("secondadd"));
+                    editor.putString("mobilephone", response.getString("mobilephone"));
+                    editor.commit();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("erro", "Error: " + error.getMessage());
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+        };
+
+        AppController.getInstance().addToRequestQueue(jsonObjectRequest, "UserInfo");
+
     }
 
     private boolean isEmailValid(String email) {
@@ -229,13 +361,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     /**
      * Shows the progress UI and hides the login form.
-     */
+
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
         // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
         // for very easy animations. If available, use these APIs to fade-in
         // the progress spinner.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
@@ -256,14 +388,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
                 }
             });
-        } else {
+        //}
+        /**else {
             // The ViewPropertyAnimator APIs are not available, so simply show
             // and hide the relevant UI components.
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
             mLogoView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
-    }
+    }*/
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
@@ -350,8 +483,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 jsonObject.put("password", mPassword);
                 jsonObject.put("username", mEmail);
 
-                URL url = new URL("https://novaleaf-197719.appspot.com/rest/login");
-                return RequestsREST.doPOST(url, jsonObject, "");
+
+                return "ola";
+                //return RequestsREST.doPOST(url, jsonObject, "");
             } catch (Exception e) {
                 return e.toString();
             }
@@ -361,7 +495,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         @Override
         protected void onPostExecute(final String result) {
             mAuthTask = null;
-            showProgress(false);
+            //showProgress(false);
 
             if (!result.contains("HTTP error code")) {
                 // We parse the result
@@ -388,7 +522,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         @Override
         protected void onCancelled() {
             mAuthTask = null;
-            showProgress(false);
+            //showProgress(false);
         }
     }
 

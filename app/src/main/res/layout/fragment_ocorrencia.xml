@@ -46,7 +46,8 @@
                 android:layout_marginStart="@dimen/activity_horizontal_margin"
                 android:gravity="center_vertical"
                 android:text="bombeirotuga"
-                android:textSize="20sp" />
+                android:maxLines="1"
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/time"
@@ -140,7 +141,7 @@
             <LinearLayout
                 android:id="@+id/linearInfo"
                 android:layout_width="match_parent"
-                android:layout_height="30dp"
+                android:layout_height="40dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:orientation="horizontal">
@@ -154,7 +155,7 @@
                     android:alpha="0.5"
                     android:gravity="start|center_vertical"
                     android:text="0 likes"
-                    android:textAppearance="?attr/textAppearanceListItem" />
+                    android:textAppearance="?attr/textAppearanceListItem"/>
 
                 <TextView
                     android:id="@+id/comentarios"
@@ -165,7 +166,7 @@
                     android:alpha="0.5"
                     android:gravity="end|center_vertical"
                     android:text="0 comentários"
-                    android:textAppearance="?attr/textAppearanceListItem" />
+                    android:textAppearance="?attr/textAppearanceListItem"/>
             </LinearLayout>
 
             <View

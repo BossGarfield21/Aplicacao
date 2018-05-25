@@ -23,7 +23,8 @@
         android:textColor="@color/snow"
         android:textSize="36sp"
         tools:layout_editor_absoluteX="42dp"
-        tools:layout_editor_absoluteY="311dp" />
+        tools:layout_editor_absoluteY="311dp"
+        android:layout_below="@id/imageView3"/>
 
     <ImageView
         android:id="@+id/imageView3"
