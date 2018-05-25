@@ -454,7 +454,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
                 String token = sharedPreferences.getString("tokenID", "erro");
 
-                URL url = new URL("https://novaleaf-197719.appspot.com/rest/withtoken/users/"+
+                URL url = new URL("https://novaleaf-197719.appspot.com/rest/withtoken/users/profileinfo?user="+
                         sharedPreferences.getString("username", "erro"));
                 return RequestsREST.doGET(url, token);
             } catch (Exception e) {
@@ -562,11 +562,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
 
                     for(int i =0; i < token.length(); i++){
-                        editor.putString("userReport"+i,token.getJSONObject(i).getString("name"));
-                        editor.putInt("numReports", i);
+                        //editor.putString("userReport"+i,token.getJSONObject(i).getString("name"));
+                        //editor.putInt("numReports", i);
                         //arrayList.add(token.getJSONObject(i).getString("name"));
                         Log.i("TOKENOCORRENCIAS", "CHE " + token.getJSONObject(i).getString("name"));
-                        editor.commit();
+                        //editor.commit();
                     }
 
 

@@ -107,10 +107,6 @@ public class MapsActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
-
-
-
         getMarkers();
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -483,7 +479,7 @@ public class MapsActivity extends AppCompatActivity
                 jsonObject.put("bottomLeft", botLeft);
                 jsonObject.put("topRight", topRight);
                 */
-                URL url = new URL("https://novaleaf-197719.appspot.com/rest/withtoken/mapsupport/listallmarkers");
+                URL url = new URL("https://novaleaf-197719.appspot.com/rest/withtoken/mapsupport/mymarkers");
                 return RequestsREST.doGET(url, token);
             } catch (Exception e) {
                 return e.toString();
