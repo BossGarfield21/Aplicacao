@@ -69,10 +69,10 @@ public class AlterarDadosActivity extends AppCompatActivity {
         arrayList = new ArrayList<>();
         arrayList.add(new PerfilItem("Username", sharedPreferences.getString("username", "erro")));
         arrayList.add(new PerfilItem("Email", email));
-        arrayList.add(new PerfilItem("Rácio de aprovação dos reports", sharedPreferences.getString("approval_rate", "erro")));
-        arrayList.add(new PerfilItem("Número de reports efetuados", sharedPreferences.getString("numb_reports", "erro")));
+        arrayList.add(new PerfilItem("Aprovação dos reports", sharedPreferences.getString("approval_rate", "erro")));
+        arrayList.add(new PerfilItem("Reports efetuados", sharedPreferences.getString("numb_reports", "erro")));
         //arrayList.add("Role: " + sharedPreferences.getString("role", "erro"));
-        arrayList.add(new PerfilItem("Morada principal", sharedPreferences.getString("firstadd", "ainda não definida")));
+        arrayList.add(new PerfilItem("Morada", sharedPreferences.getString("firstadd", "ainda não definida")));
         arrayList.add(new PerfilItem("Morada complementar", sharedPreferences.getString("secondadd", "ainda não definida")));
         arrayList.add(new PerfilItem("Localidade", sharedPreferences.getString("locality", "ainda não definida")));
         arrayList.add(new PerfilItem("Código Postal", sharedPreferences.getString("postalcode", "ainda não definido")));

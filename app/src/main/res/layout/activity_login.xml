@@ -14,13 +14,13 @@
         android:orientation="vertical"
         android:paddingLeft="24dp"
         android:paddingRight="24dp"
-        android:paddingTop="20dp"
+        android:paddingTop="75dp"
         android:id="@+id/login_form">
 
 
         <ImageView
             android:id="@+id/imageLogo"
-            android:layout_width="336dp"
+            android:layout_width="306dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             app:srcCompat="@mipmap/ic_novaleaf_foreground" />

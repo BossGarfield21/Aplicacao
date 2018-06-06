@@ -10,6 +10,7 @@
     <LinearLayout
         android:id="@+id/linearPessoal"
         android:layout_width="match_parent"
+        android:layout_weight="10"
         android:layout_height="match_parent"
         android:background="@drawable/areapessoal_perfil"
         android:gravity="end|center_vertical"
@@ -23,27 +24,23 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center_horizontal"
-            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginStart="26dp"
             android:layout_weight="1"
+            android:fontFamily="@font/roboto_light"
             android:gravity="center_vertical|start"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
         <TextView
             android:id="@+id/caracterizacao"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_marginEnd="26dp"
             android:layout_weight="1"
+            android:fontFamily="@font/roboto_light"
             android:gravity="center_vertical|end"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
     </LinearLayout>
 
-    <View
-        android:id="@+id/viewGreen"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#3eb933"
-        app:layout_constraintBottom_toBottomOf="@+id/linearPessoal"/>
 
 
 </android.support.constraint.ConstraintLayout>

@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
        android:shape="rectangle" >
+    <gradient
+        android:angle="45"
+        android:centerX="10.0"
+        android:centerY="10.0"
+        android:endColor="#b0d3bf"
+        android:gradientRadius="10"
+        android:startColor="@color/snow"
+        android:type="linear" />
 
-    <!-- View background color -->
-    <solid
-        android:color="#b3b3b3" >
-    </solid>
-
-    <!-- The radius makes the corners rounded -->
-
-    <corners
-        android:radius="10dp">
-    </corners>
 
 </shape>
