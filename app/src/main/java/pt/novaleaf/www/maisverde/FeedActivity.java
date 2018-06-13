@@ -6,8 +6,11 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.view.View;
@@ -28,12 +31,16 @@ import android.widget.Toast;
  */
 
 public class FeedActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OcorrenciaFragment.OnListFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, OcorrenciaFragment.OnListFragmentInteractionListener, EventoFragment.OnListFragmentInteractionListener {
 
     private CardView cardView;
     NavigationView navigationView;
+    private SectionsPagerAdapter mSectionsPagerAdapter;
 
-
+    /**
+     * The {@link ViewPager} that will host the section contents.
+     */
+    private ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,8 +49,19 @@ public class FeedActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
+        // Set up the ViewPager with the sections adapter.
+        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager.setAdapter(mSectionsPagerAdapter);
 
 
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+
+        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
+
+        /**
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment fragment = fragmentManager.findFragmentById(R.id.fragmentContainer);
         if (fragment==null){
@@ -52,10 +70,10 @@ public class FeedActivity extends AppCompatActivity
             fragmentManager.beginTransaction()
                                               .add(R.id.fragmentContainer, fragment)
                                               .commit();
-        }
+        }*/
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setVisibility(View.GONE);
+       // FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        //fab.setVisibility(View.GONE);
 
 
 
@@ -225,6 +243,43 @@ public class FeedActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
+     * one of the sections/tabs/pages.
+     */
+    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+
+        public SectionsPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            // getItem is called to instantiate the fragment for the given page.
+            // Return a PlaceholderFragment (defined as a static inner class below).
+            Fragment fragment;
+            switch (position) {
+                case 0:
+                    fragment = OcorrenciaFragment.newInstance(1);
+                    return fragment;
+                case 1:
+                    fragment = EventoFragment.newInstance(1);
+                    return fragment;
+                default:
+                    return null;
+            }
+
+            //return PlaceholderFragment.newInstance(position + 1);
+        }
+
+        @Override
+        public int getCount() {
+            // Show 2 total pages.
+            return 2;
+        }
+    }
+
+
     @Override
     public void onLikeInteraction(Ocorrencia item) {
 
@@ -247,5 +302,28 @@ public class FeedActivity extends AppCompatActivity
         //Toast.makeText(FeedActivity.this, "IR PARA A PAGINA DA OCORRENCIA", Toast.LENGTH_SHORT).show();
         Intent i = new Intent(FeedActivity.this, OcorrenciaActivity.class);
         startActivity(i);
+    }
+
+    @Override
+    public void onLikeInteraction(Evento item) {
+
+    }
+
+    @Override
+    public void onCommentInteraction(Evento item) {
+
+    }
+
+    @Override
+    public void onFavoritoInteraction(Evento item) {
+
+    }
+
+    @Override
+    public void onImagemInteraction(Evento item) {
+
+        Intent i = new Intent(FeedActivity.this, EventoActivity.class);
+        startActivity(i);
+
     }
 }

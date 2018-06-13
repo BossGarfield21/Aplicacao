@@ -16,6 +16,8 @@ public class Evento {
     public String location;
     public String alert;
     public String description;
+    public boolean interesse;
+    public boolean ir;
 
     public Evento(String name, String creator, long creationDate, long meetupDate, long endDate, List<String> interests,
                   List<String> confirmations, List<String> admin, String id, String location, String alert, String description){
@@ -80,6 +82,22 @@ public class Evento {
 
     public String getDescription() {
         return description;
+    }
+
+    public void setIr(){
+        ir = !ir;
+    }
+
+    public void setInteresse(){
+        interesse = !interesse;
+    }
+
+    public boolean isInteresse(){
+        return interesse;
+    }
+
+    public boolean isIr() {
+        return ir;
     }
 
 }

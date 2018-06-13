@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="pt.novaleaf.www.maisverde">
+    package="pt.novaleaf.www.maisverde">
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
-    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
-    <uses-permission android:name="android.permission.READ_PROFILE"/>
-    <uses-permission android:name="android.permission.READ_CONTACTS"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <uses-feature
         android:name="android.hardware.camera"
-        android:required="true"/>
+        android:required="true" />
 
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
          location permissions for the 'MyLocation' functionality.
     -->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:name=".AppController"
@@ -32,25 +32,25 @@
             android:name=".EntradaActivity"
             android:theme="@style/Entrada3">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity"/>
+        <activity android:name=".LoginActivity" />
         <activity
             android:name=".FeedActivity"
             android:label="Feed">
             <intent-filter>
-                <action android:name="android.intent.action.SEARCH"/>
+                <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
 
             <meta-data
                 android:name="android.app.default_searchable"
-                android:value="pt.novaleaf.www.maisverde.FeedActivity"/>
+                android:value="pt.novaleaf.www.maisverde.FeedActivity" />
             <meta-data
                 android:name="android.app.searchable"
-                android:resource="@xml/searchable"/>
+                android:resource="@xml/searchable" />
         </activity>
         <activity
             android:name=".AreaPessoalActivity"
@@ -58,11 +58,11 @@
             android:parentActivityName=".FeedActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="pt.novaleaf.www.maisverde.FeedActivity"/>
+                android:value="pt.novaleaf.www.maisverde.FeedActivity" />
         </activity>
         <activity
             android:name=".GruposMainActivity"
-            android:label="Grupos"/>
+            android:label="Grupos" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -73,52 +73,49 @@
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key"/>
+            android:value="@string/google_maps_key" />
 
         <activity
             android:name=".MapsActivity"
-            android:label="Mapa"/>
+            android:label="Mapa" />
         <activity
             android:name=".SettingsPessoaisActivity"
             android:label="@string/title_activity_settings_pessoais"
-            android:parentActivityName=".AreaPessoalActivity">
-        </activity>
+            android:parentActivityName=".AreaPessoalActivity" />
         <activity
             android:name=".AcercaActivity"
-            android:label="Acerca de">
-        </activity>
-        <activity android:name=".RegisterActivity">
-        </activity>
+            android:label="Acerca de" />
+        <activity android:name=".RegisterActivity" />
         <activity
             android:name=".CriarOcorrenciaActivity"
-            android:label="Criar ocorrência">
-        </activity>
+            android:label="Criar ocorrência" />
         <activity
             android:name=".CriarGrupoActivity"
-            android:label="Criar grupo">
-        </activity>
+            android:label="Criar grupo" />
         <activity
             android:name=".AlterarDadosActivity"
             android:label="Perfil"
-            android:parentActivityName=".AreaPessoalActivity">
-        </activity>
+            android:parentActivityName=".AreaPessoalActivity" />
         <activity
             android:name=".MinhasOcorrenciasActivity"
-            android:label="As minhas ocorrências">
-        </activity>
-        <activity android:name=".DetalheOcorrenciaActivity">
-        </activity>
+            android:label="As minhas ocorrências" />
+        <activity android:name=".DetalheOcorrenciaActivity" />
         <activity
             android:name=".AlterarPassActivity"
-            android:label="Mudar password">
-        </activity>
+            android:label="Mudar password" />
         <activity
             android:name=".ComentariosActivity"
-            android:label="Comentários">
-        </activity>
+            android:label="Comentários" />
         <activity
             android:name=".OcorrenciaActivity"
-            android:label="Ocorrência">
+            android:label="Ocorrência" />
+        <activity
+            android:name=".teste"
+            android:label="@string/title_activity_teste"
+            android:theme="@style/CustomTheme"></activity>
+        <activity
+            android:name=".EventoActivity"
+            android:label="Evento">
         </activity>
     </application>
 

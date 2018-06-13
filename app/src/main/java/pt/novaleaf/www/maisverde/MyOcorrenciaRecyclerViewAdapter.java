@@ -141,8 +141,8 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
         public LinearLayout mLinearInfo;
         public TextView mTextGosto;
         public TextView mTextFavorito;
-        public ImageButton mImageFavorito;
-        public ImageButton mImageGosto;
+        public ImageView mImageFavorito;
+        public ImageView mImageGosto;
 
         public ViewHolder(View v){
             super(v);
@@ -155,8 +155,8 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
             mLinearInfo = (LinearLayout) v.findViewById(R.id.linearInfo);
             mTextGosto = (TextView) v.findViewById(R.id.textGosto);
             mTextFavorito = (TextView) v.findViewById(R.id.textFavorito);
-            mImageFavorito = (ImageButton) v.findViewById(R.id.imageFavorito);
-            mImageGosto = (ImageButton) v.findViewById(R.id.imageGosto);
+            mImageFavorito = (ImageView) v.findViewById(R.id.imageFavorito);
+            mImageGosto = (ImageView) v.findViewById(R.id.imageGosto);
         }
     }
 }

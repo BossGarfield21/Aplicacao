@@ -38,34 +38,57 @@
                 android:text="Evento de: Junta do serrado" />
         </LinearLayout>
 
+        <View
+            android:id="@+id/view1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/information"
+            android:layout_marginTop="2dp"
+            android:background="#849d9d9d"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/infoCriador" />
+
         <android.support.v7.widget.CardView
             android:id="@+id/cardImage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
             android:elevation="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/infoCriador">
+            app:layout_constraintTop_toBottomOf="@+id/view1">
 
             <ImageView
                 android:id="@+id/imageReport"
                 android:layout_width="match_parent"
-                android:layout_height="230dp"
+                android:layout_height="200dp"
                 android:background="@mipmap/ic_launcher"
                 android:contentDescription="@string/image_report"
                 android:scaleType="centerCrop" />
 
-
         </android.support.v7.widget.CardView>
+        <View
+            android:id="@+id/view3"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/information"
+            android:layout_marginTop="16dp"
+            android:background="#849d9d9d"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cardImage" />
+
 
         <LinearLayout
             android:id="@+id/linInfo"
             android:layout_width="match_parent"
             android:layout_height="40dp"
+            android:layout_marginTop="2dp"
             android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cardImage">
+            app:layout_constraintTop_toBottomOf="@+id/view3">
 
             <TextView
                 android:id="@+id/textView15"
@@ -74,7 +97,7 @@
                 android:layout_marginLeft="@dimen/activity_horizontal_margin"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:text="74837 vão" />
+                android:text="74837 pessoas vão" />
 
             <TextView
                 android:id="@+id/textView16"
@@ -86,24 +109,41 @@
                 android:text="costa da caparica" />
         </LinearLayout>
 
+        <View
+            android:id="@+id/view2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/information"
+            android:layout_marginTop="2dp"
+            android:background="#849d9d9d"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linInfo" />
+
         <LinearLayout
             android:id="@+id/linearLayout3"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:baselineAligned="false"
+            android:layout_height="45dp"
+            android:layout_marginTop="2dp"
             android:orientation="horizontal"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linInfo">
+            app:layout_constraintTop_toBottomOf="@+id/view2">
 
 
             <LinearLayout
+                android:id="@+id/linearVou"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
                 android:orientation="vertical">
 
-                <ImageButton
+                <ImageView
                     android:id="@+id/imageGosto"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -116,9 +156,9 @@
                     app:srcCompat="@drawable/ic_favorite_border_black_24dp" />
 
                 <TextView
-                    android:id="@+id/textView17"
+                    android:id="@+id/textVou"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginStart="@dimen/activity_horizontal_margin"
                     android:layout_weight="1"
                     android:gravity="top|center_horizontal"
@@ -127,12 +167,15 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/linearInteresse"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
                 android:orientation="vertical">
 
-                <ImageButton
+                <ImageView
                     android:id="@+id/imageFavorito"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -144,9 +187,9 @@
                     app:srcCompat="@drawable/ic_star_border_black_24dp" />
 
                 <TextView
-                    android:id="@+id/textView18"
+                    android:id="@+id/textInteresse"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginEnd="@dimen/activity_horizontal_margin"
                     android:layout_weight="1"
                     android:gravity="top|center_horizontal"

@@ -54,7 +54,7 @@ public class EventoFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_ocorrencia_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_evento_list, container, false);
         myRecyclerView = (RecyclerView) view.findViewById(R.id.cardView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -68,7 +68,7 @@ public class EventoFragment extends Fragment {
             } else {
                 myRecyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            //myRecyclerView.setAdapter(new MyEventoRecyclerViewAdapter(list, mListener));
+            myRecyclerView.setAdapter(new MyEventoRecyclerViewAdapter(list, mListener));
         }
         return view;
     }
@@ -120,13 +120,13 @@ public class EventoFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onLikeInteraction(Ocorrencia item);
+        void onLikeInteraction(Evento item);
 
-        void onCommentInteraction(Ocorrencia item);
+        void onCommentInteraction(Evento item);
 
-        void onFavoritoInteraction(Ocorrencia item);
+        void onFavoritoInteraction(Evento item);
 
-        void onImagemInteraction(Ocorrencia item);
+        void onImagemInteraction(Evento item);
     }
 
 }
