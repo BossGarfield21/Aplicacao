@@ -221,7 +221,8 @@ public class FeedActivity extends AppCompatActivity
 
     @Override
     public void onImagemInteraction(Ocorrencia item) {
-        Toast.makeText(FeedActivity.this, "IR PARA A PAGINA DA OCORRENCIA", Toast.LENGTH_SHORT).show();
-
+        //Toast.makeText(FeedActivity.this, "IR PARA A PAGINA DA OCORRENCIA", Toast.LENGTH_SHORT).show();
+        Intent i = new Intent(FeedActivity.this, OcorrenciaActivity.class);
+        startActivity(i);
     }
 }

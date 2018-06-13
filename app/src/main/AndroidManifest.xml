@@ -112,8 +112,13 @@
             android:name=".AlterarPassActivity"
             android:label="Mudar password">
         </activity>
-        <activity android:name=".ComentariosActivity"
-                  android:label="Comentários"  >
+        <activity
+            android:name=".ComentariosActivity"
+            android:label="Comentários">
+        </activity>
+        <activity
+            android:name=".OcorrenciaActivity"
+            android:label="Ocorrência">
         </activity>
     </application>
 

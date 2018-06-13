@@ -202,7 +202,7 @@
                         android:alpha="0.6"
                         android:background="@android:color/transparent"
                         android:contentDescription="TODO"
-                        app:srcCompat="@drawable/ic_arrow_upward_black_24dp" />
+                        app:srcCompat="@drawable/ic_favorite_border_black_24dp" />
 
                     <TextView
                         android:id="@+id/textGosto"
@@ -233,7 +233,7 @@
                         android:alpha="0.6"
                         android:background="@android:color/transparent"
                         android:contentDescription="TODO"
-                        app:srcCompat="@drawable/ic_favorite_border_black_24dp" />
+                        app:srcCompat="@drawable/ic_star_border_black_24dp" />
 
                     <TextView
                         android:id="@+id/textFavorito"

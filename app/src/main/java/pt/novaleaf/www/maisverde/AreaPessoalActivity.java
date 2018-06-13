@@ -171,10 +171,6 @@ public class AreaPessoalActivity extends AppCompatActivity
 
             android.support.v7.app.AlertDialog alertDialog = alert.create();
             alertDialog.show();
-        } else if(id == R.id.action_change){
-            //mudar dados
-            Intent i = new Intent(AreaPessoalActivity.this, AlterarDadosActivity.class);
-            startActivity(i);
         } else if(id == R.id.action_acerca){
             Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://anovaleaf.ddns.net"));
             startActivity(i);
