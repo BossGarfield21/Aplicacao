@@ -31,6 +31,7 @@ public class FeedActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OcorrenciaFragment.OnListFragmentInteractionListener {
 
     private CardView cardView;
+    NavigationView navigationView;
 
 
 
@@ -64,8 +65,9 @@ public class FeedActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        navigationView.getMenu().getItem(0).setChecked(true);
 
 
         cardView = (CardView) findViewById(R.id.cardView);
@@ -100,7 +102,6 @@ public class FeedActivity extends AppCompatActivity
         if (id == R.id.action_help) {
             return true;
         } else if(id == R.id.action_logout){
-            //TODO: sair da app
 
             final AlertDialog.Builder alert = new AlertDialog.Builder(FeedActivity.this);
             alert.setTitle("Terminar sessão");
@@ -147,14 +148,20 @@ public class FeedActivity extends AppCompatActivity
         if (id == R.id.nav_mapa) {
 
             Intent i = new Intent(FeedActivity.this, MapsActivity.class);
-            startActivity(i);
+            startActivityForResult(i, 0);
+            //startActivity(i);
             //finish();
 
         } else if(id == R.id.nav_adicionar_report){
 
             AlertDialog.Builder alert = new AlertDialog.Builder(FeedActivity.this);
             alert.setTitle("Criar report");
-            alert
+            alert.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialogInterface) {
+                    navigationView.getMenu().getItem(0).setChecked(true);
+                }
+            })
                     .setMessage("O local do report é a sua localização atual?")
                     .setCancelable(true)
                     .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
@@ -162,7 +169,8 @@ public class FeedActivity extends AppCompatActivity
                         public void onClick(DialogInterface dialogInterface, int i) {
                             Intent intent = new Intent(FeedActivity.this, CriarOcorrenciaActivity.class);
                             intent.putExtra("estaLocal", true);
-                            startActivity(intent);
+                            startActivityForResult(intent, 0);
+                            //startActivity(intent);
                         }
                     })
                     .setNegativeButton("Não", new DialogInterface.OnClickListener() {
@@ -170,22 +178,26 @@ public class FeedActivity extends AppCompatActivity
                         public void onClick(DialogInterface dialogInterface, int i) {
                             Intent intent = new Intent(FeedActivity.this, MapsActivity.class);
                             intent.putExtra("toast", true);
-                            startActivity(intent);
+                            startActivityForResult(intent, 0);
+                            //startActivity(intent);
                         }
                     });
 
             AlertDialog alertDialog = alert.create();
             alertDialog.show();
 
+
         } else if (id == R.id.nav_area_pessoal) {
             Intent i = new Intent(FeedActivity.this, AlterarDadosActivity.class);
-            startActivity(i);
+            startActivityForResult(i, 0);
+            //startActivity(i);
             //finish();
 
         } else if (id == R.id.nav_grupos) {
 
             Intent i = new Intent(FeedActivity.this, GruposMainActivity.class);
-            startActivity(i);
+            startActivityForResult(i, 0);
+            //startActivity(i);
             //finish();
 
         } else if (id == R.id.nav_feedback) {
@@ -201,6 +213,17 @@ public class FeedActivity extends AppCompatActivity
         return true;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 0) {
+            if (resultCode == RESULT_CANCELED) {
+                // user pressed back from 2nd activity to go to 1st activity. code here
+                navigationView.getMenu().getItem(0).setChecked(true);
+            }
+        }
+    }
 
     @Override
     public void onLikeInteraction(Ocorrencia item) {

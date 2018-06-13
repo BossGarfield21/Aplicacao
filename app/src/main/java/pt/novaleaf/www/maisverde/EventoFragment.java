@@ -10,39 +10,30 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A fragment representing a list of Items.
- * <p/>
- * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
- * interface.
- */
-public class OcorrenciaFragment extends Fragment {
-
+public class EventoFragment extends Fragment {
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
     private int mColumnCount = 1;
-    private OnListFragmentInteractionListener mListener;
+    private EventoFragment.OnListFragmentInteractionListener mListener;
     private RecyclerView myRecyclerView;
-    private static List<Ocorrencia> list =  new ArrayList<>();
+    private static List<Evento> list =  new ArrayList<>();
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public OcorrenciaFragment() {
+    public EventoFragment() {
     }
 
     // TODO: Customize parameter initialization
 
-    public static OcorrenciaFragment newInstance(int columnCount) {
-        OcorrenciaFragment fragment = new OcorrenciaFragment();
+    public static EventoFragment newInstance(int columnCount) {
+        EventoFragment fragment = new EventoFragment();
         updateList();
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
@@ -77,7 +68,7 @@ public class OcorrenciaFragment extends Fragment {
             } else {
                 myRecyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            myRecyclerView.setAdapter(new MyOcorrenciaRecyclerViewAdapter(list, mListener));
+            //myRecyclerView.setAdapter(new MyEventoRecyclerViewAdapter(list, mListener));
         }
         return view;
     }
@@ -90,8 +81,8 @@ public class OcorrenciaFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnListFragmentInteractionListener) {
-            mListener = (OnListFragmentInteractionListener) context;
+        if (context instanceof OcorrenciaFragment.OnListFragmentInteractionListener) {
+            mListener = (EventoFragment.OnListFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnListFragmentInteractionListener");
@@ -106,8 +97,14 @@ public class OcorrenciaFragment extends Fragment {
 
 
     public static void updateList(){
-        list.add(new Ocorrencia("FOGO", R.mipmap.ic_entrada_round, 5, "11:45\n13/05/2018"));
-        list.add(new Ocorrencia("ajuda", R.mipmap.ic_logo_round, 3, "18:13\n16/05/2018"));
+        list.add(new Evento("limpar mata", "bombeiroTuga", 2901921, 392791, 8272,
+                null, null, null, "2", "caparica", "bina", "hoje vamos limpar a mata\n" +
+                "venham connosco limpar que isto esta tudo sujo\n" +
+                "é essencial toda a ajuda"));
+        list.add(new Evento("limpar terreno", "admin", 2901921, 392791, 8272,
+                null, null, null, "2", "leiria", "bina", "hoje vamos limpar leiria\n" +
+                "venham a leiria limpar\n" +
+                "é essencial toda a ajuda"));
 
     }
 
@@ -133,3 +130,4 @@ public class OcorrenciaFragment extends Fragment {
     }
 
 }
+

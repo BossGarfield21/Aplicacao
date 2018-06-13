@@ -64,6 +64,7 @@ public class AlterarDadosActivity extends AppCompatActivity
     public static MyPerfilRecyclerViewAdapter adapter;
     public static SharedPreferences sharedPreferences;
     public static boolean changed = false;
+    NavigationView navigationView;
     Toolbar toolbar;
     ConstraintLayout constraintLayout;
     ActionBar actionBar;
@@ -97,8 +98,9 @@ public class AlterarDadosActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        navigationView.getMenu().getItem(4).setChecked(true);
 
         sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
 
@@ -152,6 +154,8 @@ public class AlterarDadosActivity extends AppCompatActivity
     }
        //
 
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -179,6 +183,7 @@ public class AlterarDadosActivity extends AppCompatActivity
             changed = false;
             attemptSendData();
         }
+        navigationView.getMenu().getItem(0).setChecked(true);
         finish();
     }
 

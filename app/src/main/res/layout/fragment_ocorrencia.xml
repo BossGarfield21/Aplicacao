@@ -107,9 +107,9 @@
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_above="@+id/lin"
             android:layout_alignParentEnd="false"
             android:layout_below="@+id/tituloReport"
-            android:layout_above="@+id/lin"
             android:elevation="10dp">
 
             <ImageView

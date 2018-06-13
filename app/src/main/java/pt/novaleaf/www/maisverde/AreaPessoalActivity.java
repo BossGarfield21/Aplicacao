@@ -122,7 +122,9 @@ public class AreaPessoalActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+            setResult(RESULT_CANCELED);
         } else {
+            setResult(RESULT_CANCELED);
             super.onBackPressed();
         }
     }

@@ -110,6 +110,12 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        setResult(RESULT_CANCELED);
+        super.onBackPressed();
+    }
+
     //Pedir permissoes
     private void showExplanation(String title,
                                  String message,
