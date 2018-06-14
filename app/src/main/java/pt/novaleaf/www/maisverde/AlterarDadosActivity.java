@@ -261,7 +261,7 @@ public class AlterarDadosActivity extends AppCompatActivity
         if (id == R.id.nav_feed) {
             Intent i = new Intent(AlterarDadosActivity.this, FeedActivity.class);
             startActivity(i);
-            //finish();
+            finish();
         } else if(id == R.id.nav_adicionar_report){
 
 

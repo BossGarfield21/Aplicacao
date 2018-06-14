@@ -162,12 +162,12 @@ public class GruposMainActivity extends AppCompatActivity
         }else if (id == R.id.nav_mapa) {
             Intent i = new Intent(GruposMainActivity.this, MapsActivity.class);
             startActivity(i);
-            //finish();
+            finish();
 
         } else if (id == R.id.nav_area_pessoal) {
             Intent i = new Intent(GruposMainActivity.this, AlterarDadosActivity.class);
             startActivity(i);
-            //finish();
+            finish();
 
         } else if (id == R.id.nav_grupos) {
 
