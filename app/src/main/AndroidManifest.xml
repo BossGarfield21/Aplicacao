@@ -98,7 +98,8 @@
         <activity android:name=".RegisterActivity"/>
         <activity
             android:name=".CriarOcorrenciaActivity"
-            android:label="Criar ocorrência"/>
+            android:label="Criar ocorrência"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".CriarGrupoActivity"
             android:label="Criar grupo"/>
@@ -129,7 +130,8 @@
         </activity>
         <activity
             android:name=".TiposActivity"
-            android:theme="@style/Theme.Transparent">
+            android:theme="@style/Theme.Transparent"
+            android:screenOrientation="portrait">
         </activity>
     </application>
 

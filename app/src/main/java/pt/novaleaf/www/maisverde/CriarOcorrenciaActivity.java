@@ -68,6 +68,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import utils.ByteRequest;
 
@@ -95,7 +96,7 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
     String mCurrentPhotoPath;
     ConstraintLayout constraintLayout;
     static final int REQUEST_TAKE_PHOTO = 1;
-
+    private String tipo = "";
 
 
     @Override
@@ -121,8 +122,9 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
         //Consoante a atividade proceder corretamente:
         //Se veio do feed, quer dizer que nao e preciso ir ao mapa
         Intent intent = getIntent();
+
         final boolean estaLocal = intent.getBooleanExtra("estaLocal", false);
-        if (estaLocal){
+        if (estaLocal) {
 
             setLocal();
 
@@ -149,7 +151,7 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(CriarOcorrenciaActivity.this, TiposActivity.class);
-                startActivity(i);
+                startActivityForResult(i, 2);
             }
         });
 
@@ -246,59 +248,79 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode!=0) {
-            ExifInterface ei = null;
-            try {
-                ei = new ExifInterface(mCurrentPhotoPath);
-            } catch (IOException e) {
-                e.printStackTrace();
+
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                ExifInterface ei = null;
+                try {
+                    ei = new ExifInterface(mCurrentPhotoPath);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+                        ExifInterface.ORIENTATION_UNDEFINED);
+
+                Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
+
+                Bitmap rotatedBitmap = null;
+                switch (orientation) {
+
+                    case ExifInterface.ORIENTATION_ROTATE_90:
+                        rotatedBitmap = rotateImage(bitmap, 90);
+                        break;
+
+                    case ExifInterface.ORIENTATION_ROTATE_180:
+                        rotatedBitmap = rotateImage(bitmap, 180);
+                        break;
+
+                    case ExifInterface.ORIENTATION_ROTATE_270:
+                        rotatedBitmap = rotateImage(bitmap, 270);
+                        break;
+
+                    case ExifInterface.ORIENTATION_NORMAL:
+                    default:
+                        rotatedBitmap = bitmap;
+                }
+
+
+                imageView.setImageBitmap(rotatedBitmap);
+                isImage = true;
+                ByteArrayOutputStream bao = new ByteArrayOutputStream();
+                rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 70, bao);
+                imageBytes = bao.toByteArray();
+
+                Snackbar snackbar = Snackbar
+                        .make(constraintLayout, "Fotografia captada", Snackbar.LENGTH_INDEFINITE)
+                        .setAction("Tirar outra fotografia", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dispatchTakePictureIntent();
+                            }
+                        });
+
+                snackbar.show();
+
+            } else {
+                imageButton.setVisibility(View.VISIBLE);
+
             }
-            int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION,
-                    ExifInterface.ORIENTATION_UNDEFINED);
+        } else if (requestCode == 2)
+            if (resultCode == RESULT_OK) {
 
-            Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
+                /**String activity = null;
+                if (data != null)
+                    activity = data.getStringExtra("activity");
+                if (activity != null)
+                    tipo = data.getStringExtra("type");
 
-            Bitmap rotatedBitmap = null;
-            switch (orientation) {
+                Log.e("TIPO", tipo);*/
+                Intent intent = getIntent();
+                String actividade = data.getStringExtra("activity");
+                if (actividade != null)
+                    tipo = data.getStringExtra("type");
+                Log.i("CHEHCU TIPO", tipo);
 
-                case ExifInterface.ORIENTATION_ROTATE_90:
-                    rotatedBitmap = rotateImage(bitmap, 90);
-                    break;
-
-                case ExifInterface.ORIENTATION_ROTATE_180:
-                    rotatedBitmap = rotateImage(bitmap, 180);
-                    break;
-
-                case ExifInterface.ORIENTATION_ROTATE_270:
-                    rotatedBitmap = rotateImage(bitmap, 270);
-                    break;
-
-                case ExifInterface.ORIENTATION_NORMAL:
-                default:
-                    rotatedBitmap = bitmap;
             }
-
-
-            imageView.setImageBitmap(rotatedBitmap);
-            isImage = true;
-            ByteArrayOutputStream bao = new ByteArrayOutputStream();
-            rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 70, bao);
-            imageBytes = bao.toByteArray();
-
-            Snackbar snackbar = Snackbar
-                    .make(constraintLayout, "Fotografia captada", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Tirar outra fotografia", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            dispatchTakePictureIntent();
-                        }
-                    });
-
-            snackbar.show();
-
-        } else {
-            imageButton.setVisibility(View.VISIBLE);
-        }
     }
 
     @Override
@@ -332,7 +354,7 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
      * Ir buscar o ultimo lugar conhecido do GPS
      * Verifica as permissoes
      */
-    public void setLocal(){
+    public void setLocal() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
 
@@ -375,15 +397,22 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
         boolean cancel = false;
         View focusView = null;
 
-        if (TextUtils.isEmpty(titulo) ) {
+        if (TextUtils.isEmpty(titulo)) {
             mTituloView.setError("Título vazio");
             focusView = mTituloView;
             cancel = true;
         }
 
-        if (TextUtils.isEmpty(descricao) ) {
+        if (TextUtils.isEmpty(descricao)) {
             mDescricaoView.setError("Descrição vazia");
             focusView = mDescricaoView;
+            cancel = true;
+        }
+
+        if (TextUtils.isEmpty(tipo)) {
+            bTipos.setError("Por favor escolha um tipo");
+            //Toast.makeText(this, "Por favor escolha um tipo", Toast.LENGTH_SHORT).show();
+            focusView = bTipos;
             cancel = true;
         }
 
@@ -400,41 +429,43 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
             //mReportTask.execute((Void) null);
         }
     }
-/**
-    private void receberImagemVolley() {
-        String tag_json_obj = "octect_request";
-        String url = "https://novaleaf-197719.appspot.com/gcs/novaleaf-197719.appspot.com/" + "pixa";
 
-        SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
-        final String token = sharedPreferences.getString("tokenID", "erro");
-        ByteRequest stringRequest = new ByteRequest(Request.Method.GET, url, new Response.Listener<byte[]>() {
-            @Override
-            public void onResponse(byte[] response) {
-                Bitmap bitmap = BitmapFactory.decodeByteArray(response, 0, response.length);
-                imageView4.setImageBitmap(bitmap);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                VolleyLog.d("erroIMAGEM", "Error: " + error.getMessage());
-            }
-        }){
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
-                headers.put("Authorization", token);
-                return headers;
-            }
-
-
-        };
-        AppController.getInstance().addToRequestQueue(stringRequest, tag_json_obj);
-
-    }
-*/
+    /**
+     * private void receberImagemVolley() {
+     * String tag_json_obj = "octect_request";
+     * String url = "https://novaleaf-197719.appspot.com/gcs/novaleaf-197719.appspot.com/" + "pixa";
+     * <p>
+     * SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+     * final String token = sharedPreferences.getString("tokenID", "erro");
+     * ByteRequest stringRequest = new ByteRequest(Request.Method.GET, url, new Response.Listener<byte[]>() {
+     *
+     * @Override public void onResponse(byte[] response) {
+     * Bitmap bitmap = BitmapFactory.decodeByteArray(response, 0, response.length);
+     * imageView4.setImageBitmap(bitmap);
+     * }
+     * }, new Response.ErrorListener() {
+     * @Override public void onErrorResponse(VolleyError error) {
+     * VolleyLog.d("erroIMAGEM", "Error: " + error.getMessage());
+     * }
+     * }){
+     * @Override public Map<String, String> getHeaders() throws AuthFailureError {
+     * HashMap<String, String> headers = new HashMap<String, String>();
+     * headers.put("Authorization", token);
+     * return headers;
+     * }
+     * <p>
+     * <p>
+     * };
+     * AppController.getInstance().addToRequestQueue(stringRequest, tag_json_obj);
+     * <p>
+     * }
+     */
     private void enviarImagemVolley(final byte[] imageBytes) {
+        Random r = new Random();
+        int number = r.nextInt();
+        String id = Integer.toString(number);
         String tag_json_obj = "octect_request";
-        String url = "https://novaleaf-197719.appspot.com/gcs/novaleaf-197719.appspot.com/" + "pixa";
+        String url = "https://novaleaf-197719.appspot.com/gcs/novaleaf-197719.appspot.com/" + id;
 
         SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
         final String token = sharedPreferences.getString("tokenID", "erro");
@@ -448,7 +479,7 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 VolleyLog.d("erroIMAGEM", "Error: " + error.getMessage());
             }
-        }){
+        }) {
             @Override
             public byte[] getBody() throws AuthFailureError {
                 return imageBytes;
@@ -478,7 +509,7 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
             marker.put("name", titulo);
             marker.put("owner", sharedPreferences.getString("username", "erro"));
             marker.put("description", descricao);
-            marker.put("type", "fire");
+            marker.put("type", tipo);
             JSONObject coordinates = new JSONObject();
             coordinates.put("latitude", latitude);
             coordinates.put("longitude", longitude);
@@ -498,7 +529,7 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
                 public void onErrorResponse(VolleyError error) {
                     VolleyLog.d("erroNOVAOCORRENCIA", "Error: " + error.getMessage());
                 }
-            }){
+            }) {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     HashMap<String, String> headers = new HashMap<String, String>();
@@ -516,7 +547,6 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
 
     /**
      * Represents a task used to register a report
-     *
      */
     public class ReportTask extends AsyncTask<Void, Void, String> {
 
@@ -584,8 +614,8 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
                 //JSONObject token = null;
                 SharedPreferences preferences = getSharedPreferences("Prefs", MODE_PRIVATE);
                 SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
-                int newNumReports = preferences.getInt("numReports",0)+1;
-                editor.putString("userReport"+newNumReports, mTitulo);
+                int newNumReports = preferences.getInt("numReports", 0) + 1;
+                editor.putString("userReport" + newNumReports, mTitulo);
                 editor.putInt("numReports", newNumReports);
                 editor.commit();
                 LatLng position = new LatLng(latitude, longitude);
@@ -603,7 +633,6 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
 
         }
     }
-
 
 
 }
