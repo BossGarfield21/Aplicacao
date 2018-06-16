@@ -5,7 +5,7 @@
         android:angle="45"
         android:centerX="10.0"
         android:centerY="10.0"
-        android:endColor="#b0d3bf"
+        android:endColor="@color/honey_dew"
         android:gradientRadius="10"
         android:startColor="@color/snow"
         android:type="linear" />
