@@ -21,7 +21,8 @@ public class EventoFragment extends Fragment {
     private int mColumnCount = 1;
     private EventoFragment.OnListFragmentInteractionListener mListener;
     private RecyclerView myRecyclerView;
-    private static List<Evento> list =  new ArrayList<>();
+    public static List<Evento> listEventos =  new ArrayList<>();
+    public static MyEventoRecyclerViewAdapter myEventoRecyclerViewAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -68,7 +69,8 @@ public class EventoFragment extends Fragment {
             } else {
                 myRecyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            myRecyclerView.setAdapter(new MyEventoRecyclerViewAdapter(list, mListener));
+            myEventoRecyclerViewAdapter = new MyEventoRecyclerViewAdapter(listEventos, mListener);
+            myRecyclerView.setAdapter(myEventoRecyclerViewAdapter);
         }
         return view;
     }
@@ -97,14 +99,14 @@ public class EventoFragment extends Fragment {
 
 
     public static void updateList(){
-        list.add(new Evento("limpar mata", "bombeiroTuga", 2901921, 392791, 8272,
-                null, null, null, "2", "caparica", "bina", "hoje vamos limpar a mata\n" +
-                "venham connosco limpar que isto esta tudo sujo\n" +
-                "é essencial toda a ajuda"));
-        list.add(new Evento("limpar terreno", "admin", 2901921, 392791, 8272,
-                null, null, null, "2", "leiria", "bina", "hoje vamos limpar leiria\n" +
-                "venham a leiria limpar\n" +
-                "é essencial toda a ajuda"));
+        //list.add(new Evento("limpar mata", "bombeiroTuga", 2901921, 392791, 8272,
+          //      null, null, null, "2", "caparica", "bina", "hoje vamos limpar a mata\n" +
+            //    "venham connosco limpar que isto esta tudo sujo\n" +
+              //  "é essencial toda a ajuda"));
+       // list.add(new Evento("limpar terreno", "admin", 2901921, 392791, 8272,
+         //       null, null, null, "2", "leiria", "bina", "hoje vamos limpar leiria\n" +
+           //     "venham a leiria limpar\n" +
+             //   "é essencial toda a ajuda"));
 
     }
 

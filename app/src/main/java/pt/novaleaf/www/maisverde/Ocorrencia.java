@@ -2,6 +2,7 @@ package pt.novaleaf.www.maisverde;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Hugo Mochão on 27/04/2018.
@@ -15,6 +16,17 @@ public class Ocorrencia {
     boolean favorito;
     int risco;
     String hora;
+    long latitude;
+    long longitude;
+    String id;
+    String owner;
+    String descricao;
+    String likers[];
+    Map<String, String> comentarios;
+    int likes;
+    String status;
+    String type;
+
 
     public static final List<Ocorrencia> items = new ArrayList<>();
 
@@ -22,13 +34,25 @@ public class Ocorrencia {
 
     }
 
-    public Ocorrencia(String tit, int img, int risco, String hora){
-        titulo = tit;
-        imgId = img;
+    public Ocorrencia(String titulo, int imgId, int risco, String hora, String id, String descricao,
+                      String owner, String likers[], Map<String, String> comentarios, String status,
+                      long latitude, long longitude, int likes, String type){
+        this.titulo = titulo;
+        this.imgId = imgId;
         favorito = false;
         liked = false;
         this.risco = risco;
         this.hora = hora;
+        this.id = id;
+        this.descricao = descricao;
+        this.owner = owner;
+        this.likers = likers;
+        this.comentarios = comentarios;
+        this.status = status;
+        this.longitude =longitude;
+        this.latitude = latitude;
+        this.likes = likes;
+        this.type = type;
     }
 
     public String getTitulo(){
@@ -61,5 +85,45 @@ public class Ocorrencia {
 
     public boolean isLiked() {
         return liked;
+    }
+
+    public long getLatitude() {
+        return latitude;
+    }
+
+    public int getLikes() {
+        return likes;
+    }
+
+    public long getLongitude() {
+        return longitude;
+    }
+
+    public Map<String, String> getComentarios() {
+        return comentarios;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public String[] getLikers() {
+        return likers;
+    }
+
+    public String getType() {
+        return type;
     }
 }

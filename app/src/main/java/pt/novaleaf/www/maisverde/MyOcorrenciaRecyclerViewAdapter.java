@@ -43,6 +43,16 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
     }
 
     @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
+
+    @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.mImageReport.setImageResource(mValues.get(position).getImgId());
         holder.titulo.setText(mValues.get(position).getTitulo());
@@ -123,6 +133,7 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
             }
         });
 
+        holder.mTextNumLikes.setText(String.valueOf(mValues.get(position).getLikes()) + " likes");
 
     }
 
@@ -141,6 +152,7 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
         public LinearLayout mLinearInfo;
         public TextView mTextGosto;
         public TextView mTextFavorito;
+        public TextView mTextNumLikes;
         public ImageView mImageFavorito;
         public ImageView mImageGosto;
 
@@ -155,8 +167,11 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
             mLinearInfo = (LinearLayout) v.findViewById(R.id.linearInfo);
             mTextGosto = (TextView) v.findViewById(R.id.textGosto);
             mTextFavorito = (TextView) v.findViewById(R.id.textFavorito);
+            mTextNumLikes = (TextView) v.findViewById(R.id.likes);
             mImageFavorito = (ImageView) v.findViewById(R.id.imageFavorito);
             mImageGosto = (ImageView) v.findViewById(R.id.imageGosto);
+
+
         }
     }
 }

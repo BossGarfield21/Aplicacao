@@ -79,7 +79,7 @@ public class AreaPessoalActivity extends AppCompatActivity
         arrayList.add("O meu perfil");
 
 
-        mList = (ListView) findViewById(R.id.list);
+        mList = (ListView) findViewById(R.id.listOcorrencias);
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, arrayList);
 
         mList.setAdapter(arrayAdapter);

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -13,7 +12,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
-import android.view.View;
+import android.util.Log;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -22,7 +21,27 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static pt.novaleaf.www.maisverde.ComentariosActivity.comentarios;
+import static pt.novaleaf.www.maisverde.EventoFragment.listEventos;
+import static pt.novaleaf.www.maisverde.EventoFragment.myEventoRecyclerViewAdapter;
+import static pt.novaleaf.www.maisverde.OcorrenciaFragment.listOcorrencias;
+import static pt.novaleaf.www.maisverde.OcorrenciaFragment.myOcorrenciaRecyclerViewAdapter;
 
 /**
  * Author: Hugo Mochao
@@ -36,6 +55,11 @@ public class FeedActivity extends AppCompatActivity
     private CardView cardView;
     NavigationView navigationView;
     private SectionsPagerAdapter mSectionsPagerAdapter;
+    private String cursorOcorrencias = "";
+    private String cursorEventos = "";
+    private boolean isFinishedOcorrencias = false;
+    private boolean isFinishedEventos = false;
+    Fragment ocorrenciaFragment;
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -55,6 +79,8 @@ public class FeedActivity extends AppCompatActivity
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
+        //updateOcorrencias();
+        //updateEventos();
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
 
@@ -62,19 +88,18 @@ public class FeedActivity extends AppCompatActivity
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
 
         /**
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment fragment = fragmentManager.findFragmentById(R.id.fragmentContainer);
-        if (fragment==null){
-            fragment = OcorrenciaFragment.newInstance(1);
+         FragmentManager fragmentManager = getSupportFragmentManager();
+         Fragment fragment = fragmentManager.findFragmentById(R.id.fragmentContainer);
+         if (fragment==null){
+         fragment = OcorrenciaFragment.newInstance(1);
 
-            fragmentManager.beginTransaction()
-                                              .add(R.id.fragmentContainer, fragment)
-                                              .commit();
-        }*/
+         fragmentManager.beginTransaction()
+         .add(R.id.fragmentContainer, fragment)
+         .commit();
+         }*/
 
-       // FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        // FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         //fab.setVisibility(View.GONE);
-
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -86,7 +111,6 @@ public class FeedActivity extends AppCompatActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().getItem(0).setChecked(true);
-
 
         cardView = (CardView) findViewById(R.id.cardView);
 
@@ -119,7 +143,7 @@ public class FeedActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_help) {
             return true;
-        } else if(id == R.id.action_logout){
+        } else if (id == R.id.action_logout) {
 
             final AlertDialog.Builder alert = new AlertDialog.Builder(FeedActivity.this);
             alert.setTitle("Terminar sessão");
@@ -148,8 +172,7 @@ public class FeedActivity extends AppCompatActivity
             alertDialog.show();
 
 
-
-        } else if(id == R.id.action_acerca){
+        } else if (id == R.id.action_acerca) {
             Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://anovaleaf.ddns.net"));
             startActivity(i);
         }
@@ -170,7 +193,7 @@ public class FeedActivity extends AppCompatActivity
             //startActivity(i);
             //finish();
 
-        } else if(id == R.id.nav_adicionar_report){
+        } else if (id == R.id.nav_adicionar_report) {
 
             AlertDialog.Builder alert = new AlertDialog.Builder(FeedActivity.this);
             alert.setTitle("Criar report");
@@ -260,8 +283,8 @@ public class FeedActivity extends AppCompatActivity
             Fragment fragment;
             switch (position) {
                 case 0:
-                    fragment = OcorrenciaFragment.newInstance(1);
-                    return fragment;
+                    ocorrenciaFragment = OcorrenciaFragment.newInstance(1);
+                    return ocorrenciaFragment;
                 case 1:
                     fragment = EventoFragment.newInstance(1);
                     return fragment;
@@ -326,4 +349,235 @@ public class FeedActivity extends AppCompatActivity
         startActivity(i);
 
     }
+
+    public void updateOcorrencias() {
+
+        volleyGetOcorrencias();
+
+
+    }
+
+    public void volleyGetOcorrencias() {
+
+        String tag_json_obj = "json_request";
+        String url;
+        if (cursorOcorrencias.equals(""))
+            url = "https://novaleaf-197719.appspot.com/rest/withtoken/social/feed/?cursor=startquery";
+        else
+            url = "https://novaleaf-197719.appspot.com/rest/withtoken/social/feed/?cursor=" + cursorOcorrencias;
+
+        Log.d("ché bate só", url);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+        JSONObject reports = new JSONObject();
+        final String token = sharedPreferences.getString("tokenID", "erro");
+
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, reports,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            Log.d("nabo", cursorOcorrencias + "pixa");
+                            cursorOcorrencias = response.getString("cursor");
+                            Log.d("nabo", cursorOcorrencias);
+                            isFinishedOcorrencias = response.getBoolean("isFinished");
+                            Log.d("ACABOU???", String.valueOf(isFinishedOcorrencias));
+
+                            String id;
+                            String titulo;
+                            String descricao;
+                            String owner;
+                            String type;
+                            String[] likers = null;
+                            int risk;
+                            int likes;
+                            String status;
+                            long latitude;
+                            long longitude;
+                            Map<String, String> comentarios = null;
+                            JSONArray list = response.getJSONArray("list");
+                            if (!isFinishedOcorrencias)
+                                for (int i = 0; i < list.length(); i++) {
+
+                                    JSONObject ocorrencia = list.getJSONObject(i);
+                                    id = ocorrencia.getString("id");
+                                    titulo = ocorrencia.getString("name");
+                                    descricao = ocorrencia.getString("description");
+                                    owner = ocorrencia.getString("owner");
+                                    risk = ocorrencia.getInt("risk");
+                                    likes = ocorrencia.getInt("likes");
+                                    status = ocorrencia.getString("status");
+                                    type = ocorrencia.getString("type");
+
+                                    JSONObject coordinates = ocorrencia.getJSONObject("coordinates");
+                                    latitude = coordinates.getLong("latitude");
+                                    longitude = coordinates.getLong("longitude");
+                                    Ocorrencia ocorrencia1 = new Ocorrencia(titulo, R.mipmap.ic_entrada_round, risk, "23:12", id,
+                                            descricao, owner, likers, comentarios, status, latitude, longitude, likes, type);
+                                    listOcorrencias.add(ocorrencia1);
+                                    Log.d("ID", id);
+                                    Log.d("titulo", titulo);
+                                    Log.d("desc", descricao);
+                                    myOcorrenciaRecyclerViewAdapter.notifyDataSetChanged();
+
+                                }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("erroLOGIN", "Error: " + error.getMessage());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+        };
+
+        AppController.getInstance().addToRequestQueue(jsonObjectRequest);
+
+
+    }
+
+
+    public void updateEventos() {
+
+        volleyGetEventos();
+
+
+    }
+
+    public void volleyGetEventos() {
+
+        String tag_json_obj = "json_request";
+        String url;
+        if (cursorEventos.equals(""))
+            url = "https://novaleaf-197719.appspot.com/rest/withtoken/social/feed/?cursor=startquery";
+        else
+            url = "https://novaleaf-197719.appspot.com/rest/withtoken/social/feed/?cursor=" + cursorEventos;
+
+        Log.d("ché bate só", url);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+        JSONObject reports = new JSONObject();
+        final String token = sharedPreferences.getString("tokenID", "erro");
+
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, reports,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            Log.d("nabo", cursorEventos + "pixa");
+                            cursorEventos = response.getString("cursor");
+                            Log.d("nabo", cursorEventos);
+                            isFinishedEventos = response.getBoolean("isFinished");
+                            Log.d("ACABOU???", String.valueOf(isFinishedEventos));
+
+                            String name;
+                            String creator;
+                            long creationDate;
+                            long meetupDate;
+                            long endDate;
+                            List<String> interests;
+                            List<String> confirmations;
+                            List<String> admin;
+                            String id;
+                            String location;
+                            String alert;
+                            String description;
+                            JSONArray list = response.getJSONArray("list");
+                            if (!isFinishedEventos)
+                                for (int i = 0; i < list.length(); i++) {
+
+                                    JSONObject evento = list.getJSONObject(i);
+                                    id = evento.getString("id");
+                                    name = evento.getString("name");
+                                    description = evento.getString("description");
+                                    creator = evento.getString("creator");
+                                    location = evento.getString("location");
+                                    alert = evento.getString("alert");
+                                    creationDate = evento.getLong("creationDate");
+                                    meetupDate = evento.getLong("meetupDate");
+                                    endDate = evento.getLong("endDate");
+                                    interests = null;
+                                    confirmations = null;
+                                    admin = null;
+
+                                    Evento evento1 = new Evento(name, creator, creationDate, meetupDate, endDate,
+                                            interests, confirmations, admin, id, location, alert, description);
+                                    listEventos.add(evento1);
+
+                                    myEventoRecyclerViewAdapter.notifyDataSetChanged();
+
+                                }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("erroLOGIN", "Error: " + error.getMessage());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+        };
+
+        AppController.getInstance().addToRequestQueue(jsonObjectRequest);
+
+
+    }
+
+    /**
+     * private void receberImagemVolley() {
+     * String tag_json_obj = "octect_request";
+     * String url = "https://novaleaf-197719.appspot.com/gcs/novaleaf-197719.appspot.com/" + "pixa";
+     * <p>
+     * SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+     * final String token = sharedPreferences.getString("tokenID", "erro");
+     * ByteRequest stringRequest = new ByteRequest(Request.Method.GET, url, new Response.Listener<byte[]>() {
+     *
+     * @Override public void onResponse(byte[] response) {
+     * Bitmap bitmap = BitmapFactory.decodeByteArray(response, 0, response.length);
+     * imageView4.setImageBitmap(bitmap);
+     * }
+     * }, new Response.ErrorListener() {
+     * @Override public void onErrorResponse(VolleyError error) {
+     * VolleyLog.d("erroIMAGEM", "Error: " + error.getMessage());
+     * }
+     * }){
+     * @Override public Map<String, String> getHeaders() throws AuthFailureError {
+     * HashMap<String, String> headers = new HashMap<String, String>();
+     * headers.put("Authorization", token);
+     * return headers;
+     * }
+     * <p>
+     * <p>
+     * };
+     * AppController.getInstance().addToRequestQueue(stringRequest, tag_json_obj);
+     * <p>
+     * }
+     */
 }
