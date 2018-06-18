@@ -1,24 +1,53 @@
 package pt.novaleaf.www.maisverde;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.ParseError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -26,22 +55,27 @@ import java.util.ArrayList;
  * Atividade que serve para modificar os dados de um utilizador
  */
 
-public class AlterarDadosActivity extends AppCompatActivity {
+public class AlterarDadosActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener{
 
     private String email;
     public static ArrayList<PerfilItem> arrayList;
     public static RecyclerView mRecyclerViewPerfil;
     public static MyPerfilRecyclerViewAdapter adapter;
     public static SharedPreferences sharedPreferences;
-    private UserAlteraTask mAlteraTask = null;
     public static boolean changed = false;
+    NavigationView navigationView;
+    Toolbar toolbar;
+    ConstraintLayout constraintLayout;
+    ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alterar_dados);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        constraintLayout = (ConstraintLayout) findViewById(R.id.mConstr);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,11 +87,20 @@ public class AlterarDadosActivity extends AppCompatActivity {
                 finish();
             }
         });
-        ActionBar actionBar = getSupportActionBar();
+        actionBar = getSupportActionBar();
         if (actionBar != null) {
             // Show the Up button in the action bar.
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        navigationView.getMenu().getItem(4).setChecked(true);
 
         sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
 
@@ -69,181 +112,81 @@ public class AlterarDadosActivity extends AppCompatActivity {
         arrayList = new ArrayList<>();
         arrayList.add(new PerfilItem("Username", sharedPreferences.getString("username", "erro")));
         arrayList.add(new PerfilItem("Email", email));
+        arrayList.add(new PerfilItem("Nome", sharedPreferences.getString("name", "")));
         arrayList.add(new PerfilItem("Aprovação dos reports", sharedPreferences.getString("approval_rate", "erro")));
         arrayList.add(new PerfilItem("Reports efetuados", sharedPreferences.getString("numb_reports", "erro")));
-        //arrayList.add("Role: " + sharedPreferences.getString("role", "erro"));
-        arrayList.add(new PerfilItem("Morada", sharedPreferences.getString("firstadd", "ainda não definida")));
-        arrayList.add(new PerfilItem("Morada complementar", sharedPreferences.getString("secondadd", "ainda não definida")));
+        arrayList.add(new PerfilItem("Morada", sharedPreferences.getString("firstaddress", "ainda não definida")));
+        arrayList.add(new PerfilItem("Morada complementar", sharedPreferences.getString("complementaryaddress", "ainda não definida")));
         arrayList.add(new PerfilItem("Localidade", sharedPreferences.getString("locality", "ainda não definida")));
         arrayList.add(new PerfilItem("Código Postal", sharedPreferences.getString("postalcode", "ainda não definido")));
-        arrayList.add(new PerfilItem("Telefone", sharedPreferences.getString("telephone", "ainda não definido")));
-        arrayList.add(new PerfilItem("Telemovel", sharedPreferences.getString("mobilephone", "ainda não definido")));
+        arrayList.add(new PerfilItem("Telemovel", sharedPreferences.getString("mobile_phone", "ainda não definido")));
         arrayList.add(new PerfilItem("Mudar a password", ""));
 
         adapter = new MyPerfilRecyclerViewAdapter(this, arrayList);
         mRecyclerViewPerfil.setLayoutManager(new LinearLayoutManager(this));
 
-        mRecyclerViewPerfil.setAdapter(adapter);
+        float density = this.getResources().getDisplayMetrics().density;
 
+        int actionBarHeight = 56;
+        int paddingPixel = (int)((actionBarHeight + 150) * density +0.5f);
+        Log.e("pixel", ""+paddingPixel + " tool " + actionBar.getHeight() + " " + constraintLayout.getHeight());
+        mRecyclerViewPerfil.setPadding(0, paddingPixel, 0, 0);
+        mRecyclerViewPerfil.setAdapter(adapter);
+        mRecyclerViewPerfil.addOnScrollListener(new HidingScrollListener() {
+            @Override
+            public void onHide() {
+                hideViews();
+            }
+            @Override
+            public void onShow() {
+                showViews();
+            }
+        });
+    }
+
+    private void hideViews() {
+        constraintLayout.animate().translationY(-constraintLayout.getHeight()-toolbar.getHeight()).setInterpolator(new AccelerateInterpolator(2));
+
+    }
+
+    private void showViews() {
+        constraintLayout.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2));
+    }
        //
 
-    }
-/**
 
-        mRecyclerViewPerfil.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                switch (i){
-                    case 10:
-                        AlertDialog.Builder changepass = new AlertDialog.Builder(AlterarDadosActivity.this);
-                        changepass.setTitle("Mudar password");
-                        changepass
-                                .setMessage("Quer mudar a password?")
-                                .setCancelable(true)
-                                .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        Intent intent = new Intent(AlterarDadosActivity.this, AlterarPassActivity.class);
-                                        startActivity(intent);
-                                    }
-                                })
-                                .setNegativeButton("Não", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        dialogInterface.dismiss();
-                                    }
-                                });
-
-                        AlertDialog alertDialog = changepass.create();
-                        alertDialog.show();
-                        return;
-                    default:
-                        return;
-                }
-            }
-        });
-
-        //Alterar a informacao com um longo clique
-        mRecyclerViewPerfil.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-
-                switch (i) {
-                    case 1:
-                        setDialog("Alterar o Email", "Introduza o novo endereço de email", 1);
-                        return true;
-                    case 4:
-                        setDialog("Morada", "Introduza a sua morada", 4);
-                        return true;
-                    case 5:
-                        setDialog("Morada Complementar", "Introduza a sua morada complementar", 5);
-                        return true;
-                    case 6:
-                        setDialog("Localidade", "Introduza a sua localidade", 6);
-                        return true;
-                    case 7:
-                        setDialog("Código Postal", "Introduza o seu código postal", 7);
-                        return true;
-                    case 8:
-                        setDialog("Telefone", "Introduza o seu número de telefone", 8);
-                        return true;
-                    case 9:
-                        setDialog("Telemovel", "Introduza o seu número de telemovel", 9);
-                        return true;
-                    default:
-                        return false;
-                }
-
-            }
-        });
-
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.area_pessoal, menu);
+        return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
 
-    /**
-     *
-     * Mostrar o dialog correspondente a alteracao de campo
-     *
-     * @param titulo
-     * @param mensagem
-     * @param index
-     *
-    public void setDialog(String titulo, String mensagem, final int index) {
-
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(AlterarDadosActivity.this);
-        alertDialog.setTitle(titulo);
-        alertDialog.setMessage(mensagem);
-
-        final EditText input = new EditText(AlterarDadosActivity.this);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT);
-        input.setLayoutParams(lp);
-        alertDialog.setView(input);
-        String tipo="";
-        String nomeCampo="";
-        switch (index){
-            case 1:
-                tipo = "email";
-                nomeCampo = "Email: ";
-                break;
-            case 4:
-                tipo = "firstaddress";
-                nomeCampo = "Morada principal: ";
-                break;
-            case 5:
-                tipo = "complementaryaddress";
-                nomeCampo = "Morada complementar: ";
-                break;
-            case 6:
-                tipo = "locality";
-                nomeCampo = "Localidade: ";
-                break;
-            case 7:
-                tipo = "postalcode";
-                nomeCampo = "Código Postal: ";
-                break;
-            case 8:
-                tipo = "telephone";
-                nomeCampo = "Telefone: ";
-                break;
-            case 9:
-                tipo = "mobile_phone";
-                nomeCampo = "Telemovel: ";
-                break;
-            default:
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.editPerfil) {
+            return true;
         }
-
-        Log.i("tipo", tipo);
-        final String finalTipo = tipo;
-        final String finalNomeCampo = nomeCampo;
-        alertDialog.setPositiveButton("OK",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        changed = true;
-                        String campo = input.getText().toString();
-                        Log.i("finaltipo", finalTipo);
-                        arrayList.remove(index);
-                        arrayList.add(index, finalNomeCampo + campo);
-                        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(AlterarDadosActivity.this, android.R.layout.simple_list_item_1, arrayList);
-                        mRecyclerViewPerfil.setAdapter(arrayAdapter);
-                        SharedPreferences.Editor ed =sharedPreferences.edit();
-                        ed.putString(finalTipo, campo);
-                        ed.commit();
-                    }
-                });
-
-        alertDialog.setNegativeButton("Cancelar",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-
-        alertDialog.show();
+        return super.onOptionsItemSelected(item);
     }
-*/
+
+    @Override
+    public void onBackPressed() {
+        if (changed) {
+            changed = false;
+            attemptSendData();
+        }
+        navigationView.getMenu().getItem(0).setChecked(true);
+        finish();
+    }
+
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -251,129 +194,134 @@ public class AlterarDadosActivity extends AppCompatActivity {
      * errors are presented and no actual login attempt is made.
      */
     private void attemptSendData() {
-        if (mAlteraTask != null) {
-            return;
-        }
 
         String email = sharedPreferences.getString("email", "");
         String firstaddress = sharedPreferences.getString("firstaddress", "");
         String complementaryaddress = sharedPreferences.getString("complementaryaddress", "");
         String locality = sharedPreferences.getString("locality", "");
-        String telephone = sharedPreferences.getString("telephone", "");
         String mobile_phone = sharedPreferences.getString("mobile_phone", "");
         String postalcode = sharedPreferences.getString("postalcode", "");
 
 
-        boolean cancel = false;
-        View focusView = null;
+        alterarDadosVolley(email, firstaddress, complementaryaddress, locality, mobile_phone, postalcode);
+
+    }
+
+    private void alterarDadosVolley(final String email, final String firstaddress, final String complementaryaddress,
+                                    final String locality, final String mobile_phone,
+                                    final String postalcode) {
+
+        String tag_json_obj = "json_obj_req";
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/users/complete_profile";
+
+        JSONObject profileInfo = new JSONObject();
+        final String token = sharedPreferences.getString("tokenID", "erro");
+        try {
+
+            profileInfo.put("email", email);
+            profileInfo.put("firstaddress", firstaddress);
+            profileInfo.put("complementaryaddress", complementaryaddress);
+            profileInfo.put("locality", locality);
+            profileInfo.put("mobile_phone", mobile_phone);
+            profileInfo.put("postalcode", postalcode);
 
 
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, profileInfo,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                        }
+                    }, new Response.ErrorListener() {
 
-        if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
-            focusView.requestFocus();
-        } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
-            mAlteraTask = new UserAlteraTask(email, firstaddress, complementaryaddress, locality, telephone, mobile_phone, postalcode);
-            mAlteraTask.execute((Void) null);
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    changed = true;
+                    VolleyLog.d("erroLOGIN", "Error: " + error.getMessage());
+                }
+            }){
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    HashMap<String, String> headers = new HashMap<String, String>();
+                    headers.put("Authorization", token);
+                    return headers;
+                }
+            };
+            AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
 
-    /**
-     * Represents a task used to change things form the user
-     */
-    public class UserAlteraTask extends AsyncTask<Void, Void, String> {
-
-        private final String mEmail;// = sharedPreferences.getString("email", "");
-        private final String mFirstaddress;// = sharedPreferences.getString("firstaddress", "");
-        private final String mComplementaryaddress;// = sharedPreferences.getString("complementaryaddress", "");
-        private final String mLocality;// = sharedPreferences.getString("locality", "");
-        private final String mTelephone;// = sharedPreferences.getString("telephone", "");
-        private final String mMobile_phone;// = sharedPreferences.getString("mobile_phone", "");
-        private final String mPostalcode;// = sharedPreferences.getString("mobile_phone", "");
-
-        UserAlteraTask(String email, String firstaddress, String complementaryaddress,
-                       String locality, String telephone, String mobile_phone, String postalcode) {
-
-            mEmail = email;
-            mFirstaddress = firstaddress;
-            mComplementaryaddress = complementaryaddress;
-            mLocality = locality;
-            mTelephone = telephone;
-            mMobile_phone = mobile_phone;
-            mPostalcode = postalcode;
-        }
-
-        /**
-         * Cancel background network operation if we do not have network connectivity.
-         */
-        @Override
-        protected void onPreExecute() {
-            ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Activity.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-            if (networkInfo == null || !networkInfo.isConnected() ||
-                    (networkInfo.getType() != ConnectivityManager.TYPE_WIFI
-                            && networkInfo.getType() != ConnectivityManager.TYPE_MOBILE)) {
-                // If no connectivity, cancel task and update Callback with null data.
-                cancel(true);
-            }
-        }
-
-        @Override
-        protected String doInBackground(Void... params) {
-            try {
-                //TODO: create JSON object with credentials and call doPost
+        if (id == R.id.nav_feed) {
+            Intent i = new Intent(AlterarDadosActivity.this, FeedActivity.class);
+            startActivity(i);
+            finish();
+        } else if(id == R.id.nav_adicionar_report){
 
 
-                SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
-                String token =  sharedPreferences.getString("tokenID", "erro");
+            android.support.v7.app.AlertDialog.Builder alert = new android.support.v7.app.AlertDialog.Builder(AlterarDadosActivity.this);
+            alert.setTitle("Criar report");
+            alert
+                    .setMessage("O local do report é a sua localização atual?")
+                    .setCancelable(true)
+                    .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            if (changed)
+                                attemptSendData();
+                            Intent intent = new Intent(AlterarDadosActivity.this, CriarOcorrenciaActivity.class);
+                            intent.putExtra("estaLocal", true);
+                            startActivity(intent);
+                        }
+                    })
+                    .setNegativeButton("Não", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            if (changed)
+                                attemptSendData();
+                            Intent intent = new Intent(AlterarDadosActivity.this, MapsActivity.class);
+                            intent.putExtra("toast", true);
+                            startActivity(intent);
+                        }
+                    });
 
-                JSONObject profileInfo = new JSONObject();
-                profileInfo.put("email", mEmail);
-                profileInfo.put("firstaddress", mFirstaddress);
-                profileInfo.put("complementaryaddress", mComplementaryaddress);
-                profileInfo.put("locality", mLocality);
-                profileInfo.put("telephone", mTelephone);
-                profileInfo.put("mobile_phone", mMobile_phone);
-                profileInfo.put("postalcode", mPostalcode);
+            android.support.v7.app.AlertDialog alertDialog = alert.create();
+            alertDialog.show();
 
+        }else if (id == R.id.nav_mapa) {
 
-                Log.i("profile info", profileInfo.toString());
+            if (changed)
+                attemptSendData();
+            Intent i = new Intent(AlterarDadosActivity.this, MapsActivity.class);
+            startActivity(i);
+            finish();
 
-                URL url = new URL("https://novaleaf-197719.appspot.com/rest/users/complete_profile");
+        } else if (id == R.id.nav_area_pessoal) {
 
-                return RequestsREST.doPOST(url, profileInfo, token);
-            } catch (Exception e) {
-                Log.i("erro", e.toString());
-                return e.toString();
-            }
-        }
+        } else if (id == R.id.nav_grupos) {
 
+            if (changed)
+                attemptSendData();
+            Intent i = new Intent(AlterarDadosActivity.this, GruposMainActivity.class);
+            startActivity(i);
+            finish();
 
-        @Override
-        protected void onPostExecute(final String result) {
-            mAlteraTask = null;
+        } else if (id == R.id.nav_share) {
 
-            if (!result.contains("HTTP error")) {
-                    // We parse the result
-
-                Log.i("AlterarDados", "sucesso");
-            } else{
-                changed = true;
-                Log.i("AlterarDados", result);
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAlteraTask = null;
+        } else if (id == R.id.nav_send) {
 
         }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
-
 
 
 }

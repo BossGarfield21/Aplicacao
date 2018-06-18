@@ -6,8 +6,11 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.view.View;
@@ -28,11 +31,16 @@ import android.widget.Toast;
  */
 
 public class FeedActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OcorrenciaFragment.OnListFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, OcorrenciaFragment.OnListFragmentInteractionListener, EventoFragment.OnListFragmentInteractionListener {
 
     private CardView cardView;
+    NavigationView navigationView;
+    private SectionsPagerAdapter mSectionsPagerAdapter;
 
-
+    /**
+     * The {@link ViewPager} that will host the section contents.
+     */
+    private ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +49,19 @@ public class FeedActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
+        // Set up the ViewPager with the sections adapter.
+        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager.setAdapter(mSectionsPagerAdapter);
 
 
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+
+        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
+
+        /**
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment fragment = fragmentManager.findFragmentById(R.id.fragmentContainer);
         if (fragment==null){
@@ -51,10 +70,10 @@ public class FeedActivity extends AppCompatActivity
             fragmentManager.beginTransaction()
                                               .add(R.id.fragmentContainer, fragment)
                                               .commit();
-        }
+        }*/
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setVisibility(View.GONE);
+       // FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        //fab.setVisibility(View.GONE);
 
 
 
@@ -64,8 +83,9 @@ public class FeedActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        navigationView.getMenu().getItem(0).setChecked(true);
 
 
         cardView = (CardView) findViewById(R.id.cardView);
@@ -100,7 +120,6 @@ public class FeedActivity extends AppCompatActivity
         if (id == R.id.action_help) {
             return true;
         } else if(id == R.id.action_logout){
-            //TODO: sair da app
 
             final AlertDialog.Builder alert = new AlertDialog.Builder(FeedActivity.this);
             alert.setTitle("Terminar sessão");
@@ -147,14 +166,20 @@ public class FeedActivity extends AppCompatActivity
         if (id == R.id.nav_mapa) {
 
             Intent i = new Intent(FeedActivity.this, MapsActivity.class);
-            startActivity(i);
+            startActivityForResult(i, 0);
+            //startActivity(i);
             //finish();
 
         } else if(id == R.id.nav_adicionar_report){
 
             AlertDialog.Builder alert = new AlertDialog.Builder(FeedActivity.this);
             alert.setTitle("Criar report");
-            alert
+            alert.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialogInterface) {
+                    navigationView.getMenu().getItem(0).setChecked(true);
+                }
+            })
                     .setMessage("O local do report é a sua localização atual?")
                     .setCancelable(true)
                     .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
@@ -162,7 +187,8 @@ public class FeedActivity extends AppCompatActivity
                         public void onClick(DialogInterface dialogInterface, int i) {
                             Intent intent = new Intent(FeedActivity.this, CriarOcorrenciaActivity.class);
                             intent.putExtra("estaLocal", true);
-                            startActivity(intent);
+                            startActivityForResult(intent, 0);
+                            //startActivity(intent);
                         }
                     })
                     .setNegativeButton("Não", new DialogInterface.OnClickListener() {
@@ -170,22 +196,26 @@ public class FeedActivity extends AppCompatActivity
                         public void onClick(DialogInterface dialogInterface, int i) {
                             Intent intent = new Intent(FeedActivity.this, MapsActivity.class);
                             intent.putExtra("toast", true);
-                            startActivity(intent);
+                            startActivityForResult(intent, 0);
+                            //startActivity(intent);
                         }
                     });
 
             AlertDialog alertDialog = alert.create();
             alertDialog.show();
 
+
         } else if (id == R.id.nav_area_pessoal) {
             Intent i = new Intent(FeedActivity.this, AlterarDadosActivity.class);
-            startActivity(i);
+            startActivityForResult(i, 0);
+            //startActivity(i);
             //finish();
 
         } else if (id == R.id.nav_grupos) {
 
             Intent i = new Intent(FeedActivity.this, GruposMainActivity.class);
-            startActivity(i);
+            startActivityForResult(i, 0);
+            //startActivity(i);
             //finish();
 
         } else if (id == R.id.nav_feedback) {
@@ -199,6 +229,54 @@ public class FeedActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 0) {
+            if (resultCode == RESULT_CANCELED) {
+                // user pressed back from 2nd activity to go to 1st activity. code here
+                navigationView.getMenu().getItem(0).setChecked(true);
+            }
+        }
+    }
+
+    /**
+     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
+     * one of the sections/tabs/pages.
+     */
+    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+
+        public SectionsPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            // getItem is called to instantiate the fragment for the given page.
+            // Return a PlaceholderFragment (defined as a static inner class below).
+            Fragment fragment;
+            switch (position) {
+                case 0:
+                    fragment = OcorrenciaFragment.newInstance(1);
+                    return fragment;
+                case 1:
+                    fragment = EventoFragment.newInstance(1);
+                    return fragment;
+                default:
+                    return null;
+            }
+
+            //return PlaceholderFragment.newInstance(position + 1);
+        }
+
+        @Override
+        public int getCount() {
+            // Show 2 total pages.
+            return 2;
+        }
     }
 
 
@@ -221,7 +299,31 @@ public class FeedActivity extends AppCompatActivity
 
     @Override
     public void onImagemInteraction(Ocorrencia item) {
-        Toast.makeText(FeedActivity.this, "IR PARA A PAGINA DA OCORRENCIA", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(FeedActivity.this, "IR PARA A PAGINA DA OCORRENCIA", Toast.LENGTH_SHORT).show();
+        Intent i = new Intent(FeedActivity.this, OcorrenciaActivity.class);
+        startActivity(i);
+    }
+
+    @Override
+    public void onLikeInteraction(Evento item) {
+
+    }
+
+    @Override
+    public void onCommentInteraction(Evento item) {
+
+    }
+
+    @Override
+    public void onFavoritoInteraction(Evento item) {
+
+    }
+
+    @Override
+    public void onImagemInteraction(Evento item) {
+
+        Intent i = new Intent(FeedActivity.this, EventoActivity.class);
+        startActivity(i);
 
     }
 }

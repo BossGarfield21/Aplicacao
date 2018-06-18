@@ -106,10 +106,8 @@ public class OcorrenciaFragment extends Fragment {
 
 
     public static void updateList(){
-        Ocorrencia ocorrencia1 = new Ocorrencia("FOGO", R.mipmap.ic_entrada_round);
-        Ocorrencia ocorrencia2 = new Ocorrencia("ajuda", R.mipmap.ic_logo_round);
-        list.add(new Ocorrencia("FOGO", R.mipmap.ic_entrada_round));
-        list.add(new Ocorrencia("ajuda", R.mipmap.ic_logo_round));
+        list.add(new Ocorrencia("FOGO", R.mipmap.ic_entrada_round, 5, "11:45\n13/05/2018"));
+        list.add(new Ocorrencia("ajuda", R.mipmap.ic_logo_round, 3, "18:13\n16/05/2018"));
 
     }
 

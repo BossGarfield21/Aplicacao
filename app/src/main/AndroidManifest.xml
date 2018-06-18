@@ -28,6 +28,16 @@
         android:roundIcon="@mipmap/ic_logo"
         android:supportsRtl="true"
         android:theme="@style/CustomTheme">
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.example.android.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"/>
+        </provider>
+
         <activity
             android:name=".EntradaActivity"
             android:theme="@style/Entrada3">
@@ -81,39 +91,47 @@
         <activity
             android:name=".SettingsPessoaisActivity"
             android:label="@string/title_activity_settings_pessoais"
-            android:parentActivityName=".AreaPessoalActivity">
-        </activity>
+            android:parentActivityName=".AreaPessoalActivity"/>
         <activity
             android:name=".AcercaActivity"
-            android:label="Acerca de">
-        </activity>
-        <activity android:name=".RegisterActivity">
-        </activity>
+            android:label="Acerca de"/>
+        <activity android:name=".RegisterActivity"/>
         <activity
             android:name=".CriarOcorrenciaActivity"
-            android:label="Criar ocorrência">
-        </activity>
+            android:label="Criar ocorrência"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".CriarGrupoActivity"
-            android:label="Criar grupo">
-        </activity>
+            android:label="Criar grupo"/>
         <activity
             android:name=".AlterarDadosActivity"
             android:label="Perfil"
-            android:parentActivityName=".AreaPessoalActivity">
-        </activity>
+            android:parentActivityName=".AreaPessoalActivity"/>
         <activity
             android:name=".MinhasOcorrenciasActivity"
-            android:label="As minhas ocorrências">
-        </activity>
-        <activity android:name=".DetalheOcorrenciaActivity">
-        </activity>
+            android:label="As minhas ocorrências"/>
+        <activity android:name=".DetalheOcorrenciaActivity"/>
         <activity
             android:name=".AlterarPassActivity"
-            android:label="Mudar password">
+            android:label="Mudar password"/>
+        <activity
+            android:name=".ComentariosActivity"
+            android:label="Comentários"/>
+        <activity
+            android:name=".OcorrenciaActivity"
+            android:label="Ocorrência"/>
+        <activity
+            android:name=".teste"
+            android:label="@string/title_activity_teste"
+            android:theme="@style/CustomTheme"/>
+        <activity
+            android:name=".EventoActivity"
+            android:label="Evento">
         </activity>
-        <activity android:name=".ComentariosActivity"
-                  android:label="Comentários"  >
+        <activity
+            android:name=".TiposActivity"
+            android:theme="@style/Theme.Transparent"
+            android:screenOrientation="portrait">
         </activity>
     </application>
 

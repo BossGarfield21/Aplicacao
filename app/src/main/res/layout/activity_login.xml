@@ -20,10 +20,10 @@
 
         <ImageView
             android:id="@+id/imageLogo"
-            android:layout_width="306dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            app:srcCompat="@mipmap/ic_novaleaf_foreground" />
+            app:srcCompat="@mipmap/ic_novaleaf_foreground"/>
 
         <ProgressBar
             android:id="@+id/login_progress"

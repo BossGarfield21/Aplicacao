@@ -27,6 +27,7 @@ import android.view.MenuItem;
 public class GruposMainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    NavigationView navigationView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,8 +51,9 @@ public class GruposMainActivity extends AppCompatActivity
         toggle.syncState();
         ;
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        navigationView.getMenu().getItem(3).setChecked(true);
 
 
     }
@@ -61,8 +63,9 @@ public class GruposMainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+            setResult(RESULT_CANCELED);
         } else {
-
+            setResult(RESULT_CANCELED);
             super.onBackPressed();
         }
     }
@@ -159,12 +162,12 @@ public class GruposMainActivity extends AppCompatActivity
         }else if (id == R.id.nav_mapa) {
             Intent i = new Intent(GruposMainActivity.this, MapsActivity.class);
             startActivity(i);
-            //finish();
+            finish();
 
         } else if (id == R.id.nav_area_pessoal) {
             Intent i = new Intent(GruposMainActivity.this, AlterarDadosActivity.class);
             startActivity(i);
-            //finish();
+            finish();
 
         } else if (id == R.id.nav_grupos) {
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout
+    android:id="@+id/constrOco"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -57,29 +58,47 @@
 
         </android.support.design.widget.TextInputLayout>
 
-        <ImageButton
-            android:id="@+id/imageButton"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="171dp"
-            app:srcCompat="@drawable/ic_menu_camera"/>
+            android:layout_height="match_parent">
+            <ImageButton
+                android:id="@+id/imageButton"
+                android:layout_width="match_parent"
+                android:layout_height="171dp"
+                app:srcCompat="@drawable/ic_menu_camera"/>
+
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="match_parent"
+                android:layout_height="171dp"/>
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/bTipos"
+            android:background="@drawable/button_tipos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TIPO DE OCORRENCIA"/>
 
     </LinearLayout>
 
+
     <Button
-        android:id="@+id/bCriar"
+            android:id="@+id/bCriar"
 
-        android:layout_width="131dp"
-        android:layout_height="36dp"
+            android:layout_width="131dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/buttonshape"
+            android:text="@string/criar"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            tools:layout_editor_absoluteY="371dp"/>
 
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:background="@drawable/buttonshape"
-        android:text="@string/criar"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
-        tools:layout_editor_absoluteY="371dp"/>
 
 </android.support.constraint.ConstraintLayout>

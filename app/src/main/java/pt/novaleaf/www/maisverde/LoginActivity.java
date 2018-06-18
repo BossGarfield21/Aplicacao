@@ -245,7 +245,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         jsonObject.put("username", email);
 
         final ProgressDialog pDialog = new ProgressDialog(this);
-        pDialog.setMessage("Loading...");
+        pDialog.setMessage("A Carregar...");
         pDialog.show();
         final SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
 
@@ -321,9 +321,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     editor.putString("approval_rate", response.getString("approval_rate"));
                     editor.putString("name", response.getString("name"));
                     editor.putString("locality", response.getString("locality"));
-                    editor.putString("firstadd", response.getString("firstadd"));
-                    editor.putString("secondadd", response.getString("secondadd"));
-                    editor.putString("mobilephone", response.getString("mobilephone"));
+                    editor.putString("firstaddress", response.getString("firstaddress"));
+                    editor.putString("complementaryaddress", response.getString("complementaryaddress"));
+                    editor.putString("mobile_phone", response.getString("mobile_phone"));
+                    editor.putString("name", response.getString("name"));
                     editor.commit();
                 } catch (JSONException e) {
                     e.printStackTrace();

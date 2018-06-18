@@ -13,6 +13,8 @@ public class Ocorrencia {
     int imgId;
     boolean liked;
     boolean favorito;
+    int risco;
+    String hora;
 
     public static final List<Ocorrencia> items = new ArrayList<>();
 
@@ -20,11 +22,13 @@ public class Ocorrencia {
 
     }
 
-    public Ocorrencia(String tit, int img){
+    public Ocorrencia(String tit, int img, int risco, String hora){
         titulo = tit;
         imgId = img;
         favorito = false;
         liked = false;
+        this.risco = risco;
+        this.hora = hora;
     }
 
     public String getTitulo(){
@@ -35,6 +39,13 @@ public class Ocorrencia {
         return imgId;
     }
 
+    public int getRisco() {
+        return risco;
+    }
+
+    public String getHora() {
+        return hora;
+    }
 
     public void like(){
         liked = !liked;

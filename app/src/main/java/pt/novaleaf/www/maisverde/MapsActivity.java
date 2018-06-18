@@ -46,6 +46,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.clustering.Cluster;
+import com.google.maps.android.clustering.ClusterManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -65,7 +67,7 @@ import java.util.Map;
 public class MapsActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
-
+    private ClusterManager<MyItem> mClusterManager;
     private GoogleMap mMap;
     LocationManager locationManager;
     LocationListener locationListener;
@@ -87,6 +89,68 @@ public class MapsActivity extends AppCompatActivity
 
                 //centrar o mapa na ultima localizacao
                 centerMapOnLocation(lastKnownLocation);
+
+                //lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+
+                // Add a marker in Sydney and move the camera
+                LatLng currrPos = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+                //mMap.addMarker(new MarkerOptions().position(currrPos).title("Marker in Sydney"));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currrPos, 15));
+                mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+                    @Override
+                    public void onMapLongClick(final LatLng latLng) {
+
+                        //Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+
+
+                        AlertDialog.Builder alert = new AlertDialog.Builder(MapsActivity.this);
+                        alert.setTitle("Criar report");
+                        alert
+                                .setMessage("Quer fazer um report nesta localização?")
+                                .setCancelable(false)
+                                .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        Intent intent = new Intent(MapsActivity.this, CriarOcorrenciaActivity.class);
+                                        intent.putExtra("lat", latLng.latitude);
+                                        intent.putExtra("lon", latLng.longitude);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+                                })
+                                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        dialogInterface.cancel();
+                                    }
+                                });
+
+                        AlertDialog alertDialog = alert.create();
+                        alertDialog.show();
+
+                /*
+                TODO:
+                perguntar se quer criar a ocorrencia nesse sitio, se sim:
+                ir para o criar ocorrencia ativity, levando com ele as coordenadas
+                quando se cria a ocorrencia vai-se para o maps ativity
+                levando o titulo e a descricao, com que se vai criar o marker
+                (possivelmente atualizando logo na criar ocorrencia)
+                mMap.addMarker(new MarkerOptions().position(latLng).title(morada));
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                */
+
+                    }
+                });
+
+                mMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
+                    @Override
+                    public void onCameraMove() {
+                        LatLng botLeft = mMap.getProjection().getVisibleRegion().nearLeft;
+                        LatLng topRight = mMap.getProjection().getVisibleRegion().farRight;
+                        updateMarkers(botLeft, topRight);
+                    }
+                });
             }
         }
     }
@@ -137,6 +201,7 @@ public class MapsActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        navigationView.getMenu().getItem(2).setChecked(true);
     }
 
 
@@ -145,7 +210,9 @@ public class MapsActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+            setResult(RESULT_CANCELED);
         } else {
+            setResult(RESULT_CANCELED);
             super.onBackPressed();
         }
     }
@@ -240,6 +307,32 @@ public class MapsActivity extends AppCompatActivity
         return true;
     }
 
+
+    private void setUpClusterer() {
+        // Position the map.
+        // Initialize the manager with the context and the map.
+        // (Activity extends context, so we can pass 'this' in the constructor.)
+        mClusterManager = new ClusterManager<MyItem>(this, mMap);
+
+        // Point the map's listeners at the listeners implemented by the cluster
+        // manager.
+        mMap.setOnCameraIdleListener(mClusterManager);
+        mMap.setOnMarkerClickListener(mClusterManager);
+
+        // Add cluster items (markers) to the cluster manager.
+        addItems();
+    }
+
+    private void addItems() {
+
+
+        // Add ten cluster items in close proximity, for purposes of this example.
+        for (LatLng latLng : markers.keySet()) {
+
+            MyItem offsetItem = new MyItem(latLng.latitude, latLng.longitude);
+            mClusterManager.addItem(offsetItem);
+        }
+    }
 
     public void novaOcorrencia(){
         AlertDialog.Builder alert = new AlertDialog.Builder(MapsActivity.this);
@@ -338,69 +431,11 @@ public class MapsActivity extends AppCompatActivity
 
         }
 
+        startMap();
+
+        setUpClusterer();
 
 
-        //lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-
-        // Add a marker in Sydney and move the camera
-        LatLng currrPos = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-        //mMap.addMarker(new MarkerOptions().position(currrPos).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currrPos, 15));
-        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
-            @Override
-            public void onMapLongClick(final LatLng latLng) {
-
-                //Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
-
-
-                AlertDialog.Builder alert = new AlertDialog.Builder(MapsActivity.this);
-                alert.setTitle("Criar report");
-                    alert
-                        .setMessage("Quer fazer um report nesta localização?")
-                        .setCancelable(false)
-                        .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                Intent intent = new Intent(MapsActivity.this, CriarOcorrenciaActivity.class);
-                                intent.putExtra("lat", latLng.latitude);
-                                intent.putExtra("lon", latLng.longitude);
-                                startActivity(intent);
-                                finish();
-                            }
-                        })
-                        .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.cancel();
-                            }
-                        });
-
-                AlertDialog alertDialog = alert.create();
-                alertDialog.show();
-
-                /*
-                TODO:
-                perguntar se quer criar a ocorrencia nesse sitio, se sim:
-                ir para o criar ocorrencia ativity, levando com ele as coordenadas
-                quando se cria a ocorrencia vai-se para o maps ativity
-                levando o titulo e a descricao, com que se vai criar o marker
-                (possivelmente atualizando logo na criar ocorrencia)
-                mMap.addMarker(new MarkerOptions().position(latLng).title(morada));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                */
-
-            }
-        });
-
-        mMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
-            @Override
-            public void onCameraMove() {
-                LatLng botLeft = mMap.getProjection().getVisibleRegion().nearLeft;
-                LatLng topRight = mMap.getProjection().getVisibleRegion().farRight;
-                updateMarkers(botLeft, topRight);
-            }
-        });
     }
 
     //TODO: ver que marcadores estao nesta area
@@ -507,13 +542,17 @@ public class MapsActivity extends AppCompatActivity
                         JSONObject marker = token.getJSONObject(i);
                         Double lat = marker.getJSONObject("coordinates").getDouble("latitude");
                         Double lon = marker.getJSONObject("coordinates").getDouble("longitude");
+
                         String titulo = marker.getString("name");
                         String descricao = marker.getString("description");
 
-                        LatLng position = new LatLng(lat, lon);
-                        if (!markers.keySet().contains(position)) {
-                            markers.put(position, titulo);
-                        }
+                        MyItem offsetItem = new MyItem(lat, lon, titulo, descricao);
+                        mClusterManager.addItem(offsetItem);
+
+                        //LatLng position = new LatLng(lat, lon);
+                        //if (!markers.keySet().contains(position)) {
+                          //  markers.put(position, titulo);
+                       // }
 
                     }
 
@@ -534,6 +573,56 @@ public class MapsActivity extends AppCompatActivity
     }
 
 
+    public void startMap(){
+        //lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+
+        // Add a marker in Sydney and move the camera
+        LatLng currrPos = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+        //mMap.addMarker(new MarkerOptions().position(currrPos).title("Marker in Sydney"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currrPos, 15));
+        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(final LatLng latLng) {
+
+                AlertDialog.Builder alert = new AlertDialog.Builder(MapsActivity.this);
+                alert.setTitle("Criar report");
+                alert
+                        .setMessage("Quer fazer um report nesta localização?")
+                        .setCancelable(false)
+                        .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Intent intent = new Intent(MapsActivity.this, CriarOcorrenciaActivity.class);
+                                intent.putExtra("lat", latLng.latitude);
+                                intent.putExtra("lon", latLng.longitude);
+                                startActivity(intent);
+                                finish();
+                            }
+                        })
+                        .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.cancel();
+                            }
+                        });
+
+                AlertDialog alertDialog = alert.create();
+                alertDialog.show();
+
+            }
+        });
+
+        mMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
+            @Override
+            public void onCameraMove() {
+                LatLng botLeft = mMap.getProjection().getVisibleRegion().nearLeft;
+                LatLng topRight = mMap.getProjection().getVisibleRegion().farRight;
+                updateMarkers(botLeft, topRight);
+                //setUpClusterer();
+            }
+        });
+    }
 
 
 

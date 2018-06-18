@@ -122,7 +122,9 @@ public class AreaPessoalActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+            setResult(RESULT_CANCELED);
         } else {
+            setResult(RESULT_CANCELED);
             super.onBackPressed();
         }
     }
@@ -171,10 +173,6 @@ public class AreaPessoalActivity extends AppCompatActivity
 
             android.support.v7.app.AlertDialog alertDialog = alert.create();
             alertDialog.show();
-        } else if(id == R.id.action_change){
-            //mudar dados
-            Intent i = new Intent(AreaPessoalActivity.this, AlterarDadosActivity.class);
-            startActivity(i);
         } else if(id == R.id.action_acerca){
             Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://anovaleaf.ddns.net"));
             startActivity(i);

@@ -53,10 +53,14 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    if (!mValues.get(position).isLiked())
+                    if (!mValues.get(position).isLiked()) {
                         holder.mTextGosto.setTextColor(0xFF429844);
-                    else
+                        holder.mImageGosto.setImageResource(R.drawable.ic_favorite_green_24dp);
+                    }
+                    else {
                         holder.mTextGosto.setTextColor(Color.BLACK);
+                        holder.mImageGosto.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+                    }
                     mValues.get(position).like();
                     mListener.onLikeInteraction(mValues.get(position));
                 }
@@ -81,10 +85,15 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
 
-                    if (!mValues.get(position).isFavorito())
+                    if (!mValues.get(position).isFavorito()) {
                         holder.mTextFavorito.setTextColor(0xFF429844);
-                    else
+                        holder.mImageFavorito.setImageResource(R.drawable.ic_star_green_24dp);
+                    }
+                    else {
                         holder.mTextFavorito.setTextColor(Color.BLACK);
+                        holder.mImageFavorito.setImageResource(R.drawable.ic_star_border_black_24dp);
+
+                    }
                     mValues.get(position).favorito();
                     mListener.onFavoritoInteraction(mValues.get(position));
 
@@ -132,8 +141,8 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
         public LinearLayout mLinearInfo;
         public TextView mTextGosto;
         public TextView mTextFavorito;
-        public ImageButton mImageFavorito;
-        public ImageButton mImageGosto;
+        public ImageView mImageFavorito;
+        public ImageView mImageGosto;
 
         public ViewHolder(View v){
             super(v);
@@ -146,8 +155,8 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
             mLinearInfo = (LinearLayout) v.findViewById(R.id.linearInfo);
             mTextGosto = (TextView) v.findViewById(R.id.textGosto);
             mTextFavorito = (TextView) v.findViewById(R.id.textFavorito);
-            mImageFavorito = (ImageButton) v.findViewById(R.id.imageFavorito);
-            mImageGosto = (ImageButton) v.findViewById(R.id.imageGosto);
+            mImageFavorito = (ImageView) v.findViewById(R.id.imageFavorito);
+            mImageGosto = (ImageView) v.findViewById(R.id.imageGosto);
         }
     }
 }
