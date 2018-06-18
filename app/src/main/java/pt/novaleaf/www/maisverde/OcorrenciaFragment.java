@@ -7,17 +7,16 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A fragment representing a list of Items.
+ * A fragment representing a listOcorrencias of Items.
  * <p/>
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
@@ -30,7 +29,8 @@ public class OcorrenciaFragment extends Fragment {
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
     private RecyclerView myRecyclerView;
-    private static List<Ocorrencia> list =  new ArrayList<>();
+    public static List<Ocorrencia> listOcorrencias =  new ArrayList<>();
+    public static MyOcorrenciaRecyclerViewAdapter myOcorrenciaRecyclerViewAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -77,7 +77,10 @@ public class OcorrenciaFragment extends Fragment {
             } else {
                 myRecyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            myRecyclerView.setAdapter(new MyOcorrenciaRecyclerViewAdapter(list, mListener));
+            myOcorrenciaRecyclerViewAdapter =
+                    new MyOcorrenciaRecyclerViewAdapter(listOcorrencias, mListener);
+            myRecyclerView.setAdapter(myOcorrenciaRecyclerViewAdapter);
+
         }
         return view;
     }
@@ -106,8 +109,8 @@ public class OcorrenciaFragment extends Fragment {
 
 
     public static void updateList(){
-        list.add(new Ocorrencia("FOGO", R.mipmap.ic_entrada_round, 5, "11:45\n13/05/2018"));
-        list.add(new Ocorrencia("ajuda", R.mipmap.ic_logo_round, 3, "18:13\n16/05/2018"));
+        //listOcorrencias.add(new Ocorrencia("FOGO", R.mipmap.ic_entrada_round, 5, "11:45\n13/05/2018"));
+        //listOcorrencias.add(new Ocorrencia("ajuda", R.mipmap.ic_logo_round, 3, "18:13\n16/05/2018"));
 
     }
 

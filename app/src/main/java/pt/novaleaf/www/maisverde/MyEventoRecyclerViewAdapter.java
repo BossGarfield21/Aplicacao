@@ -30,6 +30,16 @@ public class MyEventoRecyclerViewAdapter extends RecyclerView.Adapter<MyEventoRe
     }
 
     @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
+
+    @Override
     public void onBindViewHolder(final MyEventoRecyclerViewAdapter.ViewHolder holder, final int position) {
         //holder.mImageReport.setImageResource(mValues.get(position).getImgId());
         //holder.titulo.setText(mValues.get(position).getName());
