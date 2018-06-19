@@ -41,6 +41,7 @@
                 android:layout_height="150dp"
                 android:background="@color/Hunter_Green"
                 android:orientation="horizontal"
+                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -61,8 +62,34 @@
                 android:scaleType="centerCrop"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/linearLayout3"
+                app:layout_constraintHorizontal_bias="0.029"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/linearLayout3"/>
+                app:layout_constraintTop_toTopOf="@+id/linearLayout3"
+                app:layout_constraintVertical_bias="0.441" />
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="171dp"
+                android:layout_height="28dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="32dp"
+                android:fontFamily="@font/roboto_bold"
+                android:text="Olha ai crlh"
+                android:textAllCaps="true"
+                android:textSize="24sp"
+                app:layout_constraintStart_toEndOf="@+id/profile_image"
+                app:layout_constraintTop_toTopOf="@+id/linearLayout3" />
+
+            <TextView
+                android:id="@+id/textView23"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="16dp"
+                android:text="Voluntario"
+                android:textSize="18sp"
+                app:layout_constraintStart_toEndOf="@+id/profile_image"
+                app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
         </android.support.constraint.ConstraintLayout>
 

@@ -63,14 +63,6 @@
                 android:resource="@xml/searchable"/>
         </activity>
         <activity
-            android:name=".AreaPessoalActivity"
-            android:label="Área Pessoal"
-            android:parentActivityName=".FeedActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="pt.novaleaf.www.maisverde.FeedActivity"/>
-        </activity>
-        <activity
             android:name=".GruposMainActivity"
             android:label="Grupos"/>
         <!--
