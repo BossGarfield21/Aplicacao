@@ -139,6 +139,10 @@
             android:name=".DetalhesGrupoActivity"
             android:label="Detalhes">
         </activity>
+        <activity
+            android:name=".ProcurarGruposActivity"
+            android:label="Procurar grupo">
+        </activity>
     </application>
 
 </manifest>

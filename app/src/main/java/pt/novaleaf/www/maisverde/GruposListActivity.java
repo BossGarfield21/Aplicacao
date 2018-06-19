@@ -50,7 +50,7 @@ public class GruposListActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-        ;
+
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -99,7 +99,10 @@ public class GruposListActivity extends AppCompatActivity
         int id = item.getItemId();
 
 
-        if (id == R.id.action_help) {
+        if (id == R.id.search) {
+            Intent intent = new Intent(GruposListActivity.this, ProcurarGruposActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.action_help) {
             return true;
         } else if(id == R.id.action_logout){
             //TODO: sair da app
