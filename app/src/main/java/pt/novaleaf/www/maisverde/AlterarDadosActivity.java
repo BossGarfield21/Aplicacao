@@ -1,50 +1,38 @@
 package pt.novaleaf.www.maisverde;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.AsyncTask;
-import android.support.annotation.NonNull;
+import android.net.Uri;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
-import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -173,6 +161,42 @@ public class AlterarDadosActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.editPerfil) {
             return true;
+        } else if (id == R.id.action_help) {
+            return true;
+        } else if (id == R.id.action_logout) {
+
+            final AlertDialog.Builder alert = new AlertDialog.Builder(AlterarDadosActivity.this);
+            alert.setTitle("Terminar sessão");
+            alert
+                    .setMessage("Deseja terminar sessão?")
+                    .setCancelable(true)
+                    .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
+                            if (changed)
+                                attemptSendData();
+                            editor.clear();
+                            editor.commit();
+                            Intent intent = new Intent(AlterarDadosActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    })
+                    .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    });
+
+            AlertDialog alertDialog = alert.create();
+            alertDialog.show();
+
+
+        } else if (id == R.id.action_acerca) {
+            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://anovaleaf.ddns.net"));
+            startActivity(i);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -308,7 +332,7 @@ public class AlterarDadosActivity extends AppCompatActivity
 
             if (changed)
                 attemptSendData();
-            Intent i = new Intent(AlterarDadosActivity.this, GruposMainActivity.class);
+            Intent i = new Intent(AlterarDadosActivity.this, GruposListActivity.class);
             startActivity(i);
             finish();
 

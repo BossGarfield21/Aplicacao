@@ -6,7 +6,8 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -24,14 +25,14 @@ import android.view.MenuItem;
  * Atividade relativa aos grupos
  * Mostra os grupos a que uma pessoa esta associada
  */
-public class GruposMainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class GruposListActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener, ItemGruposFragment.OnListFragmentInteractionListener {
 
     NavigationView navigationView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_grupos_main);
+        setContentView(R.layout.activity_grupos_list);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -39,7 +40,7 @@ public class GruposMainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(GruposMainActivity.this, CriarGrupoActivity.class);
+                Intent i = new Intent(GruposListActivity.this, CriarGrupoActivity.class);
                 startActivity(i);
             }
         });
@@ -54,6 +55,19 @@ public class GruposMainActivity extends AppCompatActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().getItem(3).setChecked(true);
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment fragment = fragmentManager.findFragmentById(R.id.gruposLinear);
+        if (fragment==null) {
+            fragment = ItemGruposFragment.newInstance(1);
+
+            fragmentManager.beginTransaction()
+                    .add(R.id.gruposLinear, fragment)
+                    .commit();
+
+            //myItemGrupoFragmentRecyclerViewAdapter.notifyDataSetChanged();
+        }
+
 
 
     }
@@ -89,7 +103,7 @@ public class GruposMainActivity extends AppCompatActivity
             return true;
         } else if(id == R.id.action_logout){
             //TODO: sair da app
-            final AlertDialog.Builder alert = new AlertDialog.Builder(GruposMainActivity.this);
+            final AlertDialog.Builder alert = new AlertDialog.Builder(GruposListActivity.this);
             alert.setTitle("Terminar sessão");
             alert
                     .setMessage("Deseja terminar sessão?")
@@ -100,7 +114,7 @@ public class GruposMainActivity extends AppCompatActivity
                             SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
                             editor.clear();
                             editor.commit();
-                            Intent intent = new Intent(GruposMainActivity.this, LoginActivity.class);
+                            Intent intent = new Intent(GruposListActivity.this, LoginActivity.class);
                             startActivity(intent);
                             finish();
                         }
@@ -129,12 +143,12 @@ public class GruposMainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_feed) {
-            Intent i = new Intent(GruposMainActivity.this, FeedActivity.class);
+            Intent i = new Intent(GruposListActivity.this, FeedActivity.class);
             startActivity(i);
             finish();
         } else if(id == R.id.nav_adicionar_report){
 
-            AlertDialog.Builder alert = new AlertDialog.Builder(GruposMainActivity.this);
+            AlertDialog.Builder alert = new AlertDialog.Builder(GruposListActivity.this);
             alert.setTitle("Criar report");
             alert
                     .setMessage("O local do report é a sua localização atual?")
@@ -142,7 +156,7 @@ public class GruposMainActivity extends AppCompatActivity
                     .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            Intent intent = new Intent(GruposMainActivity.this, CriarOcorrenciaActivity.class);
+                            Intent intent = new Intent(GruposListActivity.this, CriarOcorrenciaActivity.class);
                             intent.putExtra("estaLocal", true);
                             startActivity(intent);
                             finish();
@@ -151,7 +165,7 @@ public class GruposMainActivity extends AppCompatActivity
                     .setNegativeButton("Não", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            Intent intent = new Intent(GruposMainActivity.this, MapsActivity.class);
+                            Intent intent = new Intent(GruposListActivity.this, MapsActivity.class);
                             intent.putExtra("toast", true);
                             startActivity(intent);
                             finish();
@@ -162,12 +176,12 @@ public class GruposMainActivity extends AppCompatActivity
             alertDialog.show();
 
         }else if (id == R.id.nav_mapa) {
-            Intent i = new Intent(GruposMainActivity.this, MapsActivity.class);
+            Intent i = new Intent(GruposListActivity.this, MapsActivity.class);
             startActivity(i);
             finish();
 
         } else if (id == R.id.nav_area_pessoal) {
-            Intent i = new Intent(GruposMainActivity.this, AlterarDadosActivity.class);
+            Intent i = new Intent(GruposListActivity.this, AlterarDadosActivity.class);
             startActivity(i);
             finish();
 
@@ -182,5 +196,13 @@ public class GruposMainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onGrupoInteraction(Grupo item) {
+        Intent intent = new Intent(GruposListActivity.this, GruposActivity.class);
+        intent.putExtra("toolbar", item.getName());
+        startActivity(intent);
+
     }
 }

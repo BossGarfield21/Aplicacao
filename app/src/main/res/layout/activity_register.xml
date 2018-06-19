@@ -28,26 +28,25 @@
                 app:srcCompat="@mipmap/ic_novaleaf_foreground"/>
 
 
-            <android.support.design.widget.TextInputLayout
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingTop="16dp">
+
+            <AutoCompleteTextView
+                android:id="@+id/input_username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingEnd="16dp"
-                android:paddingStart="16dp"
-                android:paddingTop="16dp">
+                android:fontFamily="@font/roboto_light"
+                android:hint="@string/username"
+                android:inputType="text"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textColor="@color/charcoal"
+                android:theme="@style/InputTextCustom"/>
 
-                <AutoCompleteTextView
-                    android:id="@+id/input_username"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/roboto_light"
-                    android:hint="@string/username"
-                    android:inputType="text"
-                    android:maxLines="1"
-                    android:singleLine="true"
-                    android:textColor="@color/charcoal"
-                    android:theme="@style/InputTextCustom"/>
-
-            </android.support.design.widget.TextInputLayout>
+        </android.support.design.widget.TextInputLayout>
 
 
             <android.support.design.widget.TextInputLayout

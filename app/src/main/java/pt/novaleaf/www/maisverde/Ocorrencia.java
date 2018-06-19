@@ -21,6 +21,7 @@ public class Ocorrencia {
     String id;
     String owner;
     String descricao;
+    String image_uri;
     String likers[];
     Map<String, String> comentarios;
     int likes;
@@ -36,7 +37,7 @@ public class Ocorrencia {
 
     public Ocorrencia(String titulo, int imgId, int risco, String hora, String id, String descricao,
                       String owner, String likers[], Map<String, String> comentarios, String status,
-                      long latitude, long longitude, int likes, String type){
+                      long latitude, long longitude, int likes, String type, String image_uri){
         this.titulo = titulo;
         this.imgId = imgId;
         favorito = false;
@@ -53,6 +54,7 @@ public class Ocorrencia {
         this.latitude = latitude;
         this.likes = likes;
         this.type = type;
+        this.image_uri = image_uri;
     }
 
     public String getTitulo(){
@@ -125,5 +127,9 @@ public class Ocorrencia {
 
     public String getType() {
         return type;
+    }
+
+    public String getImage_uri() {
+        return image_uri;
     }
 }

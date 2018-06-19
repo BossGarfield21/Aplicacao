@@ -37,7 +37,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static pt.novaleaf.www.maisverde.ComentariosActivity.comentarios;
 import static pt.novaleaf.www.maisverde.EventoFragment.listEventos;
 import static pt.novaleaf.www.maisverde.EventoFragment.myEventoRecyclerViewAdapter;
 import static pt.novaleaf.www.maisverde.OcorrenciaFragment.listOcorrencias;
@@ -80,7 +79,7 @@ public class FeedActivity extends AppCompatActivity
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         //updateOcorrencias();
-        //updateEventos();
+        updateEventos();
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
 
@@ -236,7 +235,7 @@ public class FeedActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_grupos) {
 
-            Intent i = new Intent(FeedActivity.this, GruposMainActivity.class);
+            Intent i = new Intent(FeedActivity.this, GruposListActivity.class);
             startActivityForResult(i, 0);
             //startActivity(i);
             //finish();
@@ -390,6 +389,7 @@ public class FeedActivity extends AppCompatActivity
                             String descricao;
                             String owner;
                             String type;
+                            String image_uri;
                             String[] likers = null;
                             int risk;
                             int likes;
@@ -410,12 +410,13 @@ public class FeedActivity extends AppCompatActivity
                                     likes = ocorrencia.getInt("likes");
                                     status = ocorrencia.getString("status");
                                     type = ocorrencia.getString("type");
+                                    image_uri = ocorrencia.getString("image_uri");
 
                                     JSONObject coordinates = ocorrencia.getJSONObject("coordinates");
                                     latitude = coordinates.getLong("latitude");
                                     longitude = coordinates.getLong("longitude");
                                     Ocorrencia ocorrencia1 = new Ocorrencia(titulo, R.mipmap.ic_entrada_round, risk, "23:12", id,
-                                            descricao, owner, likers, comentarios, status, latitude, longitude, likes, type);
+                                            descricao, owner, likers, comentarios, status, latitude, longitude, likes, type, image_uri);
                                     listOcorrencias.add(ocorrencia1);
                                     Log.d("ID", id);
                                     Log.d("titulo", titulo);
@@ -463,18 +464,18 @@ public class FeedActivity extends AppCompatActivity
         String tag_json_obj = "json_request";
         String url;
         if (cursorEventos.equals(""))
-            url = "https://novaleaf-197719.appspot.com/rest/withtoken/social/feed/?cursor=startquery";
+            url = "https://novaleaf-197719.appspot.com/rest/withtoken/events/?cursor=startquery";
         else
-            url = "https://novaleaf-197719.appspot.com/rest/withtoken/social/feed/?cursor=" + cursorEventos;
+            url = "https://novaleaf-197719.appspot.com/rest/withtoken/events/?cursor=" + cursorEventos;
 
         Log.d("ché bate só", url);
 
         SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
-        JSONObject reports = new JSONObject();
+        JSONObject eventos = new JSONObject();
         final String token = sharedPreferences.getString("tokenID", "erro");
 
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, reports,
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, eventos,
                 new Response.Listener<JSONObject>() {
 
                     @Override
@@ -483,8 +484,6 @@ public class FeedActivity extends AppCompatActivity
                             Log.d("nabo", cursorEventos + "pixa");
                             cursorEventos = response.getString("cursor");
                             Log.d("nabo", cursorEventos);
-                            isFinishedEventos = response.getBoolean("isFinished");
-                            Log.d("ACABOU???", String.valueOf(isFinishedEventos));
 
                             String name;
                             String creator;
@@ -494,12 +493,17 @@ public class FeedActivity extends AppCompatActivity
                             List<String> interests;
                             List<String> confirmations;
                             List<String> admin;
+                            String image_uri;
                             String id;
                             String location;
                             String alert;
                             String description;
+                            String weather;
                             JSONArray list = response.getJSONArray("list");
-                            if (!isFinishedEventos)
+                            if (!isFinishedEventos) {
+                                isFinishedEventos = response.getBoolean("isFinished");
+                                Log.d("ACABOU???", String.valueOf(isFinishedEventos));
+
                                 for (int i = 0; i < list.length(); i++) {
 
                                     JSONObject evento = list.getJSONObject(i);
@@ -512,17 +516,20 @@ public class FeedActivity extends AppCompatActivity
                                     creationDate = evento.getLong("creationDate");
                                     meetupDate = evento.getLong("meetupDate");
                                     endDate = evento.getLong("endDate");
+                                    image_uri = evento.getString("image_uri");
+                                    weather = evento.getString("weather");
                                     interests = null;
                                     confirmations = null;
                                     admin = null;
 
                                     Evento evento1 = new Evento(name, creator, creationDate, meetupDate, endDate,
-                                            interests, confirmations, admin, id, location, alert, description);
+                                            interests, confirmations, admin, id, location, alert, description, weather, image_uri);
                                     listEventos.add(evento1);
 
                                     myEventoRecyclerViewAdapter.notifyDataSetChanged();
 
                                 }
+                            }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -544,6 +551,7 @@ public class FeedActivity extends AppCompatActivity
                 return headers;
             }
         };
+
 
         AppController.getInstance().addToRequestQueue(jsonObjectRequest);
 
