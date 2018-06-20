@@ -12,9 +12,10 @@ public class Grupo {
     private String groupId;
     private String privacy;
     private String image_uri;
+    private String distrito;
 
     public Grupo(String name, List<String> base_users, List<String> admins, long points,
-                 long creationDate, String image_uri,String groupId, String privacy)
+                 long creationDate, String image_uri,String groupId, String privacy, String distrito)
     {
 
         this.name = name;
@@ -24,6 +25,7 @@ public class Grupo {
         this.creationDate = creationDate;
         this.groupId = groupId;
         this.privacy = privacy;
+        this.distrito = distrito;
 
     }
 
@@ -45,5 +47,9 @@ public class Grupo {
 
     public String getPrivacy() {
         return privacy;
+    }
+
+    public String getDistrito() {
+        return distrito;
     }
 }

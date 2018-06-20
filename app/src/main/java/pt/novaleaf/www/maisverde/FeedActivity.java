@@ -79,7 +79,7 @@ public class FeedActivity extends AppCompatActivity
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         //updateOcorrencias();
-        updateEventos();
+        //updateEventos();
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
 
@@ -485,20 +485,20 @@ public class FeedActivity extends AppCompatActivity
                             cursorEventos = response.getString("cursor");
                             Log.d("nabo", cursorEventos);
 
-                            String name;
-                            String creator;
-                            long creationDate;
-                            long meetupDate;
-                            long endDate;
-                            List<String> interests;
-                            List<String> confirmations;
-                            List<String> admin;
-                            String image_uri;
-                            String id;
-                            String location;
-                            String alert;
-                            String description;
-                            String weather;
+                            String name = null;
+                            String creator = null;
+                            long creationDate = 0;
+                            long meetupDate = 0;
+                            long endDate = 0;
+                            List<String> interests = null;
+                            List<String> confirmations = null;
+                            List<String> admin = null;
+                            String image_uri = null;
+                            String id = null;
+                            String location = null;
+                            String alert = null;
+                            String description = null;
+                            String weather = null;
                             JSONArray list = response.getJSONArray("list");
                             if (!isFinishedEventos) {
                                 isFinishedEventos = response.getBoolean("isFinished");
@@ -507,17 +507,28 @@ public class FeedActivity extends AppCompatActivity
                                 for (int i = 0; i < list.length(); i++) {
 
                                     JSONObject evento = list.getJSONObject(i);
-                                    id = evento.getString("id");
-                                    name = evento.getString("name");
-                                    description = evento.getString("description");
-                                    creator = evento.getString("creator");
-                                    location = evento.getString("location");
-                                    alert = evento.getString("alert");
-                                    creationDate = evento.getLong("creationDate");
-                                    meetupDate = evento.getLong("meetupDate");
-                                    endDate = evento.getLong("endDate");
-                                    image_uri = evento.getString("image_uri");
-                                    weather = evento.getString("weather");
+                                    if (evento.has("alert"))
+                                        id = evento.getString("alert");
+                                    if (evento.has("name"))
+                                        name = evento.getString("name");
+                                    if (evento.has("description"))
+                                        description = evento.getString("description");
+                                    if (evento.has("creator"))
+                                        creator = evento.getString("creator");
+                                    if (evento.has("location"))
+                                        location = evento.getString("location");
+                                    if (evento.has("alert"))
+                                        alert = evento.getString("alert");
+                                    if (evento.has("creationDate"))
+                                        creationDate = evento.getLong("creationDate");
+                                    if (evento.has("meetupDate"))
+                                        meetupDate = evento.getLong("meetupDate");
+                                    if (evento.has("endDate"))
+                                        endDate = evento.getLong("endDate");
+                                    if (evento.has("image_uri"))
+                                        image_uri = evento.getString("image_uri");
+                                    if (evento.has("weather"))
+                                        weather = evento.getString("weather");
                                     interests = null;
                                     confirmations = null;
                                     admin = null;
@@ -553,7 +564,7 @@ public class FeedActivity extends AppCompatActivity
         };
 
 
-        AppController.getInstance().addToRequestQueue(jsonObjectRequest);
+        AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
 
 
     }

@@ -147,9 +147,9 @@ public class RegisterActivity extends AppCompatActivity {
             jsonObject.put("email", email);
             jsonObject.put("role", "volunteer");
 
-            String url = "https://novaleaf-197719.appspot.com/rest/register";
+            String url = "https://novaleaf-197719.appspot.com/rest/register/";
             final ProgressDialog pDialog = new ProgressDialog(this);
-            pDialog.setMessage("Loading...");
+            pDialog.setMessage("A carregar...");
             pDialog.show();
             final SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
 
@@ -168,6 +168,7 @@ public class RegisterActivity extends AppCompatActivity {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     VolleyLog.d("ERRO REGISTO", error.getMessage());
+//                    VolleyLog.d("ERRO", error.networkResponse.statusCode);
                     pDialog.dismiss();
                 }
             });

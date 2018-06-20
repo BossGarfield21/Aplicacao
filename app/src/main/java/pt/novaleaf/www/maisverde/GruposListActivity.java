@@ -9,6 +9,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -19,6 +22,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.ArrayList;
+
+import static pt.novaleaf.www.maisverde.ItemGruposFragment.myItemGrupoFragmentRecyclerViewAdapter;
+
 
 /**
  * Author: Hugo Mochao
@@ -26,9 +33,14 @@ import android.view.MenuItem;
  * Mostra os grupos a que uma pessoa esta associada
  */
 public class GruposListActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, ItemGruposFragment.OnListFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     NavigationView navigationView;
+    MyItemGrupoFragmentRecyclerViewAdapter adapter;
+    static ArrayList<Grupo> grupos = new ArrayList<>();
+    private ItemGruposFragment.OnListFragmentInteractionListener mListener;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,11 +63,21 @@ public class GruposListActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        mListener = new ItemGruposFragment.OnListFragmentInteractionListener() {
+            @Override
+            public void onGrupoInteraction(Grupo item) {
+                Intent intent = new Intent(GruposListActivity.this, GruposActivity.class);
+                intent.putExtra("toolbar", item.getName());
+                startActivity(intent);
+
+            }
+        };
+        adapter = new MyItemGrupoFragmentRecyclerViewAdapter(grupos, mListener);
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().getItem(3).setChecked(true);
-
+/**
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment fragment = fragmentManager.findFragmentById(R.id.gruposLinear);
         if (fragment==null) {
@@ -67,8 +89,15 @@ public class GruposListActivity extends AppCompatActivity
 
             //myItemGrupoFragmentRecyclerViewAdapter.notifyDataSetChanged();
         }
+*/
+        grupos.add(new Grupo("Binas churra", null, null, 0, 0,
+                null, null, "Público", "Setubal"));
+        grupos.add(new Grupo("Bombeir0's Crew", null, null, 0, 0,
+                null, null, "Público", "Porto"));
 
-
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.gruposLinear);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
 
     }
 
@@ -88,6 +117,31 @@ public class GruposListActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.grupos_main, menu);
+
+        MenuItem item = menu.findItem(R.id.search);
+        SearchView searchView = (SearchView) item.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                //myItemGrupoFragmentRecyclerViewAdapter.getFilter().filter(query);
+
+                adapter.getFilter().filter(query);
+
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                //myItemGrupoFragmentRecyclerViewAdapter
+                //grupos.add(new Grupo("Binas churra", null, null, 0, 0,
+                  //      null, null, "Público", "Setubal"));
+                //adapter.notifyDataSetChanged();
+                adapter.getFilter().filter(newText);
+                //adapter.notifyDataSetChanged();
+                return false;
+            }
+        });
+
         return true;
     }
 
@@ -100,8 +154,9 @@ public class GruposListActivity extends AppCompatActivity
 
 
         if (id == R.id.search) {
-            Intent intent = new Intent(GruposListActivity.this, ProcurarGruposActivity.class);
-            startActivity(intent);
+
+            return true;
+
         } else if (id == R.id.action_help) {
             return true;
         } else if(id == R.id.action_logout){
@@ -200,12 +255,5 @@ public class GruposListActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
-    @Override
-    public void onGrupoInteraction(Grupo item) {
-        Intent intent = new Intent(GruposListActivity.this, GruposActivity.class);
-        intent.putExtra("toolbar", item.getName());
-        startActivity(intent);
-
-    }
+    
 }

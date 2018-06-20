@@ -22,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -52,6 +53,8 @@ public class AlterarDadosActivity extends AppCompatActivity
     public static MyPerfilRecyclerViewAdapter adapter;
     public static SharedPreferences sharedPreferences;
     public static boolean changed = false;
+
+    TextView textUsername;
     NavigationView navigationView;
     Toolbar toolbar;
     ConstraintLayout constraintLayout;
@@ -86,11 +89,15 @@ public class AlterarDadosActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        textUsername = (TextView) findViewById(R.id.textUsername);
+        sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+
+        textUsername.setText(sharedPreferences.getString("username", "User"));
+
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().getItem(4).setChecked(true);
 
-        sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
 
 
         mRecyclerViewPerfil = (RecyclerView) findViewById(R.id.myList);
@@ -98,7 +105,7 @@ public class AlterarDadosActivity extends AppCompatActivity
 
         //Ir buscar a informacao do utilizador
         arrayList = new ArrayList<>();
-        arrayList.add(new PerfilItem("Username", sharedPreferences.getString("username", "erro")));
+        //arrayList.add(new PerfilItem("Username", sharedPreferences.getString("username", "erro")));
         arrayList.add(new PerfilItem("Email", email));
         arrayList.add(new PerfilItem("Nome", sharedPreferences.getString("name", "")));
         arrayList.add(new PerfilItem("Aprovação dos reports", sharedPreferences.getString("approval_rate", "erro")));

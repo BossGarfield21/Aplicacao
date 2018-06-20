@@ -89,28 +89,28 @@ public class MyPerfilRecyclerViewAdapter extends RecyclerView.Adapter{
                     PerfilItem item = mPerfilList.get(itemPosition);
 
                     switch (itemPosition) {
-                        case 1:
+                        case 0:
                             setDialog("Alterar o Email", "Introduza o novo endereço de email", 1);
                             return true;
-                        case 2:
+                        case 1:
                             setDialog("Alterar o Nome", "Introduza o seu nome", 2);
                             return true;
-                        case 5:
+                        case 4:
                             setDialog("Morada", "Introduza a sua morada", 5);
                             return true;
-                        case 6:
+                        case 5:
                             setDialog("Morada Complementar", "Introduza a sua morada complementar", 6);
                             return true;
-                        case 7:
+                        case 6:
                             setDialog("Localidade", "Introduza a sua localidade", 7);
                             return true;
-                        case 8:
+                        case 7:
                             setDialog("Código Postal", "Introduza o seu código postal", 8);
                             return true;
-                        case 9:
+                        case 8:
                             setDialog("Telefone", "Introduza o seu número de telefone", 9);
                             return true;
-                        case 10:
+                        case 9:
                             setDialog("Telemovel", "Introduza o seu número de telemovel", 10);
                             return true;
                         default:
@@ -126,7 +126,7 @@ public class MyPerfilRecyclerViewAdapter extends RecyclerView.Adapter{
                     PerfilItem item = mPerfilList.get(itemPosition);
 
                     switch (itemPosition){
-                        case 11:
+                        case 10:
                             AlertDialog.Builder changepass = new AlertDialog.Builder(mContext);
                             changepass.setTitle("Mudar password");
                             changepass

@@ -6,7 +6,8 @@
         android:icon="?android:attr/actionModeWebSearchDrawable"
         android:orderInCategory="100"
         android:title="Pesquisar grupos"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom"
+        app:actionViewClass="android.support.v7.widget.SearchView"/>
     <item
         android:id="@+id/action_help"
         android:orderInCategory="100"

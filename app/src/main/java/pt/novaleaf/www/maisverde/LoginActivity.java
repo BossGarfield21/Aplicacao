@@ -259,10 +259,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             editor.putString("username", email);
                             editor.putString("password", password);
                             editor.commit();
+                            pDialog.hide();
                             voleyGetInfo();
                             // TODO: call the main activity (to be implemented) with data in the intent
                             Intent myIntent = new Intent(LoginActivity.this, FeedActivity.class);
-                            pDialog.hide();
+
                             LoginActivity.this.startActivity(myIntent);
                             finish();
                         }
@@ -279,6 +280,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 @Override
                 protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
                     try {
+
                         String jsonString = new String(response.data,
                                 HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
                         JSONObject jsonResponse = new JSONObject(response.headers);
@@ -322,16 +324,27 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
                 SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
                 try {
-                    editor.putString("email", response.getString("email"));
-                    editor.putString("role", response.getString("role"));
-                    editor.putString("numb_reports", response.getString("numb_reports"));
-                    editor.putString("approval_rate", response.getString("approval_rate"));
-                    editor.putString("name", response.getString("name"));
-                    editor.putString("locality", response.getString("locality"));
-                    editor.putString("firstaddress", response.getString("firstaddress"));
-                    editor.putString("complementaryaddress", response.getString("complementaryaddress"));
-                    editor.putString("mobile_phone", response.getString("mobile_phone"));
-                    editor.putString("name", response.getString("name"));
+
+                    if (response.has("email"))
+                        editor.putString("email", response.getString("email"));
+                    if (response.has("role"))
+                        editor.putString("role", response.getString("role"));
+                    if (response.has("numb_reports"))
+                        editor.putString("numb_reports", response.getString("numb_reports"));
+                    if (response.has("approval_rate"))
+                        editor.putString("approval_rate", response.getString("approval_rate"));
+                    if (response.has("name"))
+                        editor.putString("name", response.getString("name"));
+                    if (response.has("locality"))
+                        editor.putString("locality", response.getString("locality"));
+                    if (response.has("firstaddress"))
+                        editor.putString("firstaddress", response.getString("firstaddress"));
+                    if (response.has("complementaryaddress"))
+                        editor.putString("complementaryaddress", response.getString("complementaryaddress"));
+                    if (response.has("mobile_phone"))
+                        editor.putString("mobile_phone", response.getString("mobile_phone"));
+                    if (response.has("name"))
+                        editor.putString("name", response.getString("name"));
                     editor.commit();
                 } catch (JSONException e) {
                     e.printStackTrace();

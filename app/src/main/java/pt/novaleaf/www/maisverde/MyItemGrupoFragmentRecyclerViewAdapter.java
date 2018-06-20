@@ -2,16 +2,21 @@ package pt.novaleaf.www.maisverde;
 
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class MyItemGrupoFragmentRecyclerViewAdapter extends RecyclerView.Adapter<MyItemGrupoFragmentRecyclerViewAdapter.ViewHolder>{
+public class MyItemGrupoFragmentRecyclerViewAdapter extends RecyclerView.Adapter<MyItemGrupoFragmentRecyclerViewAdapter.ViewHolder>
+        implements Filterable{
 
-    private final List<Grupo> mValues;
+    private List<Grupo> mValues;
     private final ItemGruposFragment.OnListFragmentInteractionListener mListener;
 
     public MyItemGrupoFragmentRecyclerViewAdapter(List<Grupo> items, ItemGruposFragment.OnListFragmentInteractionListener listener) {
@@ -51,10 +56,70 @@ public class MyItemGrupoFragmentRecyclerViewAdapter extends RecyclerView.Adapter
 
     }
 
+
+
     @Override
     public int getItemCount() {
         return mValues.size();
     }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+
+                // Create a FilterResults object
+                FilterResults results = new FilterResults();
+
+                // If the constraint (search string/pattern) is null
+                // or its length is 0, i.e., its empty then
+                // we just set the `values` property to the
+                // original contacts list which contains all of them
+                if (charSequence == null || charSequence.length() == 0) {
+                    mValues = GruposListActivity.grupos;
+                    results.values = GruposListActivity.grupos;
+                    results.count = GruposListActivity.grupos.size();
+                } else {
+                    // Some search copnstraint has been passed
+                    // so let's filter accordingly
+                    ArrayList<Grupo> filteredContacts = new ArrayList<>();
+
+                    // We'll go through all the contacts and see
+                    // if they contain the supplied string
+                    for (Grupo grupo : GruposListActivity.grupos) {
+                        if (grupo.getName().toUpperCase().contains( charSequence.toString().toUpperCase() )) {
+                            // if `contains` == true then add it
+                            // to our filtered list
+                            Log.d("adicionou", grupo.getName());
+                            filteredContacts.add(grupo);
+                        }
+                    }
+
+                    // Finally set the filtered values and size/count
+                    results.values = filteredContacts;
+                    results.count = filteredContacts.size();
+                }
+
+                // Return our FilterResults object
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                //GruposListActivity.grupos.clear();
+                ArrayList<Grupo> g =(ArrayList<Grupo>) filterResults.values;
+                Log.d("RESULTS", g.size() + " BINA");
+                mValues = (ArrayList<Grupo>) filterResults.values;
+                Log.d("RESULTS", GruposListActivity.grupos.size() + " JORGINA");
+                Log.d("RESULTS", mValues.size() + " NAO EMPINA");
+                //GruposListActivity.grupos = new ArrayList<Grupo>( (ArrayList<Grupo>)filterResults.values);
+                notifyDataSetChanged();
+            }
+        };
+    }
+
+
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 

@@ -68,15 +68,15 @@
                 app:layout_constraintVertical_bias="0.441" />
 
             <TextView
-                android:id="@+id/textView6"
+                android:id="@+id/textUsername"
                 android:layout_width="171dp"
                 android:layout_height="28dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="32dp"
                 android:fontFamily="@font/roboto_bold"
-                android:text="Olha ai crlh"
                 android:textAllCaps="true"
                 android:textSize="24sp"
+                android:textColor="@color/snow"
                 app:layout_constraintStart_toEndOf="@+id/profile_image"
                 app:layout_constraintTop_toTopOf="@+id/linearLayout3" />
 
@@ -88,8 +88,9 @@
                 android:layout_marginTop="16dp"
                 android:text="Voluntario"
                 android:textSize="18sp"
+                android:textColor="@color/snow"
                 app:layout_constraintStart_toEndOf="@+id/profile_image"
-                app:layout_constraintTop_toBottomOf="@+id/textView6" />
+                app:layout_constraintTop_toBottomOf="@+id/textUsername" />
 
         </android.support.constraint.ConstraintLayout>
 
