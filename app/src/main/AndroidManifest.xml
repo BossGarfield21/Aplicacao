@@ -23,9 +23,9 @@
     <application
         android:name=".AppController"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_logo_round"
+        android:icon="@mipmap/ic_novaleaflogo"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_logo"
+        android:roundIcon="@mipmap/ic_novaleaflogo_round"
         android:supportsRtl="true"
         android:theme="@style/CustomTheme">
         <provider
@@ -63,7 +63,15 @@
                 android:resource="@xml/searchable"/>
         </activity>
         <activity
-            android:name=".GruposMainActivity"
+            android:name=".AreaPessoalActivity"
+            android:label="Área Pessoal"
+            android:parentActivityName=".FeedActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="pt.novaleaf.www.maisverde.FeedActivity"/>
+        </activity>
+        <activity
+            android:name=".GruposListActivity"
             android:label="Grupos"/>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -122,8 +130,18 @@
         </activity>
         <activity
             android:name=".TiposActivity"
-            android:theme="@style/Theme.Transparent"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Transparent">
+        </activity>
+        <activity android:name=".GruposActivity">
+        </activity>
+        <activity
+            android:name=".DetalhesGrupoActivity"
+            android:label="Detalhes">
+        </activity>
+        <activity
+            android:name=".ProcurarGruposActivity"
+            android:label="Procurar grupo">
         </activity>
     </application>
 

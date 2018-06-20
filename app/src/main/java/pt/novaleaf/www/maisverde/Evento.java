@@ -16,11 +16,14 @@ public class Evento {
     public String location;
     public String alert;
     public String description;
+    private String weather;
+    private String image_uri;
     public boolean interesse;
     public boolean ir;
 
     public Evento(String name, String creator, long creationDate, long meetupDate, long endDate, List<String> interests,
-                  List<String> confirmations, List<String> admin, String id, String location, String alert, String description){
+                  List<String> confirmations, List<String> admin, String id, String location, String alert, String description,
+                  String weather, String image_uri){
 
         this.name = name;
         this.creator = creator;
@@ -34,6 +37,8 @@ public class Evento {
         this.location = location;
         this.alert = alert;
         this.description = description;
+        this.weather = weather;
+        this.image_uri = image_uri;
     }
 
     public String getName() {
@@ -96,8 +101,17 @@ public class Evento {
         return interesse;
     }
 
+    public String getImage_uri() {
+        return image_uri;
+    }
+
+    public String getWeather() {
+        return weather;
+    }
+
     public boolean isIr() {
         return ir;
     }
+
 
 }
