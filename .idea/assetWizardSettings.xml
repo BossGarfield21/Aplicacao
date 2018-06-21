@@ -32,8 +32,8 @@
                                   <option name="values">
                                     <map>
                                       <entry key="backgroundLayerName" value="ic_launcher_background" />
-                                      <entry key="foregroundImage" value="C:\Users\Hugo Mochão\Desktop\iconesOco\grass (2).png" />
-                                      <entry key="outputName" value="ic_grass" />
+                                      <entry key="foregroundImage" value="C:\Users\Hugo Mochão\Desktop\baseline_filter_list_white_24dp.png" />
+                                      <entry key="outputName" value="ic_filter" />
                                       <entry key="previewDensity" value="MEDIUM" />
                                     </map>
                                   </option>

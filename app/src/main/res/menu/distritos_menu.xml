@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/d0"
+        android:orderInCategory="100"
+        android:title="TUDO"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/d1"
+        android:orderInCategory="100"
+        android:title="Aveiro"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/d2"
+        android:orderInCategory="100"
+        android:title="Beja"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/d3"
+        android:orderInCategory="100"
+        android:title="Braga"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/d4"
+        android:orderInCategory="100"
+        android:title="Bragança"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/d5"
+        android:orderInCategory="100"
+        android:title="Castelo Branco"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/d6"
+        android:orderInCategory="100"
+        android:title="Coimbra"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/d7"
+        android:orderInCategory="100"
+        android:title="Évora"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/d8"
+        android:orderInCategory="100"
+        android:title="Faro"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/d9"
+        android:orderInCategory="100"
+        android:title="Guarda"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/d10"
+        android:orderInCategory="100"
+        android:title="Leiria"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/d11"
+        android:orderInCategory="100"
+        android:title="Lisboa"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/d12"
+        android:orderInCategory="100"
+        android:title="Portalegre"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/d13"
+        android:orderInCategory="100"
+        android:title="Porto"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/d14"
+        android:orderInCategory="100"
+        android:title="Santarém"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/d15"
+        android:orderInCategory="100"
+        android:title="Setúbal"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/d16"
+        android:orderInCategory="100"
+        android:title="Viana do Castelo"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/d17"
+        android:orderInCategory="100"
+        android:title="Vila Real"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/d18"
+        android:orderInCategory="100"
+        android:title="Viseu"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/d19"
+        android:orderInCategory="100"
+        android:title="Madeira"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/d20"
+        android:orderInCategory="100"
+        android:title="Açores"
+        app:showAsAction="never" />
+</menu>

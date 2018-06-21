@@ -16,12 +16,14 @@ import java.util.List;
 public class MyItemGrupoFragmentRecyclerViewAdapter extends RecyclerView.Adapter<MyItemGrupoFragmentRecyclerViewAdapter.ViewHolder>
         implements Filterable{
 
-    private List<Grupo> mValues;
+    public static List<Grupo> mValues;
     private final ItemGruposFragment.OnListFragmentInteractionListener mListener;
+    private String distrito;
 
     public MyItemGrupoFragmentRecyclerViewAdapter(List<Grupo> items, ItemGruposFragment.OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
+        distrito = "";
     }
 
     @Override
@@ -56,7 +58,9 @@ public class MyItemGrupoFragmentRecyclerViewAdapter extends RecyclerView.Adapter
 
     }
 
-
+    public void setDistrito(String distrito) {
+        this.distrito = distrito;
+    }
 
     @Override
     public int getItemCount() {
@@ -77,9 +81,9 @@ public class MyItemGrupoFragmentRecyclerViewAdapter extends RecyclerView.Adapter
                 // we just set the `values` property to the
                 // original contacts list which contains all of them
                 if (charSequence == null || charSequence.length() == 0) {
-                    mValues = GruposListActivity.grupos;
-                    results.values = GruposListActivity.grupos;
-                    results.count = GruposListActivity.grupos.size();
+                    mValues = GruposListActivity.tempGrupos;
+                    results.values = GruposListActivity.tempGrupos;
+                    results.count = GruposListActivity.tempGrupos.size();
                 } else {
                     // Some search copnstraint has been passed
                     // so let's filter accordingly
@@ -88,7 +92,8 @@ public class MyItemGrupoFragmentRecyclerViewAdapter extends RecyclerView.Adapter
                     // We'll go through all the contacts and see
                     // if they contain the supplied string
                     for (Grupo grupo : GruposListActivity.grupos) {
-                        if (grupo.getName().toUpperCase().contains( charSequence.toString().toUpperCase() )) {
+                        if (grupo.getName().toUpperCase().contains( charSequence.toString().toUpperCase() )
+                                && (distrito.isEmpty() || grupo.getDistrito().equals(distrito))) {
                             // if `contains` == true then add it
                             // to our filtered list
                             Log.d("adicionou", grupo.getName());

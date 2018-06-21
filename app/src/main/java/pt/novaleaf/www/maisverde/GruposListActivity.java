@@ -10,8 +10,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.view.MenuInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -38,8 +40,9 @@ public class GruposListActivity extends AppCompatActivity
     NavigationView navigationView;
     MyItemGrupoFragmentRecyclerViewAdapter adapter;
     static ArrayList<Grupo> grupos = new ArrayList<>();
+    static ArrayList<Grupo> tempGrupos = new ArrayList<>();
     private ItemGruposFragment.OnListFragmentInteractionListener mListener;
-
+    private PopupMenu popup = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,20 +81,20 @@ public class GruposListActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().getItem(3).setChecked(true);
 /**
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment fragment = fragmentManager.findFragmentById(R.id.gruposLinear);
-        if (fragment==null) {
-            fragment = ItemGruposFragment.newInstance(1);
+ FragmentManager fragmentManager = getSupportFragmentManager();
+ Fragment fragment = fragmentManager.findFragmentById(R.id.gruposLinear);
+ if (fragment==null) {
+ fragment = ItemGruposFragment.newInstance(1);
 
-            fragmentManager.beginTransaction()
-                    .add(R.id.gruposLinear, fragment)
-                    .commit();
+ fragmentManager.beginTransaction()
+ .add(R.id.gruposLinear, fragment)
+ .commit();
 
-            //myItemGrupoFragmentRecyclerViewAdapter.notifyDataSetChanged();
-        }
-*/
+ //myItemGrupoFragmentRecyclerViewAdapter.notifyDataSetChanged();
+ }
+ */
         grupos.add(new Grupo("Binas churra", null, null, 0, 0,
-                null, null, "Público", "Setubal"));
+                null, null, "Público", "Setúbal"));
         grupos.add(new Grupo("Bombeir0's Crew", null, null, 0, 0,
                 null, null, "Público", "Porto"));
 
@@ -118,6 +121,7 @@ public class GruposListActivity extends AppCompatActivity
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.grupos_main, menu);
 
+
         MenuItem item = menu.findItem(R.id.search);
         SearchView searchView = (SearchView) item.getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -134,7 +138,7 @@ public class GruposListActivity extends AppCompatActivity
             public boolean onQueryTextChange(String newText) {
                 //myItemGrupoFragmentRecyclerViewAdapter
                 //grupos.add(new Grupo("Binas churra", null, null, 0, 0,
-                  //      null, null, "Público", "Setubal"));
+                //      null, null, "Público", "Setubal"));
                 //adapter.notifyDataSetChanged();
                 adapter.getFilter().filter(newText);
                 //adapter.notifyDataSetChanged();
@@ -157,9 +161,12 @@ public class GruposListActivity extends AppCompatActivity
 
             return true;
 
+        } else if (id == R.id.filter) {
+
+            showMenu(findViewById(R.id.filter));
         } else if (id == R.id.action_help) {
             return true;
-        } else if(id == R.id.action_logout){
+        } else if (id == R.id.action_logout) {
             //TODO: sair da app
             final AlertDialog.Builder alert = new AlertDialog.Builder(GruposListActivity.this);
             alert.setTitle("Terminar sessão");
@@ -186,12 +193,66 @@ public class GruposListActivity extends AppCompatActivity
 
             AlertDialog alertDialog = alert.create();
             alertDialog.show();
-        } else if(id == R.id.action_acerca){
+        } else if (id == R.id.action_acerca) {
             Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://anovaleaf.ddns.net"));
             startActivity(i);
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setUncheckedMenu(PopupMenu menu, MenuItem item) {
+
+        for (int i = 0; i < menu.getMenu().size(); i++) {
+            if (!menu.getMenu().getItem(i).equals(item)) {
+                menu.getMenu().getItem(i).setCheckable(false);
+                menu.getMenu().getItem(i).setChecked(false);
+            }
+        }
+
+    }
+
+    public void showMenu(View v) {
+        if (popup == null) {
+            popup = new PopupMenu(this, v);
+            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+
+                    item.setCheckable(true);
+                    item.setChecked(!item.isChecked());
+                    setUncheckedMenu(popup, item);
+                    showDistrict(item.getTitle().toString());
+
+
+                    return false;
+                }
+            });// to implement on click event on items of menu
+            MenuInflater inflater = popup.getMenuInflater();
+            inflater.inflate(R.menu.distritos_menu, popup.getMenu());
+        }
+        popup.show();
+    }
+
+    private void showDistrict(String distrito) {
+
+        tempGrupos.clear();
+        if (!distrito.equals("TUDO")) {
+
+            adapter.setDistrito(distrito);
+
+            for (Grupo grupo : grupos) {
+                if (grupo.getDistrito().equals(distrito))
+                    tempGrupos.add(grupo);
+            }
+            MyItemGrupoFragmentRecyclerViewAdapter.mValues = tempGrupos;
+            adapter.notifyDataSetChanged();
+        } else {
+            adapter.setDistrito("");
+            MyItemGrupoFragmentRecyclerViewAdapter.mValues = grupos;
+            adapter.notifyDataSetChanged();
+        }
+
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -204,7 +265,7 @@ public class GruposListActivity extends AppCompatActivity
             Intent i = new Intent(GruposListActivity.this, FeedActivity.class);
             startActivity(i);
             finish();
-        } else if(id == R.id.nav_adicionar_report){
+        } else if (id == R.id.nav_adicionar_report) {
 
             AlertDialog.Builder alert = new AlertDialog.Builder(GruposListActivity.this);
             alert.setTitle("Criar report");
@@ -233,7 +294,7 @@ public class GruposListActivity extends AppCompatActivity
             AlertDialog alertDialog = alert.create();
             alertDialog.show();
 
-        }else if (id == R.id.nav_mapa) {
+        } else if (id == R.id.nav_mapa) {
             Intent i = new Intent(GruposListActivity.this, MapsActivity.class);
             startActivity(i);
             finish();
@@ -255,5 +316,5 @@ public class GruposListActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-    
+
 }
