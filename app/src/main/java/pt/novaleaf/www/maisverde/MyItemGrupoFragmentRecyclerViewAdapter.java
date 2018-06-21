@@ -48,6 +48,7 @@ public class MyItemGrupoFragmentRecyclerViewAdapter extends RecyclerView.Adapter
 
         holder.mNomeGrupo.setText(mValues.get(position).getName());
         holder.mPrivacyGrupo.setText(mValues.get(position).getPrivacy());
+        //holder.mNumPessoas.setText(mValues.get(position).getNumPessoas() + " pessoas");
 
         holder.mContraintLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,7 +113,6 @@ public class MyItemGrupoFragmentRecyclerViewAdapter extends RecyclerView.Adapter
 
             @Override
             protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-                //GruposListActivity.grupos.clear();
                 ArrayList<Grupo> g =(ArrayList<Grupo>) filterResults.values;
                 Log.d("RESULTS", g.size() + " BINA");
                 mValues = (ArrayList<Grupo>) filterResults.values;
@@ -130,6 +130,7 @@ public class MyItemGrupoFragmentRecyclerViewAdapter extends RecyclerView.Adapter
 
         public TextView mNomeGrupo;
         public TextView mPrivacyGrupo;
+        public TextView mNumPessoas;
         public ConstraintLayout mContraintLayout;
 
         public ViewHolder(View v){
@@ -137,6 +138,7 @@ public class MyItemGrupoFragmentRecyclerViewAdapter extends RecyclerView.Adapter
 
             mNomeGrupo = (TextView) v.findViewById(R.id.textNomeGrupo);
             mPrivacyGrupo = (TextView) v.findViewById(R.id.textPrivacy);
+            mNumPessoas = (TextView) v.findViewById(R.id.textNumPessoas);
             mContraintLayout = (ConstraintLayout) v.findViewById(R.id.constraintLayoutItemGrupo);
 
         }

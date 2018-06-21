@@ -13,6 +13,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.MenuInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -75,7 +76,6 @@ public class GruposListActivity extends AppCompatActivity
 
             }
         };
-        adapter = new MyItemGrupoFragmentRecyclerViewAdapter(grupos, mListener);
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -98,9 +98,12 @@ public class GruposListActivity extends AppCompatActivity
         grupos.add(new Grupo("Bombeir0's Crew", null, null, 0, 0,
                 null, null, "Público", "Porto"));
 
+        adapter = new MyItemGrupoFragmentRecyclerViewAdapter(grupos, mListener);
+
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.gruposLinear);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
+        tempGrupos = new ArrayList<>(grupos);
 
     }
 
@@ -123,6 +126,8 @@ public class GruposListActivity extends AppCompatActivity
 
 
         MenuItem item = menu.findItem(R.id.search);
+
+
         SearchView searchView = (SearchView) item.getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -203,6 +208,7 @@ public class GruposListActivity extends AppCompatActivity
 
     private void setUncheckedMenu(PopupMenu menu, MenuItem item) {
 
+
         for (int i = 0; i < menu.getMenu().size(); i++) {
             if (!menu.getMenu().getItem(i).equals(item)) {
                 menu.getMenu().getItem(i).setCheckable(false);
@@ -219,26 +225,31 @@ public class GruposListActivity extends AppCompatActivity
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
 
-                    item.setCheckable(true);
-                    item.setChecked(!item.isChecked());
-                    setUncheckedMenu(popup, item);
-                    showDistrict(item.getTitle().toString());
-
+                    if (!item.isChecked()) {
+                        item.setCheckable(true);
+                        item.setChecked(!item.isChecked());
+                        setUncheckedMenu(popup, item);
+                        showDistrict(item.getTitle().toString());
+                    }
 
                     return false;
                 }
             });// to implement on click event on items of menu
             MenuInflater inflater = popup.getMenuInflater();
             inflater.inflate(R.menu.distritos_menu, popup.getMenu());
+
+            popup.getMenu().findItem(R.id.d0).setCheckable(true);
+            popup.getMenu().findItem(R.id.d0).setChecked(true);
         }
         popup.show();
     }
 
     private void showDistrict(String distrito) {
 
-        tempGrupos.clear();
+        //tempGrupos.clear();
+        Log.d("DITRITO", distrito);
         if (!distrito.equals("TUDO")) {
-
+            tempGrupos.clear();
             adapter.setDistrito(distrito);
 
             for (Grupo grupo : grupos) {
@@ -248,8 +259,9 @@ public class GruposListActivity extends AppCompatActivity
             MyItemGrupoFragmentRecyclerViewAdapter.mValues = tempGrupos;
             adapter.notifyDataSetChanged();
         } else {
+            tempGrupos = new ArrayList<>(grupos);
             adapter.setDistrito("");
-            MyItemGrupoFragmentRecyclerViewAdapter.mValues = grupos;
+            MyItemGrupoFragmentRecyclerViewAdapter.mValues = tempGrupos;
             adapter.notifyDataSetChanged();
         }
 

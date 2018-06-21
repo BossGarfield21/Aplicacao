@@ -52,4 +52,8 @@ public class Grupo {
     public String getDistrito() {
         return distrito;
     }
+
+    public int getNumPessoas(){
+        return admins.size() + base_users.size();
+    }
 }

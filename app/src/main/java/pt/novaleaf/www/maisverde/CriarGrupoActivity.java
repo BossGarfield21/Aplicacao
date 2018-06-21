@@ -35,6 +35,7 @@ public class CriarGrupoActivity extends AppCompatActivity {
     private AutoCompleteTextView mNomeGrupo;
     private Switch mPrivacidade;
     private PopupMenu popup = null;
+    private String distrito = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +99,9 @@ public class CriarGrupoActivity extends AppCompatActivity {
                     item.setCheckable(true);
                     item.setChecked(!item.isChecked());
                     setUncheckedMenu(popup, item);
+                    mButtonDistrito.setText(item.getTitle());
+                    mButtonDistrito.setError(null);
+                    distrito = item.getTitle().toString();
 
                     return false;
                 }
@@ -112,6 +116,7 @@ public class CriarGrupoActivity extends AppCompatActivity {
     private void attemptCreateGroup() {
 
         String nomeGrupo = mNomeGrupo.getText().toString();
+
         boolean isPrivado = mPrivacidade.isChecked();
 
         mNomeGrupo.setError(null);
@@ -123,6 +128,11 @@ public class CriarGrupoActivity extends AppCompatActivity {
             mNomeGrupo.setError("O nome tem de ter pelo menos 4 caracteres");
             focusView = mNomeGrupo;
             cancel = true;
+        } else if (TextUtils.isEmpty(distrito)){
+            mButtonDistrito.setError("Escolha um distrito");
+            mButtonDistrito.setText("Escolha um distrito");
+            focusView = mButtonDistrito;
+            cancel = true;
         }
 
         String privacy;
@@ -130,6 +140,8 @@ public class CriarGrupoActivity extends AppCompatActivity {
             privacy = "private";
         else
             privacy = "public";
+
+
 
         if (cancel) {
             // There was an error; focus the first
