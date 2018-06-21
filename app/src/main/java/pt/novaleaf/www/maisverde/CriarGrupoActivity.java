@@ -5,8 +5,11 @@ import android.content.SharedPreferences;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -28,8 +31,10 @@ import java.util.Map;
 public class CriarGrupoActivity extends AppCompatActivity {
 
     private Button mButtonCriarGrupo;
+    private Button mButtonDistrito;
     private AutoCompleteTextView mNomeGrupo;
     private Switch mPrivacidade;
+    private PopupMenu popup = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +55,7 @@ public class CriarGrupoActivity extends AppCompatActivity {
         }
 
         mButtonCriarGrupo = (Button) findViewById(R.id.btn_criar_grupo);
+        mButtonDistrito = (Button) findViewById(R.id.bDistritos);
         mNomeGrupo = (AutoCompleteTextView) findViewById(R.id.input_group);
         mPrivacidade = (Switch) findViewById(R.id.switchGoups);
 
@@ -60,6 +66,47 @@ public class CriarGrupoActivity extends AppCompatActivity {
             }
         });
 
+        mButtonDistrito.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                showMenu(findViewById(R.id.bDistritos));
+            }
+        });
+
+    }
+
+    private void setUncheckedMenu(PopupMenu menu, MenuItem item) {
+
+        for (int i = 0; i < menu.getMenu().size(); i++) {
+            if (!menu.getMenu().getItem(i).equals(item)) {
+                menu.getMenu().getItem(i).setCheckable(false);
+                menu.getMenu().getItem(i).setChecked(false);
+            }
+        }
+
+    }
+
+
+    public void showMenu(View v) {
+        if (popup == null) {
+            popup = new PopupMenu(this, v);
+            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+
+                    item.setCheckable(true);
+                    item.setChecked(!item.isChecked());
+                    setUncheckedMenu(popup, item);
+
+                    return false;
+                }
+            });// to implement on click event on items of menu
+            MenuInflater inflater = popup.getMenuInflater();
+            inflater.inflate(R.menu.distritos_menu, popup.getMenu());
+            popup.getMenu().getItem(0).setVisible(false);
+        }
+        popup.show();
     }
 
     private void attemptCreateGroup() {

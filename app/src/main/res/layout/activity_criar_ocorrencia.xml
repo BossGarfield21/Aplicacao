@@ -75,9 +75,10 @@
 
         <Button
             android:id="@+id/bTipos"
-            android:background="@drawable/button_tipos"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:background="@drawable/button_tipos"
             android:text="TIPO DE OCORRENCIA"/>
 
     </LinearLayout>
