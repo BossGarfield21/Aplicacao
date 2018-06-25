@@ -50,27 +50,11 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="24dp"
-                android:text="Binas churra"
-                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/imageView7"
-                app:layout_constraintTop_toBottomOf="@+id/appBarLayout"/>
-
-            <TextView
-                android:id="@+id/textView24"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="12dp"
                 android:text="123 pessoas"
                 android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-                android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/imageView7"
-                app:layout_constraintTop_toBottomOf="@+id/textView6"/>
+                app:layout_constraintTop_toTopOf="parent"/>
 
             <View
                 android:id="@+id/view1"
@@ -135,19 +119,32 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView26"/>
 
             <Button
-                android:id="@+id/button2"
-                android:layout_width="250dp"
-                android:layout_height="wrap_content"
+                android:id="@+id/buttonPedido"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="8dp"
                 android:background="@drawable/buttonshape"
-                android:text="Enviar pedido de inscrição"
+                android:text="Enviar pedido"
                 android:textColor="#FFFFFF"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.028"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView27"/>
+                app:layout_constraintStart_toEndOf="@+id/imageView7"
+                app:layout_constraintTop_toBottomOf="@+id/textView6"/>
+
+            <Button
+                android:id="@+id/buttonCancelar"
+                android:layout_width="150dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/buttonshape"
+                android:text="Cancelar pedido"
+                android:textColor="#FFFFFF"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/imageView7"
+                app:layout_constraintTop_toBottomOf="@+id/textView6"/>
 
         </android.support.constraint.ConstraintLayout>
     </ScrollView>

@@ -70,7 +70,7 @@ public class GruposListActivity extends AppCompatActivity
         mListener = new ItemGruposFragment.OnListFragmentInteractionListener() {
             @Override
             public void onGrupoInteraction(Grupo item) {
-                Intent intent = new Intent(GruposListActivity.this, GruposActivity.class);
+                Intent intent = new Intent(GruposListActivity.this, GrupoFeedActivity.class);
                 intent.putExtra("toolbar", item.getName());
                 startActivity(intent);
 

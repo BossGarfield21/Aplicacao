@@ -114,7 +114,7 @@ public class AlterarDadosActivity extends AppCompatActivity
         arrayList.add(new PerfilItem("Morada complementar", sharedPreferences.getString("complementaryaddress", "ainda não definida")));
         arrayList.add(new PerfilItem("Localidade", sharedPreferences.getString("locality", "ainda não definida")));
         arrayList.add(new PerfilItem("Código Postal", sharedPreferences.getString("postalcode", "ainda não definido")));
-        arrayList.add(new PerfilItem("Telemovel", sharedPreferences.getString("mobile_phone", "ainda não definido")));
+        arrayList.add(new PerfilItem("Telemóvel", sharedPreferences.getString("mobile_phone", "ainda não definido")));
         arrayList.add(new PerfilItem("Mudar a password", ""));
 
         adapter = new MyPerfilRecyclerViewAdapter(this, arrayList);

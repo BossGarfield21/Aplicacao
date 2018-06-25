@@ -143,6 +143,12 @@
             android:name=".ProcurarGruposActivity"
             android:label="Procurar grupo">
         </activity>
+        <activity android:name=".GrupoFeedActivity">
+        </activity>
+        <activity
+            android:name=".AddPostActivity"
+            android:label="Criar publicação">
+        </activity>
     </application>
 
 </manifest>

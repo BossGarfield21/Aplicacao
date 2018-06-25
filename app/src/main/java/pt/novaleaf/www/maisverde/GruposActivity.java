@@ -12,8 +12,26 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class GruposActivity extends AppCompatActivity {
+
+    private Button mButtonPedido;
+    private Button mButtonCancelar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +51,110 @@ public class GruposActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         setTitle(getIntent().getStringExtra("toolbar"));
+
+
+        mButtonPedido = (Button) findViewById(R.id.buttonPedido);
+        mButtonCancelar = (Button) findViewById(R.id.buttonCancelar);
+
+        mButtonCancelar.setVisibility(View.GONE);
+        mButtonCancelar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //cancelJoinGroupVolley();
+                mButtonCancelar.setVisibility(View.GONE);
+                mButtonPedido.setVisibility(View.VISIBLE);
+            }
+        });
+
+        mButtonPedido.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //joinGroupVolley();
+                mButtonPedido.setVisibility(View.GONE);
+                mButtonCancelar.setVisibility(View.VISIBLE);
+            }
+        });
+
+
+    }
+
+    private void cancelJoinGroupVolley() {
+
+        String groupID = "id";
+        String tag_json_obj = "json_obj_req";
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/cancel_request?group_id=" + groupID;
+
+        JSONObject grupo = new JSONObject();
+        SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+        final String token = sharedPreferences.getString("tokenID", "erro");
+
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, grupo,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                        mButtonCancelar.setVisibility(View.GONE);
+                        mButtonPedido.setVisibility(View.VISIBLE);
+
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("erroJoingrupo", "Error: " + error.getMessage());
+                Toast.makeText(GruposActivity.this, "Verifique a ligação", Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+
+        };
+        AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
+    }
+
+    private void joinGroupVolley() {
+
+        String groupID = "id";
+        String tag_json_obj = "json_obj_req";
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/request?group_id=" + groupID;
+
+        JSONObject grupo = new JSONObject();
+        SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+        final String token = sharedPreferences.getString("tokenID", "erro");
+
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, grupo,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                        mButtonPedido.setVisibility(View.GONE);
+                        mButtonCancelar.setVisibility(View.VISIBLE);
+
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("erroJoingrupo", "Error: " + error.getMessage());
+                Toast.makeText(GruposActivity.this, "Verifique a ligação", Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+
+        };
+        AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
+
     }
 
     @Override
@@ -49,10 +171,9 @@ public class GruposActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-
-        if (id == R.id.action_help) {
+       if (id == R.id.action_help) {
             return true;
-        } else if(id == R.id.action_logout){
+        } else if (id == R.id.action_logout) {
             //TODO: sair da app
             final AlertDialog.Builder alert = new AlertDialog.Builder(GruposActivity.this);
             alert.setTitle("Terminar sessão");
@@ -79,12 +200,13 @@ public class GruposActivity extends AppCompatActivity {
 
             AlertDialog alertDialog = alert.create();
             alertDialog.show();
-        } else if(id == R.id.detalhes_grupo){
+        } else if (id == R.id.detalhes_grupo) {
             Intent intent = new Intent(GruposActivity.this, DetalhesGrupoActivity.class);
             startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
     }
+
 
 }

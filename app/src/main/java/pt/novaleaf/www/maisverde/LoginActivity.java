@@ -249,6 +249,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             final ProgressDialog pDialog = new ProgressDialog(this);
             pDialog.setMessage("A Carregar...");
+            pDialog.setCanceledOnTouchOutside(false);
             pDialog.show();
             final SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
 
