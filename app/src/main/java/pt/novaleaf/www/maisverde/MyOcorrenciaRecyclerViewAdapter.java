@@ -1,10 +1,16 @@
 package pt.novaleaf.www.maisverde;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.preference.PreferenceManager;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,10 +21,24 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import pt.novaleaf.www.maisverde.OcorrenciaFragment.OnListFragmentInteractionListener;
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
 
+import pt.novaleaf.www.maisverde.OcorrenciaFragment.OnListFragmentInteractionListener;
+import utils.ByteRequest;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
+import static android.content.Context.MODE_PRIVATE;
+import static pt.novaleaf.www.maisverde.LoginActivity.sharedPreferences;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link Ocorrencia} and makes a call to the
@@ -54,30 +74,40 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        holder.mImageReport.setImageResource(mValues.get(position).getImgId());
-        holder.titulo.setText(mValues.get(position).getTitulo());
+        //holder.mImageReport.setImageResource(mValues.get(position).getImgId());
 
-        holder.mLinearGosto.setOnClickListener(new View.OnClickListener() {
+        Ocorrencia ocorrencia = mValues.get(position);
+        holder.titulo.setText(mValues.get(position).getName());
+
+        if (mValues.get(position).isLiked()) {
+            holder.mImageGosto.setImageResource(R.drawable.ic_favorite_green_24dp);
+        }
+
+        holder.mImageGosto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
                     if (!mValues.get(position).isLiked()) {
-                        holder.mTextGosto.setTextColor(0xFF429844);
                         holder.mImageGosto.setImageResource(R.drawable.ic_favorite_green_24dp);
-                    }
-                    else {
-                        holder.mTextGosto.setTextColor(Color.BLACK);
+
+                    } else {
                         holder.mImageGosto.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+
                     }
-                    mValues.get(position).like();
                     mListener.onLikeInteraction(mValues.get(position));
+
+                    mValues.get(position).like();
+                    if (mValues.get(position).getLikes() != 1)
+                        holder.mTextNumLikes.setText(String.valueOf(mValues.get(position).getLikes()) + " likes");
+                    else
+                        holder.mTextNumLikes.setText(String.valueOf(mValues.get(position).getLikes()) + " like");
                 }
             }
         });
 
-        holder.mLinearComentar.setOnClickListener(new View.OnClickListener() {
+        holder.mImageComentario.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (null != mListener) {
@@ -88,7 +118,7 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
             }
         });
 
-        holder.mLinearFavorito.setOnClickListener(new View.OnClickListener() {
+        holder.mImageFavorito.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (null != mListener) {
@@ -96,11 +126,9 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
                     // fragment is attached to one) that an item has been selected.
 
                     if (!mValues.get(position).isFavorito()) {
-                        holder.mTextFavorito.setTextColor(0xFF429844);
                         holder.mImageFavorito.setImageResource(R.drawable.ic_star_green_24dp);
-                    }
-                    else {
-                        holder.mTextFavorito.setTextColor(Color.BLACK);
+
+                    } else {
                         holder.mImageFavorito.setImageResource(R.drawable.ic_star_border_black_24dp);
 
                     }
@@ -133,7 +161,42 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
             }
         });
 
-        holder.mTextNumLikes.setText(String.valueOf(mValues.get(position).getLikes()) + " likes");
+        if (mValues.get(position).getLikes() != 1)
+            holder.mTextNumLikes.setText(String.valueOf(mValues.get(position).getLikes()) + " likes");
+        else
+            holder.mTextNumLikes.setText(String.valueOf(mValues.get(position).getLikes()) + " like");
+
+        holder.username.setText(mValues.get(position).getOwner());
+        long time = mValues.get(position).getCreationDate();
+
+        if (time != 0) {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM HH:mm");
+            String data = simpleDateFormat.format(new Date(time));
+            holder.time.setText(data);
+        }
+
+        if (mValues.get(position).getImage_uri() != null) {
+            receberImagemVolley(holder, position);
+        } else {
+            holder.mImageReport.setAdjustViewBounds(false);
+            String tipo = mValues.get(position).getType();
+            if (tipo.equals("bonfire")) {
+
+                holder.mImageReport.setImageResource(R.mipmap.ic_bonfire_foreground);
+            } else if (tipo.equals("fire")) {
+                holder.mImageReport.setImageResource(R.mipmap.ic_fire_foreground);
+
+            } else if (tipo.equals("trash")) {
+                holder.mImageReport.setImageResource(R.mipmap.ic_garbage_foreground);
+
+            } else {
+                holder.mImageReport.setImageResource(R.mipmap.ic_grass_foreground);
+
+            }
+        }
+
+        holder.mRisco.setText(mValues.get(position).getRisk()+"");
+
 
     }
 
@@ -145,33 +208,65 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
     public class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView mImageReport;
         public TextView titulo;
-        public RelativeLayout mRelative;
-        public LinearLayout mLinearGosto;
-        public LinearLayout mLinearFavorito;
-        public LinearLayout mLinearComentar;
+        public TextView username;
+        public TextView time;
+        public ConstraintLayout mRelative;
         public LinearLayout mLinearInfo;
-        public TextView mTextGosto;
-        public TextView mTextFavorito;
         public TextView mTextNumLikes;
+        public TextView mRisco;
         public ImageView mImageFavorito;
         public ImageView mImageGosto;
+        public ImageView mImageComentario;
 
-        public ViewHolder(View v){
+        public ViewHolder(View v) {
             super(v);
             mImageReport = (ImageView) v.findViewById(R.id.imageReport);
             titulo = (TextView) v.findViewById(R.id.tituloReport);
-            mRelative = (RelativeLayout) v.findViewById(R.id.relative);
-            mLinearGosto = (LinearLayout) v.findViewById(R.id.linearGosto);
-            mLinearFavorito = (LinearLayout) v.findViewById(R.id.linearFavorito);
-            mLinearComentar = (LinearLayout) v.findViewById(R.id.linearComentar);
+            username = (TextView) v.findViewById(R.id.userName);
+            time = (TextView) v.findViewById(R.id.time);
+            mRisco = (TextView) v.findViewById(R.id.riscoCalculado);
+            mRelative = (ConstraintLayout) v.findViewById(R.id.relative);
             mLinearInfo = (LinearLayout) v.findViewById(R.id.linearInfo);
-            mTextGosto = (TextView) v.findViewById(R.id.textGosto);
-            mTextFavorito = (TextView) v.findViewById(R.id.textFavorito);
             mTextNumLikes = (TextView) v.findViewById(R.id.likes);
             mImageFavorito = (ImageView) v.findViewById(R.id.imageFavorito);
             mImageGosto = (ImageView) v.findViewById(R.id.imageGosto);
+            mImageComentario = (ImageView) v.findViewById(R.id.imageComentar);
 
 
         }
     }
+
+    private void receberImagemVolley(final ViewHolder holder, int position) {
+        String tag_json_obj = "octect_request";
+        Log.d("imgeuri", mValues.get(position).getImage_uri());
+        String url = mValues.get(position).getImage_uri();
+
+
+        final String token = sharedPreferences.getString("tokenID", "erro");
+        ByteRequest stringRequest = new ByteRequest(Request.Method.GET, url, new Response.Listener<byte[]>() {
+
+            @Override
+            public void onResponse(byte[] response) {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(response, 0, response.length);
+                holder.mImageReport.setImageBitmap(bitmap);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("erroIMAGEMocorrencia", "Error: " + error.getMessage());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+
+        };
+        AppController.getInstance().addToRequestQueue(stringRequest, tag_json_obj);
+
+    }
+
+
 }

@@ -102,7 +102,7 @@ public class MyComentariosRecyclerViewAdapter extends RecyclerView.Adapter {
             }
 
             void bind(final Comentario comentario) {
-                messageText.setText(comentario.getMensagem());
+                messageText.setText(comentario.getMessage());
                 messageText.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View view) {
@@ -133,7 +133,7 @@ public class MyComentariosRecyclerViewAdapter extends RecyclerView.Adapter {
                 });
 
                 // Format the stored timestamp into a readable String using method.
-                timeText.setText(comentario.getTempo());
+                timeText.setText(comentario.getCreation_date()+"");
             }
 
         }
@@ -152,12 +152,12 @@ public class MyComentariosRecyclerViewAdapter extends RecyclerView.Adapter {
             }
 
             void bind(Comentario comentario) {
-                messageText.setText(comentario.getMensagem());
+                messageText.setText(comentario.getMessage());
 
                 // Format the stored timestamp into a readable String using method.
-                timeText.setText(comentario.getTempo());
+                timeText.setText(comentario.getCreation_date()+"");
 
-                nameText.setText(comentario.getAutor());
+                nameText.setText(comentario.getAuthor());
 
             }
         }

@@ -1,14 +1,11 @@
 package pt.novaleaf.www.maisverde;
 
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.List;
@@ -77,6 +74,17 @@ public class MyPostRecyclerViewAdapter extends RecyclerView.Adapter<MyPostRecycl
 
 
         holder.mTextNumLikes.setText(String.valueOf(mValues.get(position).getLikes()) + " likes");
+        //holder.mLinearComentarios.setClickable(true);
+        holder.mLinearComentarios.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (null != mListener) {
+                    // Notify the active callbacks interface (the activity, if the
+                    // fragment is attached to one) that an item has been selected.
+                    mListener.onCommentInteraction(mValues.get(position));
+                }
+            }
+        });
 
     }
 
@@ -86,6 +94,8 @@ public class MyPostRecyclerViewAdapter extends RecyclerView.Adapter<MyPostRecycl
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+
+        public LinearLayout mLinearComentarios;
         public ImageView mImagePost;
         public TextView mTextNumLikes;
         public TextView mTextNumComments;
@@ -99,13 +109,13 @@ public class MyPostRecyclerViewAdapter extends RecyclerView.Adapter<MyPostRecycl
             super(v);
             mImageGosto = (ImageView) v.findViewById(R.id.imagePostLike);
             mImageComments = (ImageView) v.findViewById(R.id.imagePostComment);
-            mImagePost = (ImageView) v.findViewById(R.id.imagePost);
+            mImagePost = (ImageView) v.findViewById(R.id.imagePostAuthor);
             mMessage = (TextView) v.findViewById(R.id.textPostMessage);
             mTextNumLikes = (TextView) v.findViewById(R.id.textPostLikes);
             mTextNumComments = (TextView) v.findViewById(R.id.textPostComments);
             mHour = (TextView) v.findViewById(R.id.textPostHour);
             mAutor = (TextView) v.findViewById(R.id.textPostAutor);
-
+            mLinearComentarios = (LinearLayout) v.findViewById(R.id.linLikes);
 
 
         }

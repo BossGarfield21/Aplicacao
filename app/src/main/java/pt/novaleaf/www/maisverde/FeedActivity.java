@@ -33,7 +33,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +53,8 @@ import static pt.novaleaf.www.maisverde.OcorrenciaFragment.myOcorrenciaRecyclerV
  */
 
 public class FeedActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OcorrenciaFragment.OnListFragmentInteractionListener, EventoFragment.OnListFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, OcorrenciaFragment.OnListFragmentInteractionListener, EventoFragment.OnListFragmentInteractionListener,
+        Serializable{
 
     private CardView cardView;
     NavigationView navigationView;
@@ -78,8 +83,8 @@ public class FeedActivity extends AppCompatActivity
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        //updateOcorrencias();
-        //updateEventos();
+        updateOcorrencias();
+        updateEventos();
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
 
@@ -269,7 +274,7 @@ public class FeedActivity extends AppCompatActivity
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+    public class SectionsPagerAdapter extends FragmentPagerAdapter implements Serializable {
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -302,10 +307,7 @@ public class FeedActivity extends AppCompatActivity
     }
 
 
-    @Override
-    public void onLikeInteraction(Ocorrencia item) {
 
-    }
 
     @Override
     public void onCommentInteraction(Ocorrencia item) {
@@ -323,6 +325,7 @@ public class FeedActivity extends AppCompatActivity
     public void onImagemInteraction(Ocorrencia item) {
         //Toast.makeText(FeedActivity.this, "IR PARA A PAGINA DA OCORRENCIA", Toast.LENGTH_SHORT).show();
         Intent i = new Intent(FeedActivity.this, OcorrenciaActivity.class);
+        i.putExtra("Ocorrencia", (Serializable) item);
         startActivity(i);
     }
 
@@ -384,39 +387,92 @@ public class FeedActivity extends AppCompatActivity
                             isFinishedOcorrencias = response.getBoolean("isFinished");
                             Log.d("ACABOU???", String.valueOf(isFinishedOcorrencias));
 
-                            String id;
-                            String titulo;
-                            String descricao;
-                            String owner;
-                            String type;
-                            String image_uri;
-                            String[] likers = null;
-                            int risk;
-                            int likes;
-                            String status;
-                            long latitude;
-                            long longitude;
-                            Map<String, String> comentarios = null;
+
                             JSONArray list = response.getJSONArray("list");
                             if (!isFinishedOcorrencias)
                                 for (int i = 0; i < list.length(); i++) {
 
-                                    JSONObject ocorrencia = list.getJSONObject(i);
-                                    id = ocorrencia.getString("id");
-                                    titulo = ocorrencia.getString("name");
-                                    descricao = ocorrencia.getString("description");
-                                    owner = ocorrencia.getString("owner");
-                                    risk = ocorrencia.getInt("risk");
-                                    likes = ocorrencia.getInt("likes");
-                                    status = ocorrencia.getString("status");
-                                    type = ocorrencia.getString("type");
-                                    image_uri = ocorrencia.getString("image_uri");
+                                    String id = null;
+                                    String titulo = null;
+                                    String descricao = null;
+                                    String owner = null;
+                                    String type = null;
+                                    boolean hasLiked = false;
+                                    String image_uri = null;
+                                    List<String> likers = new ArrayList<>();
+                                    long creationDate = 0;
+                                    String district = null;
+                                    double risk = 0;
+                                    long likes = 0;
+                                    long status = 0;
+                                    long latitude = 0;
+                                    long longitude = 0;
+                                    Map<String, Comentario> comentarios = new HashMap<>();
 
-                                    JSONObject coordinates = ocorrencia.getJSONObject("coordinates");
-                                    latitude = coordinates.getLong("latitude");
-                                    longitude = coordinates.getLong("longitude");
-                                    Ocorrencia ocorrencia1 = new Ocorrencia(titulo, R.mipmap.ic_entrada_round, risk, "23:12", id,
-                                            descricao, owner, likers, comentarios, status, latitude, longitude, likes, type, image_uri);
+                                    JSONObject ocorrencia = list.getJSONObject(i);
+                                    if (ocorrencia.has("id"))
+                                        id = ocorrencia.getString("id");
+                                    if (ocorrencia.has("name"))
+                                        titulo = ocorrencia.getString("name");
+                                    if (ocorrencia.has("description"))
+                                        descricao = ocorrencia.getString("description");
+                                    if (ocorrencia.has("owner"))
+                                        owner = ocorrencia.getString("owner");
+                                    if (ocorrencia.has("risk"))
+                                        risk = ocorrencia.getInt("risk");
+                                    if (ocorrencia.has("likes"))
+                                        likes = ocorrencia.getInt("likes");
+                                    if (ocorrencia.has("status"))
+                                        status = ocorrencia.getLong("status");
+                                    if (ocorrencia.has("type"))
+                                        type = ocorrencia.getString("type");
+                                    JSONObject image = null;
+                                    if (ocorrencia.has("image_uri")) {
+                                        image = ocorrencia.getJSONObject("image_uri");
+                                        if (image.has("value"))
+                                            image_uri = image.getString("value");
+                                    }
+
+                                    if (ocorrencia.has("hasLike"))
+                                        hasLiked = ocorrencia.getBoolean("hasLike");
+                                    if (ocorrencia.has("creationDate"))
+                                        creationDate = ocorrencia.getLong("creationDate");
+
+                                    Log.d("HASLIKE???", hasLiked+"FDPDPDPD");
+                                    if (ocorrencia.has("comments")) {
+                                        JSONObject coms = ocorrencia.getJSONObject("comments");
+
+                                        Iterator<String> comentario = coms.keys();
+                                        while (comentario.hasNext()) {
+                                            String comentID = comentario.next();
+                                            int origem = 1;
+                                            JSONObject com = coms.getJSONObject(comentID);
+                                            if (com.getString("author").equals(
+                                                    getSharedPreferences("Prefs", MODE_PRIVATE).getString("username", "")))
+                                                origem = 2;
+                                            else origem = 1;
+                                            comentarios.put(comentID, new Comentario(comentID, com.getString("author"),
+                                                    com.getString("message"), com.getString("image"),
+                                                    com.getLong("creationDate"), origem));
+
+                                        }
+                                    }
+                                    if (ocorrencia.has("coordinates")) {
+                                        JSONObject coordinates = ocorrencia.getJSONObject("coordinates");
+                                        latitude = coordinates.getLong("latitude");
+                                        longitude = coordinates.getLong("longitude");
+                                    }
+
+                                    if (ocorrencia.has("likers")) {
+                                        JSONArray lik = ocorrencia.getJSONArray("likers");
+                                        for (int a = 0; a < lik.length(); a++)
+                                            likers.add(lik.getString(a));
+                                    }
+
+
+                                    Ocorrencia ocorrencia1 = new Ocorrencia(titulo, risk, "23:12", id,
+                                            descricao, owner, likers, status, latitude, longitude, likes, type, image_uri,
+                                            comentarios, creationDate, district, hasLiked);
                                     listOcorrencias.add(ocorrencia1);
                                     Log.d("ID", id);
                                     Log.d("titulo", titulo);
@@ -431,13 +487,17 @@ public class FeedActivity extends AppCompatActivity
                     }
 
 
-                }, new Response.ErrorListener() {
+                }, new Response.ErrorListener()
+
+        {
 
             @Override
             public void onErrorResponse(VolleyError error) {
                 VolleyLog.d("erroLOGIN", "Error: " + error.getMessage());
             }
-        }) {
+        })
+
+        {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> headers = new HashMap<String, String>();
@@ -446,7 +506,9 @@ public class FeedActivity extends AppCompatActivity
             }
         };
 
-        AppController.getInstance().addToRequestQueue(jsonObjectRequest);
+        AppController.getInstance().
+
+                addToRequestQueue(jsonObjectRequest);
 
 
     }
@@ -490,9 +552,9 @@ public class FeedActivity extends AppCompatActivity
                             long creationDate = 0;
                             long meetupDate = 0;
                             long endDate = 0;
-                            List<String> interests = null;
-                            List<String> confirmations = null;
-                            List<String> admin = null;
+                            List<String> interests = new ArrayList<>();
+                            List<String> confirmations = new ArrayList<>();
+                            List<String> admin = new ArrayList<>();
                             String image_uri = null;
                             String id = null;
                             String location = null;
@@ -511,6 +573,8 @@ public class FeedActivity extends AppCompatActivity
                                         id = evento.getString("alert");
                                     if (evento.has("name"))
                                         name = evento.getString("name");
+                                    if (evento.has("creator"))
+                                        creator = evento.getString("creator");
                                     if (evento.has("description"))
                                         description = evento.getString("description");
                                     if (evento.has("creator"))
@@ -529,9 +593,25 @@ public class FeedActivity extends AppCompatActivity
                                         image_uri = evento.getString("image_uri");
                                     if (evento.has("weather"))
                                         weather = evento.getString("weather");
-                                    interests = null;
-                                    confirmations = null;
-                                    admin = null;
+
+                                    if (evento.has("interests")) {
+                                        JSONArray interest = evento.getJSONArray("interests");
+                                        for (int a = 0; a < interest.length(); a++)
+                                            interests.add(interest.getString(a));
+                                    }
+
+                                    if (evento.has("confirmations")) {
+                                        JSONArray confirmation = evento.getJSONArray("confirmations");
+                                        for (int a = 0; a < confirmation.length(); a++)
+                                            confirmations.add(confirmation.getString(a));
+                                    }
+
+                                    if (evento.has("admin")) {
+                                        JSONArray admins = evento.getJSONArray("admin");
+                                        for (int a = 0; a < admins.length(); a++)
+                                            admin.add(admins.getString(a));
+                                    }
+
 
                                     Evento evento1 = new Evento(name, creator, creationDate, meetupDate, endDate,
                                             interests, confirmations, admin, id, location, alert, description, weather, image_uri);
@@ -599,4 +679,100 @@ public class FeedActivity extends AppCompatActivity
      * <p>
      * }
      */
+
+    @Override
+    public void onLikeInteraction(Ocorrencia item) {
+
+        Log.d("TAS LIKE???", item.isLiked()+" PUTA");
+
+        likeReportVolley(item, !item.isLiked());
+        //item.like();
+
+
+    }
+
+    private void likeReportVolley(final Ocorrencia item, boolean like) {
+
+
+        String tag_json_obj = "json_obj_req";
+        String url;
+        int method;
+        if (!item.isLiked()) {
+            url = "https://novaleaf-197719.appspot.com/rest/withtoken/social/addlike?markerid=" + item.getId();
+            method = Request.Method.PUT;
+        } else {
+            url = "https://novaleaf-197719.appspot.com/rest/withtoken/social/removelike?markerid=" + item.getId();
+            method = Request.Method.DELETE;
+        }
+
+        JSONObject grupo = new JSONObject();
+        SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+        final String token = sharedPreferences.getString("tokenID", "erro");
+
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(method, url, grupo,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                if (error.networkResponse==null) {
+                    VolleyLog.d("errolike", "Error: " + error.getMessage());
+                }else
+                    item.like();
+
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+
+        };
+        AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
+    }
+
+
+    private void takeLikeReportVolley(final Ocorrencia item) {
+
+        String groupID = "id";
+        String tag_json_obj = "json_obj_req";
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/social/removelike?markerid=" + item.getId();
+
+        JSONObject grupo = new JSONObject();
+        SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+        final String token = sharedPreferences.getString("tokenID", "erro");
+
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.DELETE, url, grupo,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                item.like();
+                VolleyLog.d("erroJoingrupo", "Error: " + error.getMessage());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+
+        };
+        AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
+    }
+
+
 }

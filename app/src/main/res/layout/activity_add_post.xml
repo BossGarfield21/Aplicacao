@@ -5,10 +5,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
+    android:id="@+id/linearAddPost"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".AddPostActivity">
+
     <include
         android:id="@+id/include"
         layout="@layout/app_bar_settings"
@@ -26,7 +28,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:context=".AddPostActivity">
-
 
 
             <android.support.design.widget.TextInputLayout
@@ -47,6 +48,28 @@
                     android:hint="Escrever publicação..."/>
             </android.support.design.widget.TextInputLayout>
 
+            <RelativeLayout
+                android:id="@+id/relativeAddPost"
+                android:layout_width="match_parent"
+                android:layout_height="171dp"
+                android:layout_marginEnd="@dimen/activity_horizontal_margin"
+                android:layout_marginStart="@dimen/activity_horizontal_margin"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textInputLayout">
+
+            <ImageButton
+                android:id="@+id/imageButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:srcCompat="@drawable/ic_menu_camera"/>
+
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+            </RelativeLayout>
+
             <Button
                 android:id="@+id/buttonCriarPost"
                 android:layout_width="131dp"
@@ -54,7 +77,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:background="@drawable/buttonshape"
                 android:paddingEnd="16dp"
                 android:paddingStart="16dp"
@@ -63,8 +86,9 @@
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.502"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textInputLayout"/>
+                app:layout_constraintTop_toBottomOf="@+id/relativeAddPost"/>
 
         </android.support.constraint.ConstraintLayout>
 

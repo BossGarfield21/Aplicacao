@@ -47,7 +47,7 @@ public class ComentariosActivity extends AppCompatActivity {
                     Calendar calendar= Calendar.getInstance();
                     SimpleDateFormat mdformat = new SimpleDateFormat("HH:mm");
                     Comentario com = new Comentario(comentario,
-                            preferences.getString("username", "desconhecido"),mdformat.format(calendar.getTime()),1);
+                            preferences.getString("username", "desconhecido"),comentario,"", 0, 1);
                     comentarios.add(com);
                     mMessageAdapter.notifyDataSetChanged();
                     View v = getCurrentFocus();
@@ -65,9 +65,9 @@ public class ComentariosActivity extends AppCompatActivity {
         });
 
         comentarios = new ArrayList<>();
-        comentarios.add(new Comentario("tao isso ja ta limpo?", "bombeirotuga", "03:49", 1));
-        comentarios.add(new Comentario("nepia puto", "macambuzio", "05:29", 2));
-        comentarios.add(new Comentario("chama os bombeiros", "bombeirotuga", "17:22", 1));
+        comentarios.add(new Comentario("tao isso ja ta limpo?", "bombeirotuga", "tao isso ja ta limpo?", "", 2, 1));
+        comentarios.add(new Comentario("nepia puto", "macambuzio", "05:29", "", 1, 2));
+        comentarios.add(new Comentario("chama os bombeiros", "bombeirotuga", "chama os bombeiros", "", 2, 1));
 
         mMessageRecycler = (RecyclerView) findViewById(R.id.reyclerview_message_list);
         mMessageAdapter = new MyComentariosRecyclerViewAdapter(this, comentarios);

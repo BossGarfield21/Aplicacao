@@ -61,7 +61,9 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -94,8 +96,9 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
     private boolean isImage = false;
     byte[] imageBytes;
     String mCurrentPhotoPath;
-    ConstraintLayout constraintLayout;
+    private ConstraintLayout constraintLayout;
     static final int REQUEST_TAKE_PHOTO = 1;
+    static final int PICK_IMAGE = 3;
     private String tipo = "";
 
 
@@ -166,32 +169,7 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!isImage) {
-                    //Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    //startActivityForResult(intent, 0);
-
-                    dispatchTakePictureIntent();
-                } else {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(CriarOcorrenciaActivity.this);
-                    builder.setTitle("Outra imagem")
-                            .setCancelable(true)
-                            .setMessage("Tem a certeza de que quer tirar outra foto?\n" +
-                                    "A foto tirada anteriormente será perdida")
-                            .setPositiveButton("Tirar outra", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    imageButton.setVisibility(View.GONE);
-                                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                                    startActivityForResult(intent, 0);
-                                }
-                            })
-                            .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    dialogInterface.dismiss();
-                                }
-                            });
-                    builder.create().show();
-                }
+                choosePicture();
             }
         });
     }
@@ -294,26 +272,40 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
                         .setAction("Tirar outra fotografia", new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                dispatchTakePictureIntent();
+                                choosePicture();
                             }
                         });
 
                 snackbar.show();
 
             } else {
-                imageButton.setVisibility(View.VISIBLE);
+                if (!isImage)
+                    imageButton.setVisibility(View.VISIBLE);
+                else {
+                    Snackbar snackbar = Snackbar
+                            .make(constraintLayout, "Fotografia captada", Snackbar.LENGTH_INDEFINITE)
+                            .setAction("Tirar outra fotografia", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    choosePicture();
+                                    //dispatchTakePictureIntent();
+                                }
+                            });
+
+                    snackbar.show();
+                }
 
             }
-        } else if (requestCode == 2)
+        } else if (requestCode == 2) {
             if (resultCode == RESULT_OK) {
 
                 /**String activity = null;
-                if (data != null)
-                    activity = data.getStringExtra("activity");
-                if (activity != null)
-                    tipo = data.getStringExtra("type");
+                 if (data != null)
+                 activity = data.getStringExtra("activity");
+                 if (activity != null)
+                 tipo = data.getStringExtra("type");
 
-                Log.e("TIPO", tipo);*/
+                 Log.e("TIPO", tipo);*/
                 Intent intent = getIntent();
                 String actividade = data.getStringExtra("activity");
                 if (actividade != null)
@@ -321,6 +313,202 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
                 Log.i("CHEHCU TIPO", tipo);
 
             }
+        } else if (requestCode == 3){
+            if (resultCode == RESULT_OK) {
+                try {
+                    InputStream inputStream = this.getContentResolver().openInputStream(data.getData());
+                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                    imageView.setImageBitmap(bitmap);
+
+                    isImage = true;
+                    ByteArrayOutputStream bao = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 70, bao);
+                    imageBytes = bao.toByteArray();
+
+                    Snackbar snackbar = Snackbar
+                            .make(constraintLayout, "Fotografia escolhida", Snackbar.LENGTH_INDEFINITE)
+                            .setAction("Escolher outra fotografia", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    choosePicture();
+                                    //dispatchTakePictureIntent();
+                                }
+                            });
+
+                    snackbar.show();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                if (!isImage)
+                    imageButton.setVisibility(View.VISIBLE);
+                else {
+                    Snackbar snackbar = Snackbar
+                            .make(constraintLayout, "Fotografia escolhida", Snackbar.LENGTH_INDEFINITE)
+                            .setAction("Escolher outra fotografia", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    choosePicture();
+                                    //dispatchTakePictureIntent();
+                                }
+                            });
+
+                    snackbar.show();
+                }
+
+            }
+        }else{
+            Snackbar snackbar = Snackbar
+                    .make(constraintLayout, "Fotografia escolhida", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Escolher outra fotografia", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            choosePicture();
+                            //dispatchTakePictureIntent();
+                        }
+                    });
+
+            snackbar.show();
+        }
+    }
+
+    private void choosePicture() {
+
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(CriarOcorrenciaActivity.this);
+        builder.setTitle("Escolher foto")
+                .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialogInterface) {
+                        if (isImage) {
+                            Snackbar snackbar = Snackbar
+                                    .make(constraintLayout, "Fotografia escolhida", Snackbar.LENGTH_INDEFINITE)
+                                    .setAction("Escolher outra fotografia", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            choosePicture();
+                                            //dispatchTakePictureIntent();
+                                        }
+                                    });
+
+                            snackbar.show();
+                        }
+                    }
+                })
+                .setCancelable(true)
+                .setMessage("Tirar foto, ou escolher da galeria?")
+                .setPositiveButton("Tirar foto", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        takePic();
+                    }
+                })
+                .setNegativeButton("Escolher da galeria", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        chooseGalery();
+                    }
+                });
+        builder.create().show();
+    }
+
+    private void chooseGalery() {
+
+        if (!isImage) {
+            //Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            //startActivityForResult(intent, 0);
+
+            Intent intent = new Intent();
+            intent.setType("image/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(CriarOcorrenciaActivity.this);
+            builder.setTitle("Outra imagem")
+                    .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialogInterface) {
+                            if (isImage) {
+                                Snackbar snackbar = Snackbar
+                                        .make(constraintLayout, "Fotografia escolhida", Snackbar.LENGTH_INDEFINITE)
+                                        .setAction("Escolher outra fotografia", new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+                                                choosePicture();
+                                                //dispatchTakePictureIntent();
+                                            }
+                                        });
+
+                                snackbar.show();
+                            }
+                        }
+                    })
+                    .setCancelable(true)
+                    .setMessage("Tem a certeza de que quer escolher outra foto?\n" +
+                            "A foto tirada anteriormente será perdida")
+                    .setPositiveButton("Escolher outra", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            Intent intent = new Intent();
+                            intent.setType("image/*");
+                            intent.setAction(Intent.ACTION_GET_CONTENT);
+                            startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
+                        }
+                    })
+                    .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    });
+            builder.create().show();
+        }
+    }
+
+    private void takePic() {
+
+        if (!isImage) {
+            //Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            //startActivityForResult(intent, 0);
+
+            dispatchTakePictureIntent();
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(CriarOcorrenciaActivity.this);
+            builder.setTitle("Outra imagem")
+                    .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialogInterface) {
+                            if (isImage) {
+                                Snackbar snackbar = Snackbar
+                                        .make(constraintLayout, "Fotografia escolhida", Snackbar.LENGTH_INDEFINITE)
+                                        .setAction("Escolher outra fotografia", new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+                                                choosePicture();
+                                                //dispatchTakePictureIntent();
+                                            }
+                                        });
+
+                                snackbar.show();
+                            }
+                        }
+                    })
+                    .setCancelable(true)
+                    .setMessage("Tem a certeza de que quer tirar outra foto?\n" +
+                            "A foto tirada anteriormente será perdida")
+                    .setPositiveButton("Tirar outra", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            imageButton.setVisibility(View.GONE);
+                            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                            startActivityForResult(intent, 0);
+                        }
+                    })
+                    .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    });
+            builder.create().show();
+        }
     }
 
     @Override
@@ -422,8 +610,11 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
             // form field with an error.
             focusView.requestFocus();
         } else {
-            enviarImagemVolley(imageBytes);
-            enviarOcorrenciaVolley(titulo, descricao);
+            Random r = new Random();
+            int number = r.nextInt();
+            String id = Integer.toString(number);
+            enviarImagemVolley(imageBytes, id);
+            enviarOcorrenciaVolley(titulo, descricao, id);
             //receberImagemVolley();
             //mReportTask = new ReportTask(titulo, descricao);
             //mReportTask.execute((Void) null);
@@ -460,10 +651,8 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
      * <p>
      * }
      */
-    private void enviarImagemVolley(final byte[] imageBytes) {
-        Random r = new Random();
-        int number = r.nextInt();
-        String id = Integer.toString(number);
+    private void enviarImagemVolley(final byte[] imageBytes, String id) {
+
         String tag_json_obj = "octect_request";
         String url = "https://novaleaf-197719.appspot.com/gcs/novaleaf-197719.appspot.com/" + id;
 
@@ -497,7 +686,7 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
     }
 
 
-    private void enviarOcorrenciaVolley(final String titulo, final String descricao) {
+    private void enviarOcorrenciaVolley(final String titulo, final String descricao, String id) {
         String tag_json_obj = "json_obj_req";
         String url = "https://novaleaf-197719.appspot.com/rest/withtoken/mapsupport/addmarker";
 
@@ -510,6 +699,7 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
             marker.put("owner", sharedPreferences.getString("username", "erro"));
             marker.put("description", descricao);
             marker.put("type", tipo);
+            marker.put("image_uri", "https://novaleaf-197719.appspot.com/gcs/novaleaf-197719.appspot.com/" + id);
             JSONObject coordinates = new JSONObject();
             coordinates.put("latitude", latitude);
             coordinates.put("longitude", longitude);

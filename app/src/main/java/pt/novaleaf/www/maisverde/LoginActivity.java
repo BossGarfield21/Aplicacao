@@ -90,6 +90,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private ImageView mLogoView;
     private Context mContext;
 
+    public static SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,6 +99,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         // Set up the login form.
         mUsernameView = (AutoCompleteTextView) findViewById(R.id.username);
         populateAutoComplete();
+        sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -251,7 +254,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             pDialog.setMessage("A Carregar...");
             pDialog.setCanceledOnTouchOutside(false);
             pDialog.show();
-            final SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
+            final SharedPreferences.Editor editor = sharedPreferences.edit();
 
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject,
                     new Response.Listener<JSONObject>() {
@@ -288,6 +291,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         //jsonResponse.put("headers", new JSONObject(response.headers));
                         Log.d("YA BINA", jsonResponse.getString("Authorization"));
                         editor.putString("tokenID", jsonResponse.getString("Authorization"));
+                        editor.commit();
                         return Response.success(jsonResponse,
                                 HttpHeaderParser.parseCacheHeaders(response));
                     } catch (UnsupportedEncodingException e) {

@@ -6,28 +6,41 @@ package pt.novaleaf.www.maisverde;
 
 public class Comentario {
 
-    private String mensagem;
-    private String autor;
-    private String tempo;
+    public String id, author, message;
+    public String image;
+    public long creation_date;
     private int origem;
 
-    public Comentario(String mensagem, String autor, String tempo, int origem){
-        this.mensagem = mensagem;
-        this.autor = autor;
-        this.tempo =tempo;
+
+    public Comentario(String id, String author, String message, String image, long creation_date, int origem) {
+
+        this.id = id;
+        this.author = author;
+        this.message = message;
+        this.image = image;
+        this.creation_date = creation_date;
         this.origem = origem;
+
     }
 
-    public String getMensagem() {
-        return mensagem;
+    public String getMessage() {
+        return message;
     }
 
-    public String getAutor() {
-        return autor;
+    public String getImage() {
+        return image;
     }
 
-    public String getTempo() {
-        return tempo;
+    public String getAuthor() {
+        return author;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public long getCreation_date() {
+        return creation_date;
     }
 
     public int getOrigem() {
