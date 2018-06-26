@@ -30,6 +30,7 @@ import com.android.volley.VolleyLog;
 import pt.novaleaf.www.maisverde.OcorrenciaFragment.OnListFragmentInteractionListener;
 import utils.ByteRequest;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -45,7 +46,7 @@ import static pt.novaleaf.www.maisverde.LoginActivity.sharedPreferences;
  * specified {@link OnListFragmentInteractionListener}.
  * Adaptador para o recycler view
  */
-public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcorrenciaRecyclerViewAdapter.ViewHolder> {
+public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcorrenciaRecyclerViewAdapter.ViewHolder> implements Serializable {
 
     private final List<Ocorrencia> mValues;
     private final OnListFragmentInteractionListener mListener;
@@ -175,27 +176,18 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
             holder.time.setText(data);
         }
 
-        if (mValues.get(position).getImage_uri() != null) {
-            receberImagemVolley(holder, position);
+        if (mValues.get(position).getImage_uri() != null && mValues.get(position).getBitmap() != null) {
+            holder.mImageReport.setImageBitmap(BitmapFactory.decodeByteArray(mValues.get(position).getBitmap(),
+                    0, mValues.get(position).getBitmap().length));
+            //receberImagemVolley(holder, position);
         } else {
             holder.mImageReport.setAdjustViewBounds(false);
-            String tipo = mValues.get(position).getType();
-            if (tipo.equals("bonfire")) {
 
-                holder.mImageReport.setImageResource(R.mipmap.ic_bonfire_foreground);
-            } else if (tipo.equals("fire")) {
-                holder.mImageReport.setImageResource(R.mipmap.ic_fire_foreground);
+                holder.mImageReport.setImageResource(mValues.get(position).getImageID());
 
-            } else if (tipo.equals("trash")) {
-                holder.mImageReport.setImageResource(R.mipmap.ic_garbage_foreground);
-
-            } else {
-                holder.mImageReport.setImageResource(R.mipmap.ic_grass_foreground);
-
-            }
         }
 
-        holder.mRisco.setText(mValues.get(position).getRisk()+"");
+        holder.mRisco.setText(mValues.get(position).getRisk() + "");
 
 
     }
@@ -205,7 +197,7 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
         return mValues.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements Serializable {
         public ImageView mImageReport;
         public TextView titulo;
         public TextView username;
@@ -236,7 +228,7 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
         }
     }
 
-    private void receberImagemVolley(final ViewHolder holder, int position) {
+    private void receberImagemVolley(final ViewHolder holder, final int position) {
         String tag_json_obj = "octect_request";
         Log.d("imgeuri", mValues.get(position).getImage_uri());
         String url = mValues.get(position).getImage_uri();
@@ -248,6 +240,8 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
             @Override
             public void onResponse(byte[] response) {
                 Bitmap bitmap = BitmapFactory.decodeByteArray(response, 0, response.length);
+                mValues.get(position).setBitmap(response);
+                notifyDataSetChanged();
                 holder.mImageReport.setImageBitmap(bitmap);
             }
         }, new Response.ErrorListener() {

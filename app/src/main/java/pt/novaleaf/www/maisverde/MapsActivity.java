@@ -34,6 +34,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -46,22 +52,30 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class MapsActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
+import static pt.novaleaf.www.maisverde.OcorrenciaFragment.listOcorrencias;
+import static pt.novaleaf.www.maisverde.OcorrenciaFragment.myOcorrenciaRecyclerViewAdapter;
 
-    private ClusterManager<MyItem> mClusterManager;
+public class MapsActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, Serializable {
+
+    private ClusterManager<Ocorrencia> mClusterManager;
     private GoogleMap mMap;
     LocationManager locationManager;
     LocationListener locationListener;
     Location lastKnownLocation;
     getMarkersTask mMarkersTask = null;
     public static Map<LatLng, String> markers = new HashMap<>();
+    String cursorMarkers = "";
+    boolean isFinishedMarkers = false;
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -159,7 +173,21 @@ public class MapsActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getMarkers();
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+
+        if (savedInstanceState == null) {
+            // First incarnation of this activity.
+            mapFragment.setRetainInstance(true);
+            mapFragment.getMapAsync(this);
+        } else {
+            // Reincarnated activity. The obtained map is the same map instance in the previous
+            // activity life cycle. There is no need to reinitialize it.
+            mapFragment.getMapAsync(this);
+        }
+
+
+        //getMarkers();
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -175,10 +203,9 @@ public class MapsActivity extends AppCompatActivity
 
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-
+        //SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+          //      .findFragmentById(R.id.map);
+        //mapFragment.getMapAsync(this);
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -191,6 +218,7 @@ public class MapsActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().getItem(2).setChecked(true);
     }
+
 
 
     @Override
@@ -222,7 +250,7 @@ public class MapsActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_help) {
             return true;
-        } else if(id == R.id.action_logout){
+        } else if (id == R.id.action_logout) {
             //TODO: revogar token
             final AlertDialog.Builder alert = new AlertDialog.Builder(MapsActivity.this);
             alert.setTitle("Terminar sessão");
@@ -249,7 +277,7 @@ public class MapsActivity extends AppCompatActivity
 
             AlertDialog alertDialog = alert.create();
             alertDialog.show();
-        } else if(id == R.id.action_acerca){
+        } else if (id == R.id.action_acerca) {
             Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://anovaleaf.ddns.net"));
             startActivity(i);
         }
@@ -269,11 +297,11 @@ public class MapsActivity extends AppCompatActivity
             startActivity(i);
             finish();
 
-        } else if(id == R.id.nav_adicionar_report){
+        } else if (id == R.id.nav_adicionar_report) {
 
             novaOcorrencia();
 
-        }else if (id == R.id.nav_area_pessoal) {
+        } else if (id == R.id.nav_area_pessoal) {
             Intent i = new Intent(MapsActivity.this, AlterarDadosActivity.class);
             startActivity(i);
             finish();
@@ -300,13 +328,25 @@ public class MapsActivity extends AppCompatActivity
         // Position the map.
         // Initialize the manager with the context and the map.
         // (Activity extends context, so we can pass 'this' in the constructor.)
-        mClusterManager = new ClusterManager<MyItem>(this, mMap);
+        mClusterManager = new ClusterManager<Ocorrencia>(this, mMap);
 
         // Point the map's listeners at the listeners implemented by the cluster
         // manager.
         mMap.setOnCameraIdleListener(mClusterManager);
         mMap.setOnMarkerClickListener(mClusterManager);
 
+
+
+        mClusterManager.setOnClusterItemInfoWindowClickListener(new ClusterManager.OnClusterItemInfoWindowClickListener<Ocorrencia>() {
+            @Override
+            public void onClusterItemInfoWindowClick(Ocorrencia ocorrencia) {
+                Intent intent = new Intent(MapsActivity.this, OcorrenciaActivity.class);
+                intent.putExtra("Ocorrencia", (Serializable) ocorrencia);
+                startActivity(intent);
+            }
+        });
+
+        mMap.setOnInfoWindowClickListener(mClusterManager);
         // Add cluster items (markers) to the cluster manager.
         addItems();
     }
@@ -315,14 +355,12 @@ public class MapsActivity extends AppCompatActivity
 
 
         // Add ten cluster items in close proximity, for purposes of this example.
-        for (LatLng latLng : markers.keySet()) {
-
-            MyItem offsetItem = new MyItem(latLng.latitude, latLng.longitude);
-            mClusterManager.addItem(offsetItem);
+        for (Ocorrencia ocorrencia : OcorrenciaFragment.listOcorrencias) {
+            mClusterManager.addItem(ocorrencia);
         }
     }
 
-    public void novaOcorrencia(){
+    public void novaOcorrencia() {
         AlertDialog.Builder alert = new AlertDialog.Builder(MapsActivity.this);
         alert.setTitle("Criar report");
         alert
@@ -359,75 +397,75 @@ public class MapsActivity extends AppCompatActivity
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
 
-        mMap.getUiSettings().setMapToolbarEnabled(false);
+        if (mMap==null) {
+            mMap = googleMap;
 
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
+            mMap.getUiSettings().setMapToolbarEnabled(false);
 
-
-
-            }
-
-            @Override
-            public void onStatusChanged(String s, int i, Bundle bundle) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String s) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String s) {
-
-            }
-        };
+            locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+            locationListener = new LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
 
 
+                }
 
-        if (Build.VERSION.SDK_INT < 23) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10, 30, locationListener);
+                @Override
+                public void onStatusChanged(String s, int i, Bundle bundle) {
 
-            else {
-                Intent myIntent = new Intent(Settings.ACTION_SETTINGS);
-                startActivity(myIntent);
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                }
 
-            }
-        } else {
+                @Override
+                public void onProviderEnabled(String s) {
 
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                }
 
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10, 30, locationListener);
+                @Override
+                public void onProviderDisabled(String s) {
 
-                lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                }
+            };
 
-                centerMapOnLocation(lastKnownLocation);
 
+            if (Build.VERSION.SDK_INT < 23) {
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10, 30, locationListener);
+
+                else {
+                    Intent myIntent = new Intent(Settings.ACTION_SETTINGS);
+                    startActivity(myIntent);
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+
+                }
             } else {
 
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10, 30, locationListener);
+
+                    lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+                    centerMapOnLocation(lastKnownLocation);
+
+                } else {
+
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+
+                }
+
 
             }
 
+            startMap();
+
+            setUpClusterer();
 
         }
-
-        startMap();
-
-        setUpClusterer();
-
-
     }
 
     //TODO: ver que marcadores estao nesta area
-    public void getMarkers(){
+    public void getMarkers() {
 
 
         mMarkersTask = new getMarkersTask();
@@ -435,37 +473,183 @@ public class MapsActivity extends AppCompatActivity
 
     }
 
-    public void updateMarkers(LatLng botLeft, LatLng topRight){
+    public void updateMarkers(LatLng botLeft, LatLng topRight) {
 
         List<LatLng> list = new ArrayList<>();
-        for (LatLng latLng : markers.keySet()){
-            if(latLng.latitude>=botLeft.latitude && latLng.longitude>=botLeft.longitude
-                    && latLng.latitude<=topRight.latitude && latLng.longitude <= topRight.longitude) {
+        for (LatLng latLng : markers.keySet()) {
+            if (latLng.latitude >= botLeft.latitude && latLng.longitude >= botLeft.longitude
+                    && latLng.latitude <= topRight.latitude && latLng.longitude <= topRight.longitude) {
                 mMap.addMarker(new MarkerOptions().position(latLng).title(markers.get(latLng)));
-                list.add(latLng);}
+                list.add(latLng);
+            }
         }
         markers.keySet().removeAll(list);
 
     }
 
+    private void volleyGetMarkers() {
+
+        String tag_json_obj = "json_request";
+        String url;
+        if (cursorMarkers.equals(""))
+            url = "https://novaleaf-197719.appspot.com/rest/withtoken/social/feed/?cursor=startquery";
+        else
+            url = "https://novaleaf-197719.appspot.com/rest/withtoken/social/feed/?cursor=" + cursorMarkers;
+
+        Log.d("ché bate só", url);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+        JSONObject reports = new JSONObject();
+        final String token = sharedPreferences.getString("tokenID", "erro");
+
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, reports,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            Log.d("nabo", cursorMarkers + "pixa");
+                            cursorMarkers = response.getString("cursor");
+                            Log.d("nabo", cursorMarkers);
+
+
+                            JSONArray list = response.getJSONArray("list");
+                            if (!isFinishedMarkers) {
+                                isFinishedMarkers = response.getBoolean("isFinished");
+                                Log.d("ACABOU???", String.valueOf(isFinishedMarkers));
+                                for (int i = 0; i < list.length(); i++) {
+
+                                    String id = null;
+                                    String titulo = null;
+                                    String descricao = null;
+                                    String owner = null;
+                                    String type = null;
+                                    boolean hasLiked = false;
+                                    String image_uri = null;
+                                    List<String> likers = new ArrayList<>();
+                                    long creationDate = 0;
+                                    String district = null;
+                                    double risk = 0;
+                                    long likes = 0;
+                                    long status = 0;
+                                    long latitude = 0;
+                                    long longitude = 0;
+                                    Map<String, Comentario> comentarios = new HashMap<>();
+
+                                    JSONObject ocorrencia = list.getJSONObject(i);
+                                    if (ocorrencia.has("id"))
+                                        id = ocorrencia.getString("id");
+                                    if (ocorrencia.has("name"))
+                                        titulo = ocorrencia.getString("name");
+                                    if (ocorrencia.has("description"))
+                                        descricao = ocorrencia.getString("description");
+                                    if (ocorrencia.has("owner"))
+                                        owner = ocorrencia.getString("owner");
+                                    if (ocorrencia.has("risk"))
+                                        risk = ocorrencia.getInt("risk");
+                                    if (ocorrencia.has("likes"))
+                                        likes = ocorrencia.getInt("likes");
+                                    if (ocorrencia.has("status"))
+                                        status = ocorrencia.getLong("status");
+                                    if (ocorrencia.has("type"))
+                                        type = ocorrencia.getString("type");
+                                    JSONObject image = null;
+                                    if (ocorrencia.has("image_uri")) {
+                                        image = ocorrencia.getJSONObject("image_uri");
+                                        if (image.has("value"))
+                                            image_uri = image.getString("value");
+                                    }
+
+                                    if (ocorrencia.has("hasLike"))
+                                        hasLiked = ocorrencia.getBoolean("hasLike");
+                                    if (ocorrencia.has("creationDate"))
+                                        creationDate = ocorrencia.getLong("creationDate");
+
+                                    Log.d("HASLIKE???", hasLiked + "FDPDPDPD");
+                                    if (ocorrencia.has("comments")) {
+                                        JSONObject coms = ocorrencia.getJSONObject("comments");
+
+                                        Iterator<String> comentario = coms.keys();
+                                        while (comentario.hasNext()) {
+                                            String comentID = comentario.next();
+                                            int origem = 1;
+                                            JSONObject com = coms.getJSONObject(comentID);
+                                            if (com.getString("author").equals(
+                                                    getSharedPreferences("Prefs", MODE_PRIVATE).getString("username", "")))
+                                                origem = 2;
+                                            else origem = 1;
+                                            comentarios.put(comentID, new Comentario(comentID, com.getString("author"),
+                                                    com.getString("message"), com.getString("image"),
+                                                    com.getLong("creationDate"), origem));
+
+                                        }
+                                    }
+                                    if (ocorrencia.has("coordinates")) {
+                                        JSONObject coordinates = ocorrencia.getJSONObject("coordinates");
+                                        latitude = coordinates.getLong("latitude");
+                                        longitude = coordinates.getLong("longitude");
+                                    }
+
+                                    if (ocorrencia.has("likers")) {
+                                        JSONArray lik = ocorrencia.getJSONArray("likers");
+                                        for (int a = 0; a < lik.length(); a++)
+                                            likers.add(lik.getString(a));
+                                    }
+
+
+                                }
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+
+                }, new Response.ErrorListener()
+
+        {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("erroLOGIN", "Error: " + error.getMessage());
+            }
+        })
+
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+        };
+
+        AppController.getInstance().
+
+                addToRequestQueue(jsonObjectRequest);
+
+
+    }
 
 
     public class getMarkersTask extends AsyncTask<Void, Void, String> {
 
 
         /**
-        private final Double mLatBotLeft;
-        private final Double mLonBotLeft;
-        private final Double mLatTopRight;
-        private final Double mLonTopRight;
+         * private final Double mLatBotLeft;
+         * private final Double mLonBotLeft;
+         * private final Double mLatTopRight;
+         * private final Double mLonTopRight;
          */
 
         getMarkersTask() {
             /**
-            mLonBotLeft = botLeft.longitude;
-            mLatBotLeft = botLeft.latitude;
-            mLonTopRight = topRight.longitude;
-            mLatTopRight = topRight.latitude;*/
+             mLonBotLeft = botLeft.longitude;
+             mLatBotLeft = botLeft.latitude;
+             mLonTopRight = topRight.longitude;
+             mLatTopRight = topRight.latitude;*/
         }
 
         /**
@@ -526,7 +710,7 @@ public class MapsActivity extends AppCompatActivity
 
                     SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
 
-                    for (int i = 0; i< token.length(); i++){
+                    for (int i = 0; i < token.length(); i++) {
                         JSONObject marker = token.getJSONObject(i);
                         Double lat = marker.getJSONObject("coordinates").getDouble("latitude");
                         Double lon = marker.getJSONObject("coordinates").getDouble("longitude");
@@ -534,13 +718,13 @@ public class MapsActivity extends AppCompatActivity
                         String titulo = marker.getString("name");
                         String descricao = marker.getString("description");
 
-                        MyItem offsetItem = new MyItem(lat, lon, titulo, descricao);
-                        mClusterManager.addItem(offsetItem);
+                        //MyItem offsetItem = new MyItem(lat, lon, titulo, descricao);
+                        //mClusterManager.addItem(offsetItem);
 
                         //LatLng position = new LatLng(lat, lon);
                         //if (!markers.keySet().contains(position)) {
-                          //  markers.put(position, titulo);
-                       // }
+                        //  markers.put(position, titulo);
+                        // }
 
                     }
 
@@ -561,7 +745,7 @@ public class MapsActivity extends AppCompatActivity
     }
 
 
-    public void startMap(){
+    public void startMap() {
         //lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
 
@@ -611,7 +795,6 @@ public class MapsActivity extends AppCompatActivity
             }
         });
     }
-
 
 
 }

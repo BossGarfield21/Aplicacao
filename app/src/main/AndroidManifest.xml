@@ -87,6 +87,7 @@
 
         <activity
             android:name=".MapsActivity"
+            android:configChanges="orientation|screenSize"
             android:label="Mapa"/>
         <activity
             android:name=".SettingsPessoaisActivity"

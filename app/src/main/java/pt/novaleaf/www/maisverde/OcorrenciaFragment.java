@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -124,7 +125,7 @@ public class OcorrenciaFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnListFragmentInteractionListener {
+    public interface OnListFragmentInteractionListener extends Serializable {
         // TODO: Update argument type and name
         void onLikeInteraction(Ocorrencia item);
 

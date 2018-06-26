@@ -1,7 +1,13 @@
 package pt.novaleaf.www.maisverde;
 
+import android.graphics.Bitmap;
+
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.clustering.ClusterItem;
+
 import org.w3c.dom.Comment;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -11,7 +17,7 @@ import java.util.Map;
  * Created by Hugo Mochão on 27/04/2018.
  */
 
-public class Ocorrencia {
+public class Ocorrencia implements Serializable, ClusterItem{
 
     boolean liked;
     boolean favorito;
@@ -33,13 +39,13 @@ public class Ocorrencia {
     public String county;
     public String parish;
     public String type;
+    private byte bitmap[];
+    private int imageID;
 
 
     public static final List<Ocorrencia> items = new ArrayList<>();
 
-    public Ocorrencia(){
 
-    }
 
     public Ocorrencia(String name, double risk, String hora, String id, String description,
                       String owner, List<String> likers, Long status,
@@ -63,6 +69,25 @@ public class Ocorrencia {
         this.image_uri = image_uri;
         this.comments = comments;
         this.creationDate = creationDate;
+        bitmap = null;
+        imageID = 0;
+
+    }
+
+    public int getImageID() {
+        return imageID;
+    }
+
+    public void setImageID(int imageID) {
+        this.imageID = imageID;
+    }
+
+    public byte[] getBitmap() {
+        return bitmap;
+    }
+
+    public void setBitmap(byte[] bitmap) {
+        this.bitmap = bitmap;
     }
 
     public String getName(){
@@ -149,5 +174,26 @@ public class Ocorrencia {
 
     public String getDistrict() {
         return district;
+    }
+
+    @Override
+    public LatLng getPosition() {
+        return new LatLng(latitude, longitude);
+    }
+
+    @Override
+    public String getTitle() {
+        return name;
+    }
+
+    @Override
+    public String getSnippet() {
+        return description;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        Ocorrencia ocorrencia = (Ocorrencia) obj;
+        return this.getId().equals(ocorrencia.getId());
     }
 }

@@ -3,6 +3,8 @@ package pt.novaleaf.www.maisverde;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -41,8 +43,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import utils.ByteRequest;
+
 import static pt.novaleaf.www.maisverde.EventoFragment.listEventos;
 import static pt.novaleaf.www.maisverde.EventoFragment.myEventoRecyclerViewAdapter;
+import static pt.novaleaf.www.maisverde.LoginActivity.sharedPreferences;
 import static pt.novaleaf.www.maisverde.OcorrenciaFragment.listOcorrencias;
 import static pt.novaleaf.www.maisverde.OcorrenciaFragment.myOcorrenciaRecyclerViewAdapter;
 
@@ -54,7 +59,7 @@ import static pt.novaleaf.www.maisverde.OcorrenciaFragment.myOcorrenciaRecyclerV
 
 public class FeedActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OcorrenciaFragment.OnListFragmentInteractionListener, EventoFragment.OnListFragmentInteractionListener,
-        Serializable{
+        Serializable {
 
     private CardView cardView;
     NavigationView navigationView;
@@ -307,8 +312,6 @@ public class FeedActivity extends AppCompatActivity
     }
 
 
-
-
     @Override
     public void onCommentInteraction(Ocorrencia item) {
         //Toast.makeText(FeedActivity.this, "IR PARA A PAGINA DOS COMENTARIOS", Toast.LENGTH_SHORT).show();
@@ -438,7 +441,9 @@ public class FeedActivity extends AppCompatActivity
                                     if (ocorrencia.has("creationDate"))
                                         creationDate = ocorrencia.getLong("creationDate");
 
-                                    Log.d("HASLIKE???", hasLiked+"FDPDPDPD");
+
+
+                                    Log.d("HASLIKE???", hasLiked + "FDPDPDPD");
                                     if (ocorrencia.has("comments")) {
                                         JSONObject coms = ocorrencia.getJSONObject("comments");
 
@@ -473,7 +478,24 @@ public class FeedActivity extends AppCompatActivity
                                     Ocorrencia ocorrencia1 = new Ocorrencia(titulo, risk, "23:12", id,
                                             descricao, owner, likers, status, latitude, longitude, likes, type, image_uri,
                                             comentarios, creationDate, district, hasLiked);
-                                    listOcorrencias.add(ocorrencia1);
+                                    if (ocorrencia1.getImage_uri() != null)
+                                        receberImagemVolley(ocorrencia1);
+
+                                        String tipo = ocorrencia1.getType();
+                                        if (tipo.equals("bonfire")) {
+                                            ocorrencia1.setImageID(R.mipmap.ic_bonfire_foreground);
+                                        } else if (tipo.equals("fire")) {
+                                            ocorrencia1.setImageID(R.mipmap.ic_fire_foreground);
+                                        } else if (tipo.equals("trash")) {
+                                            ocorrencia1.setImageID(R.mipmap.ic_garbage_foreground);
+                                        } else {
+                                            ocorrencia1.setImageID(R.mipmap.ic_grass_foreground);
+                                        }
+
+
+
+                                    if (!listOcorrencias.contains(ocorrencia1))
+                                        listOcorrencias.add(ocorrencia1);
                                     Log.d("ID", id);
                                     Log.d("titulo", titulo);
                                     Log.d("desc", descricao);
@@ -683,7 +705,7 @@ public class FeedActivity extends AppCompatActivity
     @Override
     public void onLikeInteraction(Ocorrencia item) {
 
-        Log.d("TAS LIKE???", item.isLiked()+" PUTA");
+        Log.d("TAS LIKE???", item.isLiked() + " PUTA");
 
         likeReportVolley(item, !item.isLiked());
         //item.like();
@@ -719,9 +741,9 @@ public class FeedActivity extends AppCompatActivity
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                if (error.networkResponse==null) {
+                if (error.networkResponse == null) {
                     VolleyLog.d("errolike", "Error: " + error.getMessage());
-                }else
+                } else
                     item.like();
 
             }
@@ -772,6 +794,37 @@ public class FeedActivity extends AppCompatActivity
 
         };
         AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
+    }
+
+    private void receberImagemVolley(final Ocorrencia item) {
+        String tag_json_obj = "octect_request";
+        String url = item.getImage_uri();
+
+
+        final String token = sharedPreferences.getString("tokenID", "erro");
+        ByteRequest stringRequest = new ByteRequest(Request.Method.GET, url, new Response.Listener<byte[]>() {
+
+            @Override
+            public void onResponse(byte[] response) {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(response, 0, response.length);
+                item.setBitmap(response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("erroIMAGEMocorrencia", "Error: " + error.getMessage());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+
+        };
+        AppController.getInstance().addToRequestQueue(stringRequest, tag_json_obj);
+
     }
 
 
