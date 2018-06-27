@@ -19,8 +19,8 @@
                                   <option name="values">
                                     <map>
                                       <entry key="assetType" value="IMAGE" />
-                                      <entry key="imageAsset" value="D:\Transferências\serradaarrabida.jpg" />
-                                      <entry key="outputName" value="Arrabida" />
+                                      <entry key="imageAsset" value="C:\Users\Hugo Mochão\Desktop\ic_newspaper_512.png" />
+                                      <entry key="outputName" value="ic_feed" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -32,8 +32,8 @@
                                   <option name="values">
                                     <map>
                                       <entry key="backgroundLayerName" value="ic_launcher_background" />
-                                      <entry key="foregroundImage" value="C:\Users\Hugo Mochão\Desktop\baseline_filter_list_white_24dp.png" />
-                                      <entry key="outputName" value="ic_filter" />
+                                      <entry key="foregroundImage" value="C:\Users\Hugo Mochão\Desktop\ic_newspaper_512.png" />
+                                      <entry key="outputName" value="ic_feed" />
                                       <entry key="previewDensity" value="MEDIUM" />
                                     </map>
                                   </option>
@@ -105,9 +105,10 @@
                         </option>
                         <option name="values">
                           <map>
+                            <entry key="assetSourceType" value="FILE" />
                             <entry key="color" value="ffffff" />
-                            <entry key="outputName" value="ic_add_white_24dp" />
-                            <entry key="sourceFile" value="C:\Users\Utilizador" />
+                            <entry key="outputName" value="ic_google_maps" />
+                            <entry key="sourceFile" value="C:\Users\Hugo Mochão\Desktop\icons8-google-maps.svg" />
                           </map>
                         </option>
                       </PersistentState>

@@ -45,7 +45,7 @@ import java.util.Map;
  */
 
 public class AlterarDadosActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener{
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     private String email;
     public static ArrayList<PerfilItem> arrayList;
@@ -99,7 +99,6 @@ public class AlterarDadosActivity extends AppCompatActivity
         navigationView.getMenu().getItem(4).setChecked(true);
 
 
-
         mRecyclerViewPerfil = (RecyclerView) findViewById(R.id.myList);
         email = sharedPreferences.getString("email", "erro");
 
@@ -123,8 +122,8 @@ public class AlterarDadosActivity extends AppCompatActivity
         float density = this.getResources().getDisplayMetrics().density;
 
         int actionBarHeight = 56;
-        int paddingPixel = (int)((actionBarHeight + 150) * density +0.5f);
-        Log.e("pixel", ""+paddingPixel + " tool " + actionBar.getHeight() + " " + constraintLayout.getHeight());
+        int paddingPixel = (int) ((actionBarHeight + 150) * density + 0.5f);
+        Log.e("pixel", "" + paddingPixel + " tool " + actionBar.getHeight() + " " + constraintLayout.getHeight());
         mRecyclerViewPerfil.setPadding(0, paddingPixel, 0, 0);
         mRecyclerViewPerfil.setAdapter(adapter);
         mRecyclerViewPerfil.addOnScrollListener(new HidingScrollListener() {
@@ -132,6 +131,7 @@ public class AlterarDadosActivity extends AppCompatActivity
             public void onHide() {
                 hideViews();
             }
+
             @Override
             public void onShow() {
                 showViews();
@@ -140,15 +140,14 @@ public class AlterarDadosActivity extends AppCompatActivity
     }
 
     private void hideViews() {
-        constraintLayout.animate().translationY(-constraintLayout.getHeight()-toolbar.getHeight()).setInterpolator(new AccelerateInterpolator(2));
+        constraintLayout.animate().translationY(-constraintLayout.getHeight() - toolbar.getHeight()).setInterpolator(new AccelerateInterpolator(2));
 
     }
 
     private void showViews() {
         constraintLayout.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2));
     }
-       //
-
+    //
 
 
     @Override
@@ -214,7 +213,7 @@ public class AlterarDadosActivity extends AppCompatActivity
             changed = false;
             attemptSendData();
         }
-        navigationView.getMenu().getItem(0).setChecked(true);
+        //navigationView.getMenu().getItem(0).setChecked(true);
         finish();
     }
 
@@ -269,7 +268,7 @@ public class AlterarDadosActivity extends AppCompatActivity
                     changed = true;
                     VolleyLog.d("erroLOGIN", "Error: " + error.getMessage());
                 }
-            }){
+            }) {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     HashMap<String, String> headers = new HashMap<String, String>();
@@ -289,43 +288,15 @@ public class AlterarDadosActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_feed) {
+        if (id == R.id.nav_eventos) {
+            Intent i = new Intent(AlterarDadosActivity.this, FeedEventosActivity.class);
+            startActivityForResult(i, 0);
+        } else if (id == R.id.nav_feed) {
             Intent i = new Intent(AlterarDadosActivity.this, FeedActivity.class);
             startActivity(i);
             finish();
-        } else if(id == R.id.nav_adicionar_report){
 
-
-            android.support.v7.app.AlertDialog.Builder alert = new android.support.v7.app.AlertDialog.Builder(AlterarDadosActivity.this);
-            alert.setTitle("Criar report");
-            alert
-                    .setMessage("O local do report é a sua localização atual?")
-                    .setCancelable(true)
-                    .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            if (changed)
-                                attemptSendData();
-                            Intent intent = new Intent(AlterarDadosActivity.this, CriarOcorrenciaActivity.class);
-                            intent.putExtra("estaLocal", true);
-                            startActivity(intent);
-                        }
-                    })
-                    .setNegativeButton("Não", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            if (changed)
-                                attemptSendData();
-                            Intent intent = new Intent(AlterarDadosActivity.this, MapsActivity.class);
-                            intent.putExtra("toast", true);
-                            startActivity(intent);
-                        }
-                    });
-
-            android.support.v7.app.AlertDialog alertDialog = alert.create();
-            alertDialog.show();
-
-        }else if (id == R.id.nav_mapa) {
+        } else if (id == R.id.nav_mapa) {
 
             if (changed)
                 attemptSendData();

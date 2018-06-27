@@ -177,13 +177,16 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
         }
 
         if (mValues.get(position).getImage_uri() != null && mValues.get(position).getBitmap() != null) {
+            holder.mImageReport.setAdjustViewBounds(true);
+
             holder.mImageReport.setImageBitmap(BitmapFactory.decodeByteArray(mValues.get(position).getBitmap(),
                     0, mValues.get(position).getBitmap().length));
+
             //receberImagemVolley(holder, position);
-        } else {
+        } else if (mValues.get(position).getImageID() != 0) {
             holder.mImageReport.setAdjustViewBounds(false);
 
-                holder.mImageReport.setImageResource(mValues.get(position).getImageID());
+            holder.mImageReport.setImageResource(mValues.get(position).getImageID());
 
         }
 

@@ -150,6 +150,10 @@
             android:name=".AddPostActivity"
             android:label="Criar publicação">
         </activity>
+        <activity
+            android:name=".FeedEventosActivity"
+            android:label="Eventos">
+        </activity>
     </application>
 
 </manifest>

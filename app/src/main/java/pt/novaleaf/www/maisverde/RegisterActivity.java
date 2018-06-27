@@ -167,7 +167,16 @@ public class RegisterActivity extends AppCompatActivity {
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    VolleyLog.d("ERRO REGISTO", error.getMessage());
+                    if (error.networkResponse == null) {
+                        VolleyLog.d("errolike", "Error: " + error.getMessage());
+                        Intent myIntent = new Intent(RegisterActivity.this, LoginActivity.class);
+                        RegisterActivity.this.startActivity(myIntent);
+                        finish();
+                    } else{
+                        VolleyLog.d("errolike", "Error: " + error.getMessage());
+
+                    }
+
 //                    VolleyLog.d("ERRO", error.networkResponse.statusCode);
                     pDialog.dismiss();
                 }

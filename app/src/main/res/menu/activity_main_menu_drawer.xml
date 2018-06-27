@@ -6,16 +6,16 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_feed"
-            android:icon="@mipmap/ic_feed_foreground"
+            android:icon="@drawable/ic_ifeed_ocorrencias"
             android:title="Feed"/>
         <item
-            android:id="@+id/nav_adicionar_report"
-            android:icon="@drawable/ic_add_location_black_24dp"
-            android:title="Adicionar Ocorrência"/>
-        <item
             android:id="@+id/nav_mapa"
-            android:icon="@android:drawable/ic_dialog_map"
+            android:icon="@drawable/ic_google_maps"
             android:title="Mapa"/>
+        <item
+            android:id="@+id/nav_eventos"
+            android:icon="@drawable/ic_baseline_calendar_eventos_24px"
+            android:title="Eventos"/>
         <item
             android:id="@+id/nav_grupos"
             android:icon="@mipmap/ic_foreground_group_black"

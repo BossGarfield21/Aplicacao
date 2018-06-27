@@ -273,39 +273,14 @@ public class GruposListActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_feed) {
+        if (id == R.id.nav_eventos) {
+            Intent i = new Intent(GruposListActivity.this, FeedEventosActivity.class);
+            startActivityForResult(i, 0);
+            finish();
+        } else if (id == R.id.nav_feed) {
             Intent i = new Intent(GruposListActivity.this, FeedActivity.class);
             startActivity(i);
             finish();
-        } else if (id == R.id.nav_adicionar_report) {
-
-            AlertDialog.Builder alert = new AlertDialog.Builder(GruposListActivity.this);
-            alert.setTitle("Criar report");
-            alert
-                    .setMessage("O local do report é a sua localização atual?")
-                    .setCancelable(true)
-                    .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            Intent intent = new Intent(GruposListActivity.this, CriarOcorrenciaActivity.class);
-                            intent.putExtra("estaLocal", true);
-                            startActivity(intent);
-                            finish();
-                        }
-                    })
-                    .setNegativeButton("Não", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            Intent intent = new Intent(GruposListActivity.this, MapsActivity.class);
-                            intent.putExtra("toast", true);
-                            startActivity(intent);
-                            finish();
-                        }
-                    });
-
-            AlertDialog alertDialog = alert.create();
-            alertDialog.show();
-
         } else if (id == R.id.nav_mapa) {
             Intent i = new Intent(GruposListActivity.this, MapsActivity.class);
             startActivity(i);

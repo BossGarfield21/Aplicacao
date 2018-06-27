@@ -71,10 +71,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 
 import utils.ByteRequest;
 
 import static pt.novaleaf.www.maisverde.MapsActivity.markers;
+import static pt.novaleaf.www.maisverde.OcorrenciaFragment.listOcorrencias;
 
 
 /**
@@ -264,7 +266,7 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
                 imageView.setImageBitmap(rotatedBitmap);
                 isImage = true;
                 ByteArrayOutputStream bao = new ByteArrayOutputStream();
-                rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 70, bao);
+                rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 50, bao);
                 imageBytes = bao.toByteArray();
 
                 Snackbar snackbar = Snackbar
@@ -610,9 +612,7 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
             // form field with an error.
             focusView.requestFocus();
         } else {
-            Random r = new Random();
-            int number = r.nextInt();
-            String id = Integer.toString(number);
+            String id = UUID.randomUUID().toString();
             enviarImagemVolley(imageBytes, id);
             enviarOcorrenciaVolley(titulo, descricao, id);
             //receberImagemVolley();

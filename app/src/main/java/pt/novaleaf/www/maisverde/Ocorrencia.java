@@ -22,8 +22,8 @@ public class Ocorrencia implements Serializable, ClusterItem{
     boolean liked;
     boolean favorito;
     String hora;
-    long latitude;
-    long longitude;
+    double latitude;
+    double longitude;
     public String id;
     public String name;
     public String owner; //username
@@ -49,7 +49,7 @@ public class Ocorrencia implements Serializable, ClusterItem{
 
     public Ocorrencia(String name, double risk, String hora, String id, String description,
                       String owner, List<String> likers, Long status,
-                      long latitude, long longitude, long likes, String type, String image_uri,
+                      double latitude, double longitude, long likes, String type, String image_uri,
                       Map<String, Comentario> comments, long creationDate, String district, boolean liked){
         this.name = name;
         this.district = district;
@@ -124,7 +124,7 @@ public class Ocorrencia implements Serializable, ClusterItem{
         return liked;
     }
 
-    public long getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
@@ -132,7 +132,7 @@ public class Ocorrencia implements Serializable, ClusterItem{
         return likes;
     }
 
-    public long getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
@@ -196,4 +196,6 @@ public class Ocorrencia implements Serializable, ClusterItem{
         Ocorrencia ocorrencia = (Ocorrencia) obj;
         return this.getId().equals(ocorrencia.getId());
     }
+
+    
 }

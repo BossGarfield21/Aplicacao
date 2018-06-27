@@ -82,30 +82,23 @@ public class FeedActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
 
         updateOcorrencias();
         updateEventos();
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
 
-        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
 
-        /**
          FragmentManager fragmentManager = getSupportFragmentManager();
-         Fragment fragment = fragmentManager.findFragmentById(R.id.fragmentContainer);
+         Fragment fragment = fragmentManager.findFragmentById(R.id.container);
          if (fragment==null){
          fragment = OcorrenciaFragment.newInstance(1);
 
          fragmentManager.beginTransaction()
-         .add(R.id.fragmentContainer, fragment)
+         .add(R.id.container, fragment)
          .commit();
-         }*/
+         }
 
         // FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         //fab.setVisibility(View.GONE);
@@ -195,47 +188,16 @@ public class FeedActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_mapa) {
+        if (id == R.id.nav_eventos){
+            Intent i = new Intent(FeedActivity.this, FeedEventosActivity.class);
+            startActivityForResult(i, 0);
+        }
+        else if (id == R.id.nav_mapa) {
 
             Intent i = new Intent(FeedActivity.this, MapsActivity.class);
             startActivityForResult(i, 0);
             //startActivity(i);
             //finish();
-
-        } else if (id == R.id.nav_adicionar_report) {
-
-            AlertDialog.Builder alert = new AlertDialog.Builder(FeedActivity.this);
-            alert.setTitle("Criar report");
-            alert.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialogInterface) {
-                    navigationView.getMenu().getItem(0).setChecked(true);
-                }
-            })
-                    .setMessage("O local do report é a sua localização atual?")
-                    .setCancelable(true)
-                    .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            Intent intent = new Intent(FeedActivity.this, CriarOcorrenciaActivity.class);
-                            intent.putExtra("estaLocal", true);
-                            startActivityForResult(intent, 0);
-                            //startActivity(intent);
-                        }
-                    })
-                    .setNegativeButton("Não", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            Intent intent = new Intent(FeedActivity.this, MapsActivity.class);
-                            intent.putExtra("toast", true);
-                            startActivityForResult(intent, 0);
-                            //startActivity(intent);
-                        }
-                    });
-
-            AlertDialog alertDialog = alert.create();
-            alertDialog.show();
-
 
         } else if (id == R.id.nav_area_pessoal) {
             Intent i = new Intent(FeedActivity.this, AlterarDadosActivity.class);
@@ -408,8 +370,8 @@ public class FeedActivity extends AppCompatActivity
                                     double risk = 0;
                                     long likes = 0;
                                     long status = 0;
-                                    long latitude = 0;
-                                    long longitude = 0;
+                                    double latitude = 0;
+                                    double longitude = 0;
                                     Map<String, Comentario> comentarios = new HashMap<>();
 
                                     JSONObject ocorrencia = list.getJSONObject(i);
@@ -464,8 +426,8 @@ public class FeedActivity extends AppCompatActivity
                                     }
                                     if (ocorrencia.has("coordinates")) {
                                         JSONObject coordinates = ocorrencia.getJSONObject("coordinates");
-                                        latitude = coordinates.getLong("latitude");
-                                        longitude = coordinates.getLong("longitude");
+                                        latitude = coordinates.getDouble("latitude");
+                                        longitude = coordinates.getDouble("longitude");
                                     }
 
                                     if (ocorrencia.has("likers")) {
@@ -480,7 +442,7 @@ public class FeedActivity extends AppCompatActivity
                                             comentarios, creationDate, district, hasLiked);
                                     if (ocorrencia1.getImage_uri() != null)
                                         receberImagemVolley(ocorrencia1);
-
+                                    else{
                                         String tipo = ocorrencia1.getType();
                                         if (tipo.equals("bonfire")) {
                                             ocorrencia1.setImageID(R.mipmap.ic_bonfire_foreground);
@@ -491,6 +453,9 @@ public class FeedActivity extends AppCompatActivity
                                         } else {
                                             ocorrencia1.setImageID(R.mipmap.ic_grass_foreground);
                                         }
+                                    }
+
+
 
 
 
@@ -808,11 +773,24 @@ public class FeedActivity extends AppCompatActivity
             public void onResponse(byte[] response) {
                 Bitmap bitmap = BitmapFactory.decodeByteArray(response, 0, response.length);
                 item.setBitmap(response);
+                myOcorrenciaRecyclerViewAdapter.notifyDataSetChanged();
+
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 VolleyLog.d("erroIMAGEMocorrencia", "Error: " + error.getMessage());
+                String tipo = item.getType();
+                if (tipo.equals("bonfire")) {
+                    item.setImageID(R.mipmap.ic_bonfire_foreground);
+                } else if (tipo.equals("fire")) {
+                    item.setImageID(R.mipmap.ic_fire_foreground);
+                } else if (tipo.equals("trash")) {
+                    item.setImageID(R.mipmap.ic_garbage_foreground);
+                } else {
+                    item.setImageID(R.mipmap.ic_grass_foreground);
+                }
+                myOcorrenciaRecyclerViewAdapter.notifyDataSetChanged();
             }
         }) {
             @Override

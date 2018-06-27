@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -44,9 +45,13 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.clustering.Cluster;
+import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -204,7 +209,7 @@ public class MapsActivity extends AppCompatActivity
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         //SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-          //      .findFragmentById(R.id.map);
+        //      .findFragmentById(R.id.map);
         //mapFragment.getMapAsync(this);
 
 
@@ -216,9 +221,8 @@ public class MapsActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        navigationView.getMenu().getItem(2).setChecked(true);
+        navigationView.getMenu().getItem(1).setChecked(true);
     }
-
 
 
     @Override
@@ -291,15 +295,15 @@ public class MapsActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_feed) {
+        if (id == R.id.nav_eventos) {
+            Intent i = new Intent(MapsActivity.this, FeedEventosActivity.class);
+            startActivityForResult(i, 0);
+            finish();
+        } else if (id == R.id.nav_feed) {
 
             Intent i = new Intent(MapsActivity.this, FeedActivity.class);
             startActivity(i);
             finish();
-
-        } else if (id == R.id.nav_adicionar_report) {
-
-            novaOcorrencia();
 
         } else if (id == R.id.nav_area_pessoal) {
             Intent i = new Intent(MapsActivity.this, AlterarDadosActivity.class);
@@ -323,18 +327,36 @@ public class MapsActivity extends AppCompatActivity
         return true;
     }
 
+    private class CustomMapClusterRenderer<T extends ClusterItem> extends DefaultClusterRenderer<T> {
+        CustomMapClusterRenderer(Context context, GoogleMap map, ClusterManager<T> clusterManager) {
+            super(context, map, clusterManager);
+        }
+
+        @Override
+        protected void onBeforeClusterItemRendered(T item,
+                                                   MarkerOptions markerOptions) {
+            Ocorrencia markerItem = (Ocorrencia) item;
+            if (markerItem.getStatus() == 1)
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+            else if (markerItem.getStatus() == 2)
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+            else if (markerItem.getStatus() == 3)
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+
+        }
+    }
 
     private void setUpClusterer() {
         // Position the map.
         // Initialize the manager with the context and the map.
         // (Activity extends context, so we can pass 'this' in the constructor.)
         mClusterManager = new ClusterManager<Ocorrencia>(this, mMap);
+        mClusterManager.setRenderer(new CustomMapClusterRenderer<Ocorrencia>(this, mMap, mClusterManager));
 
         // Point the map's listeners at the listeners implemented by the cluster
         // manager.
         mMap.setOnCameraIdleListener(mClusterManager);
         mMap.setOnMarkerClickListener(mClusterManager);
-
 
 
         mClusterManager.setOnClusterItemInfoWindowClickListener(new ClusterManager.OnClusterItemInfoWindowClickListener<Ocorrencia>() {
@@ -357,6 +379,7 @@ public class MapsActivity extends AppCompatActivity
         // Add ten cluster items in close proximity, for purposes of this example.
         for (Ocorrencia ocorrencia : OcorrenciaFragment.listOcorrencias) {
             mClusterManager.addItem(ocorrencia);
+
         }
     }
 
@@ -398,7 +421,7 @@ public class MapsActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
-        if (mMap==null) {
+        if (mMap == null) {
             mMap = googleMap;
 
             mMap.getUiSettings().setMapToolbarEnabled(false);

@@ -56,7 +56,7 @@ public class GrupoFeedActivity extends AppCompatActivity {
         setTitle(getIntent().getStringExtra("toolbar"));
 
 
-        posts.add(new Post("oj", "BombeiroTuga", "Hoje vamos limpar a mata da Joana",
+        posts.add(new Post("oj", "BombeiroTuga", "Hoje vamos limpar o terreno da Joana",
                 "dm"));
 
         posts.add(new Post("oj", "admin", "Hoje vamos limpar a casa da bina",
