@@ -86,7 +86,7 @@ public class FeedActivity extends AppCompatActivity
         // Set up the ViewPager with the sections adapter.
 
         updateOcorrencias();
-        updateEventos();
+        //updateEventos();
 
 
 

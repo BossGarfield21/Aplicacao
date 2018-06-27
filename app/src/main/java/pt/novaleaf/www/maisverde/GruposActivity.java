@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -25,13 +26,16 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GruposActivity extends AppCompatActivity {
+public class GruposActivity extends AppCompatActivity implements Serializable{
 
     private Button mButtonPedido;
     private Button mButtonCancelar;
+    private TextView mTextNumPessoas;
+    Grupo grupo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,11 +54,15 @@ public class GruposActivity extends AppCompatActivity {
             // Show the Up button in the action bar.
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        setTitle(getIntent().getStringExtra("toolbar"));
 
+        grupo = (Grupo) getIntent().getSerializableExtra("grupo");
+
+        setTitle(grupo.getName());
 
         mButtonPedido = (Button) findViewById(R.id.buttonPedido);
         mButtonCancelar = (Button) findViewById(R.id.buttonCancelar);
+        mTextNumPessoas = (TextView) findViewById(R.id.textGrupoPessoas);
+        mTextNumPessoas.setText(grupo.getNumPessoas() + " pessoas");
 
         mButtonCancelar.setVisibility(View.GONE);
         mButtonCancelar.setOnClickListener(new View.OnClickListener() {

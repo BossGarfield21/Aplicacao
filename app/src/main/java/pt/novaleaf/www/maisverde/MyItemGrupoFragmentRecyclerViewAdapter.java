@@ -48,7 +48,7 @@ public class MyItemGrupoFragmentRecyclerViewAdapter extends RecyclerView.Adapter
 
         holder.mNomeGrupo.setText(mValues.get(position).getName());
         holder.mPrivacyGrupo.setText(mValues.get(position).getPrivacy());
-        //holder.mNumPessoas.setText(mValues.get(position).getNumPessoas() + " pessoas");
+        holder.mNumPessoas.setText(mValues.get(position).getNumPessoas() + " pessoas");
 
         holder.mContraintLayout.setOnClickListener(new View.OnClickListener() {
             @Override

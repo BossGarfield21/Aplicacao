@@ -8,6 +8,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class MyPostRecyclerViewAdapter extends RecyclerView.Adapter<MyPostRecyclerViewAdapter.ViewHolder> {
@@ -85,6 +87,14 @@ public class MyPostRecyclerViewAdapter extends RecyclerView.Adapter<MyPostRecycl
                 }
             }
         });
+
+        long time = mValues.get(position).getCreationDate();
+
+        if (time != 0) {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM HH:mm");
+            String data = simpleDateFormat.format(new Date(time));
+            holder.mHour.setText(data);
+        }
 
     }
 

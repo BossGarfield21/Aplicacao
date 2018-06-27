@@ -154,6 +154,10 @@
             android:name=".FeedEventosActivity"
             android:label="Eventos">
         </activity>
+        <activity
+            android:name=".AdministrarGrupoActivity"
+            android:label="Administrar grupo">
+        </activity>
     </application>
 
 </manifest>

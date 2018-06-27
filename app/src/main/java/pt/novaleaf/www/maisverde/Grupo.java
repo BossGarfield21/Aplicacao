@@ -1,8 +1,9 @@
 package pt.novaleaf.www.maisverde;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Grupo {
+public class Grupo implements Serializable{
 
     private String name;
     private List<String> base_users;
@@ -26,6 +27,7 @@ public class Grupo {
         this.groupId = groupId;
         this.privacy = privacy;
         this.distrito = distrito;
+        this.image_uri = image_uri;
 
     }
 
@@ -56,4 +58,31 @@ public class Grupo {
     public int getNumPessoas(){
         return admins.size() + base_users.size();
     }
+
+    public List<String> getAdmins() {
+        return admins;
+    }
+
+    public List<String> getBase_users() {
+        return base_users;
+    }
+
+    public long getCreationDate() {
+        return creationDate;
+    }
+
+    public long getPoints() {
+        return points;
+    }
+
+    public String getGroupId() {
+        return groupId;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        Grupo grupo = (Grupo) obj;
+        return this.getGroupId().equals(grupo.getGroupId());
+    }
+
 }
