@@ -43,7 +43,9 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
     private PostFragment.OnListFragmentInteractionListener mListener;
     private boolean isFinishedPosts = false;
     private String cursorPosts = "";
-    Grupo grupo;
+    Grupo group;
+    Grupo novoGrupo;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,12 +65,17 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        grupo = (Grupo) getIntent().getSerializableExtra("grupo");
+        group = (Grupo) getIntent().getSerializableExtra("grupo");
 
-        setTitle(grupo.getName());
+        setTitle(group.getName());
+
+        volleyGetGrupo();
+
+        //group = (Grupo) getIntent().getSerializableExtra("grupo");
 
 
-        volleyGetPosts();
+
+        //volleyGetPosts();
 
         mListener = new PostFragment.OnListFragmentInteractionListener() {
             @Override
@@ -108,6 +115,117 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
         adapter.notifyDataSetChanged();
     }
 
+    private void volleyGetGrupo() {
+
+        String tag_json_obj = "json_request";
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/detail_info?group_id=" + group.getGroupId();
+
+        Log.d("ché bate só", url);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+        JSONObject eventos = new JSONObject();
+        final String token = sharedPreferences.getString("tokenID", "erro");
+
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, eventos,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            Log.d("tao DRED", response.toString());
+
+                            String name = null;
+                            long numbMembers = 0;
+                            long points = 0;
+                            long creationDate = 0;
+                            String groupId = null;
+                            String privacy = null;
+                            String image_uri = null;
+                            String distrito = null;
+                            boolean isMember = false;
+                            boolean isAdmin = false;
+                            List<String> admins = new ArrayList<>();
+                            List<String> base_users = new ArrayList<>();
+
+                            JSONObject grupo = response;
+                            if (grupo.has("groupId"))
+                                groupId = grupo.getString("groupId");
+                            if (grupo.has("name"))
+                                name = grupo.getString("name");
+                            if (grupo.has("creationDate"))
+                                creationDate = grupo.getLong("creationDate");
+                            if (grupo.has("points"))
+                                points = grupo.getLong("points");
+                            if (grupo.has("image_uri"))
+                                image_uri = grupo.getString("image_uri");
+                            if (grupo.has("groupId"))
+                                groupId = grupo.getString("groupId");
+                            if (grupo.has("privacy"))
+                                privacy = grupo.getString("privacy");
+                            if (grupo.has("district"))
+                                distrito = grupo.getString("district");
+
+
+                            if (grupo.has("isAdmin")) {
+                                isAdmin = grupo.getBoolean("isAdmin");
+                            }
+                            if (grupo.has("isMember")) {
+                                isMember = grupo.getBoolean("isMember");
+                            }
+                            if (grupo.has("numbMembers")) {
+                                numbMembers = grupo.getLong("numbMembers");
+                            }
+
+                            if (grupo.has("admins")){
+                                JSONArray ads = grupo.getJSONArray("admins");
+                                for (int i = 0; i< ads.length(); i++)
+                                    admins.add(ads.getString(i));
+                            }
+
+                            if (grupo.has("base_users")){
+                                JSONArray base = grupo.getJSONArray("base_users");
+                                for (int i = 0; i< base.length(); i++)
+                                    base_users.add(base.getString(i));
+                            }
+
+
+                            Log.d("name", name);
+                            Log.d("groupId", groupId);
+                            Log.d("tao crl" , admins.get(0));
+
+
+                            novoGrupo = new Grupo(name, base_users, admins, points,
+                                    creationDate, image_uri, groupId, privacy, distrito, isAdmin, isMember,
+                                    numbMembers);
+
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("erroDETAILED", "Error: " + error.getMessage());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+        };
+
+
+        AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
+    }
+
 
     @Override
     public void onBackPressed() {
@@ -118,7 +236,7 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        if (true)
+        if (group.isAdmin())
             getMenuInflater().inflate(R.menu.grupos_admin, menu);
         else
             getMenuInflater().inflate(R.menu.grupo_feed_menu, menu);
@@ -136,6 +254,7 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
 
         if (id == R.id.admin_grupo) {
             Intent intent = new Intent(GrupoFeedActivity.this, AdministrarGrupoActivity.class);
+            intent.putExtra("grupo", novoGrupo);
             startActivity(intent);
 
         } else if (id == R.id.addPost) {
@@ -144,7 +263,7 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
         } else if (id == R.id.action_help) {
             return true;
         } else if (id == R.id.action_logout) {
-            //TODO: sair da app
+//TODO: sair da app
             final AlertDialog.Builder alert = new AlertDialog.Builder(GrupoFeedActivity.this);
             alert.setTitle("Abandonar grupo");
             alert
@@ -217,7 +336,7 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
 
         String groupID = "id";
         String tag_json_obj = "json_obj_req";
-        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/like?group_id=" + grupo.getGroupId() +
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/like?group_id=" + group.getGroupId() +
                 "&publication=" + item.getId();
 
         JSONObject grupo = new JSONObject();
@@ -252,9 +371,8 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
 
     private void takeLikePostVolley(final Post item) {
 
-        String groupID = "id";
         String tag_json_obj = "json_obj_req";
-        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/remove_like?group_id=" + grupo.getGroupId() +
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/remove_like?group_id=" + group.getGroupId() +
                 "&publication=" + item.getId();
 
         JSONObject grupo = new JSONObject();
@@ -292,9 +410,10 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
         String tag_json_obj = "json_request";
         String url;
         if (cursorPosts.equals(""))
-            url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/?cursor=startquery";
+            url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/feed?group_id=" +
+                    group.getGroupId() + "&cursor=startquery";
         else
-            url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/?cursor=" + cursorPosts;
+            url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/feed?cursor=" + cursorPosts;
 
         Log.d("ché bate só", url);
 

@@ -313,9 +313,20 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
                 if (actividade != null)
                     tipo = data.getStringExtra("type");
                 Log.i("CHEHCU TIPO", tipo);
+                String tipoButton = "erro";
+                if (tipo.equals("trash"))
+                    tipoButton = "lixo";
+                else if (tipo.equals("fire"))
+                    tipoButton = "incêndio";
+                else if (tipo.equals("bonfire"))
+                    tipoButton = "queimada";
+                else if (tipo.equals("dirty_woods"))
+                    tipoButton = "mata suja";
+
+                bTipos.setText(tipoButton);
 
             }
-        } else if (requestCode == 3){
+        } else if (requestCode == 3) {
             if (resultCode == RESULT_OK) {
                 try {
                     InputStream inputStream = this.getContentResolver().openInputStream(data.getData());
@@ -359,7 +370,7 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
                 }
 
             }
-        }else{
+        } else {
             Snackbar snackbar = Snackbar
                     .make(constraintLayout, "Fotografia escolhida", Snackbar.LENGTH_INDEFINITE)
                     .setAction("Escolher outra fotografia", new View.OnClickListener() {

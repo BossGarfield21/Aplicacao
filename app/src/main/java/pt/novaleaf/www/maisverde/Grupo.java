@@ -1,5 +1,7 @@
 package pt.novaleaf.www.maisverde;
 
+import android.graphics.Bitmap;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -14,9 +16,15 @@ public class Grupo implements Serializable{
     private String privacy;
     private String image_uri;
     private String distrito;
+    private boolean isAdmin;
+    private boolean isMember;
+    private long numbMembers;
+    private int imageID;
+    private byte[] bitmap;
 
     public Grupo(String name, List<String> base_users, List<String> admins, long points,
-                 long creationDate, String image_uri,String groupId, String privacy, String distrito)
+                 long creationDate, String image_uri,String groupId, String privacy, String distrito,
+                 boolean isAdmin, boolean isMember, long numbMembers)
     {
 
         this.name = name;
@@ -28,7 +36,28 @@ public class Grupo implements Serializable{
         this.privacy = privacy;
         this.distrito = distrito;
         this.image_uri = image_uri;
+        this.isAdmin = isAdmin;
+        this.isMember = isMember;
+        this.numbMembers = numbMembers;
+        imageID = 0;
+        bitmap = null;
 
+    }
+
+    public int getImageID() {
+        return imageID;
+    }
+
+    public void setImageID(int imageID) {
+        this.imageID = imageID;
+    }
+
+    public byte[] getBitmap() {
+        return bitmap;
+    }
+
+    public void setBitmap(byte[] bitmap) {
+        this.bitmap = bitmap;
     }
 
     public void setAdmins(List<String> admins) {
@@ -55,8 +84,8 @@ public class Grupo implements Serializable{
         return distrito;
     }
 
-    public int getNumPessoas(){
-        return admins.size() + base_users.size();
+    public long getNumPessoas(){
+        return numbMembers;
     }
 
     public List<String> getAdmins() {
@@ -85,4 +114,11 @@ public class Grupo implements Serializable{
         return this.getGroupId().equals(grupo.getGroupId());
     }
 
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public boolean isMember() {
+        return isMember;
+    }
 }

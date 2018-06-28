@@ -48,7 +48,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="10"
                 android:gravity="center_horizontal"
-                android:text="FOGO LEVE"/>
+                android:text="QUEIMADA"/>
         </LinearLayout>
 
 
@@ -125,7 +125,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="10"
                 android:gravity="center_horizontal"
-                android:text="LIMPAR MATA"/>
+                android:text="MATA SUJA"/>
         </LinearLayout>
     </GridLayout>
 </android.support.constraint.ConstraintLayout>

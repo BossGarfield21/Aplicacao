@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".AdministrarGrupoActivity">
+    tools:context=".AdminGrupoAtualizarActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBarLayout"
@@ -24,9 +24,4 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <ListView
-        android:id="@+id/listAdmin"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
 </LinearLayout>

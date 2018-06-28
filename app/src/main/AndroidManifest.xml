@@ -158,6 +158,22 @@
             android:name=".AdministrarGrupoActivity"
             android:label="Administrar grupo">
         </activity>
+        <activity
+            android:name=".AdminGrupoConvidarActivity"
+            android:label="Convidar pessoas">
+        </activity>
+        <activity
+            android:name=".AdminGrupoAtualizarActivity"
+            android:label="Atualizar informação">
+        </activity>
+        <activity
+            android:name=".AdminGrupoMembrosActivity"
+            android:label="Gerir membros">
+        </activity>
+        <activity
+            android:name=".AdminGrupoPedidosActivity"
+            android:label="Pedidos pendentes">
+        </activity>
     </application>
 
 </manifest>

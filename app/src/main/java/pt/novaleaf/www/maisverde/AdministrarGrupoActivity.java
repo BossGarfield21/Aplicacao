@@ -8,12 +8,22 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
-public class AdministrarGrupoActivity extends AppCompatActivity {
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
+public class AdministrarGrupoActivity extends AppCompatActivity implements Serializable{
+
+
+    ListView listView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,7 +42,46 @@ public class AdministrarGrupoActivity extends AppCompatActivity {
             // Show the Up button in the action bar.
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+
+        final Grupo grupo = (Grupo) getIntent().getSerializableExtra("grupo");
+
+        Log.d("TAS FIXE??", grupo.getAdmins().get(0));
+
+        List<String> lista = new ArrayList<>();
+        lista.add("Convidar pessoas");
+        lista.add("Atualizar informação");
+        lista.add("Gerir membros");
+        //if (grupo.getPrivacy().equals("public"))
+            lista.add("Pedidos pendentes");
+        listView = (ListView) findViewById(R.id.listAdmin);
+
+        ArrayAdapter adapter = new ArrayAdapter(this,
+                android.R.layout.simple_list_item_1, lista);
+
+        listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = null;
+                if (i==0)
+                    intent = new Intent(AdministrarGrupoActivity.this, AdminGrupoConvidarActivity.class);
+                else if (i==1)
+                    intent = new Intent(AdministrarGrupoActivity.this, AdminGrupoAtualizarActivity.class);
+                else if (i==2)
+                    intent = new Intent(AdministrarGrupoActivity.this, AdminGrupoMembrosActivity.class);
+                else if (i==3)
+                    intent = new Intent(AdministrarGrupoActivity.this, AdminGrupoPedidosActivity.class);
+
+                intent.putExtra("grupo", grupo);
+                startActivity(intent);
+            }
+        });
+
+
     }
+
+
 
 
     @Override
