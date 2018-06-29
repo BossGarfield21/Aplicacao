@@ -100,10 +100,9 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
                     mListener.onLikeInteraction(mValues.get(position));
 
                     mValues.get(position).like();
-                    if (mValues.get(position).getLikes() != 1)
-                        holder.mTextNumLikes.setText(String.valueOf(mValues.get(position).getLikes()) + " likes");
-                    else
-                        holder.mTextNumLikes.setText(String.valueOf(mValues.get(position).getLikes()) + " like");
+
+                    holder.mTextNumLikes.setText(String.valueOf(mValues.get(position).getLikes()));
+
                 }
             }
         });
@@ -142,10 +141,9 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
             }
         });
 
-        if (mValues.get(position).getLikes() != 1)
-            holder.mTextNumLikes.setText(String.valueOf(mValues.get(position).getLikes()) + " likes");
-        else
-            holder.mTextNumLikes.setText(String.valueOf(mValues.get(position).getLikes()) + " like");
+
+        holder.mTextNumLikes.setText(String.valueOf(mValues.get(position).getLikes()));
+
 
         holder.username.setText(mValues.get(position).getOwner());
         long time = mValues.get(position).getCreationDate();
