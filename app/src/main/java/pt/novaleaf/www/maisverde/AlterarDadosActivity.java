@@ -11,6 +11,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class AlterarDadosActivity extends AppCompatActivity {
 
     private TextInputEditText mEmail;
@@ -69,11 +82,75 @@ public class AlterarDadosActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+
+        String email = mEmail.getText().toString();
+        String nome = mNome.getText().toString();
+        String morada = mMorada.getText().toString();
+        String morada_complementar = mMoradaComplementar.getText().toString();
+        String localidade = mLocalidade.getText().toString();
+        String codigo_postal = mCodigoPostal.getText().toString();
+        String telemovel = mTelemovel.getText().toString();
+
+        alterarDadosVolley(email, morada, morada_complementar, localidade, telemovel, codigo_postal, nome);
+
+
         Intent intent = new Intent(AlterarDadosActivity.this, PerfilActivity.class);
-        intent.putExtra("email" , mEmail.getText().toString());
-        startActivityForResult(intent, 5);
+        intent.putExtra("email" , email);
+        intent.putExtra("nome" , nome);
+        intent.putExtra("morada" , morada);
+        intent.putExtra("morada_complementar" , morada_complementar);
+        intent.putExtra("localidade" , localidade);
+        intent.putExtra("codigo_postal" , codigo_postal);
+        intent.putExtra("telemovel" , telemovel);
+        intent.putExtra("mudou" , true);
+        startActivity(intent);
         finish();
         //super.onBackPressed();
+    }
+
+    private void alterarDadosVolley(final String email, final String firstaddress, final String complementaryaddress,
+                                    final String locality, final String mobile_phone,
+                                    final String postalcode, String nome) {
+
+        String tag_json_obj = "json_obj_req";
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/users/complete_profile";
+
+        JSONObject profileInfo = new JSONObject();
+        final String token = getSharedPreferences("Prefs", MODE_PRIVATE).getString("tokenID", "erro");
+        try {
+
+            profileInfo.put("email", email);
+            profileInfo.put("firstaddress", firstaddress);
+            profileInfo.put("complementaryaddress", complementaryaddress);
+            profileInfo.put("locality", locality);
+            profileInfo.put("mobile_phone", mobile_phone);
+            profileInfo.put("postalcode", postalcode);
+            profileInfo.put("name", nome);
+
+
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, profileInfo,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                        }
+                    }, new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    VolleyLog.d("erroLOGIN", "Error: " + error.getMessage());
+                }
+            }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    HashMap<String, String> headers = new HashMap<String, String>();
+                    headers.put("Authorization", token);
+                    return headers;
+                }
+            };
+            AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
 }

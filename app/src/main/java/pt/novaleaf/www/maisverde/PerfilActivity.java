@@ -126,6 +126,66 @@ public class PerfilActivity extends AppCompatActivity
         Log.e("pixel", "" + paddingPixel + " tool " + actionBar.getHeight() + " " + constraintLayout.getHeight());
         mRecyclerViewPerfil.setPadding(0, paddingPixel, 0, 0);
         mRecyclerViewPerfil.setAdapter(adapter);
+
+        if (getIntent().getBooleanExtra("mudou", false))
+            chageData(getIntent());
+    }
+
+    private void chageData(Intent intent) {
+        String email, nome, morada, morada_complementar, localidade, codigo_postal, telemovel;
+
+        email = intent.getStringExtra("email");
+        nome = intent.getStringExtra("nome");
+        morada = intent.getStringExtra("morada");
+        morada_complementar = intent.getStringExtra("morada_complementar");
+        localidade = intent.getStringExtra("localidade");
+        codigo_postal = intent.getStringExtra("codigo_postal");
+        telemovel = intent.getStringExtra("telemovel");
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+
+        if (!email.isEmpty()){
+            arrayList.remove(0);
+            arrayList.add(0, new PerfilItem("Email", email));
+            editor.putString("email", email);
+        }
+
+        if (!nome.isEmpty()){
+            arrayList.remove(1);
+            arrayList.add(1, new PerfilItem("Nome", nome));
+            editor.putString("nome", nome);
+        }
+
+        if (!morada.isEmpty()){
+            arrayList.remove(4);
+            arrayList.add(4, new PerfilItem("Morada", morada));
+            editor.putString("firstaddress", morada);
+        }
+
+        if (!morada_complementar.isEmpty()){
+            arrayList.remove(5);
+            arrayList.add(5, new PerfilItem("Morada complementar", morada_complementar));
+            editor.putString("complementaryaddress", morada_complementar);
+        }
+
+        if (!localidade.isEmpty()){
+            arrayList.remove(6);
+            arrayList.add(6, new PerfilItem("Localidade", localidade));
+            editor.putString("locality", localidade);
+        }
+
+        if (!codigo_postal.isEmpty()){
+            arrayList.remove(7);
+            arrayList.add(7, new PerfilItem("Código postal", codigo_postal));
+            editor.putString("postalcode", codigo_postal);
+        }
+
+        if (!telemovel.isEmpty()){
+            arrayList.remove(8);
+            arrayList.add(8, new PerfilItem("Telemóvel", telemovel));
+            editor.putString("mobile_phone", telemovel);
+        }
+
     }
     //
 
@@ -206,20 +266,6 @@ public class PerfilActivity extends AppCompatActivity
         finish();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == 5)
-            if (resultCode == RESULT_OK) {
-
-                Toast.makeText(this, getIntent().getStringExtra("email"), Toast.LENGTH_SHORT).show();
-
-
-            } else
-                Toast.makeText(this, "tao mpt", Toast.LENGTH_SHORT).show();
-
-    }
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -236,54 +282,11 @@ public class PerfilActivity extends AppCompatActivity
         String postalcode = sharedPreferences.getString("postalcode", "");
 
 
-        alterarDadosVolley(email, firstaddress, complementaryaddress, locality, mobile_phone, postalcode);
+        //alterarDadosVolley(email, firstaddress, complementaryaddress, locality, mobile_phone, postalcode);
 
     }
 
-    private void alterarDadosVolley(final String email, final String firstaddress, final String complementaryaddress,
-                                    final String locality, final String mobile_phone,
-                                    final String postalcode) {
 
-        String tag_json_obj = "json_obj_req";
-        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/users/complete_profile";
-
-        JSONObject profileInfo = new JSONObject();
-        final String token = sharedPreferences.getString("tokenID", "erro");
-        try {
-
-            profileInfo.put("email", email);
-            profileInfo.put("firstaddress", firstaddress);
-            profileInfo.put("complementaryaddress", complementaryaddress);
-            profileInfo.put("locality", locality);
-            profileInfo.put("mobile_phone", mobile_phone);
-            profileInfo.put("postalcode", postalcode);
-
-
-            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, profileInfo,
-                    new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                        }
-                    }, new Response.ErrorListener() {
-
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    changed = true;
-                    VolleyLog.d("erroLOGIN", "Error: " + error.getMessage());
-                }
-            }) {
-                @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {
-                    HashMap<String, String> headers = new HashMap<String, String>();
-                    headers.put("Authorization", token);
-                    return headers;
-                }
-            };
-            AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
