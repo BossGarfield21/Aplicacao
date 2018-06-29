@@ -119,26 +119,6 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
             }
         });
 
-        holder.mImageFavorito.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-
-                    if (!mValues.get(position).isFavorito()) {
-                        holder.mImageFavorito.setImageResource(R.drawable.ic_star_green_24dp);
-
-                    } else {
-                        holder.mImageFavorito.setImageResource(R.drawable.ic_star_border_black_24dp);
-
-                    }
-                    mValues.get(position).favorito();
-                    mListener.onFavoritoInteraction(mValues.get(position));
-
-                }
-            }
-        });
 
         holder.mLinearInfo.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -190,7 +170,7 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
 
         }
 
-        holder.mRisco.setText(mValues.get(position).getRisk() + "");
+        holder.mRisco.setText(String.format("Risco\n%s", mValues.get(position).getRisk()));
 
 
     }
@@ -209,7 +189,6 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
         public LinearLayout mLinearInfo;
         public TextView mTextNumLikes;
         public TextView mRisco;
-        public ImageView mImageFavorito;
         public ImageView mImageGosto;
         public ImageView mImageComentario;
 
@@ -223,7 +202,6 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
             mRelative = (ConstraintLayout) v.findViewById(R.id.relative);
             mLinearInfo = (LinearLayout) v.findViewById(R.id.linearInfo);
             mTextNumLikes = (TextView) v.findViewById(R.id.likes);
-            mImageFavorito = (ImageView) v.findViewById(R.id.imageFavorito);
             mImageGosto = (ImageView) v.findViewById(R.id.imageGosto);
             mImageComentario = (ImageView) v.findViewById(R.id.imageComentar);
 

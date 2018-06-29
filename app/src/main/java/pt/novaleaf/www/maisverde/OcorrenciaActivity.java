@@ -1,5 +1,6 @@
 package pt.novaleaf.www.maisverde;
 
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -7,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,6 +24,7 @@ public class OcorrenciaActivity extends AppCompatActivity implements Serializabl
     private TextView mEventos;
     private TextView mData;
     private TextView mTexto;
+    private TextView mMapa;
     private ImageView mImage;
 
     @Override
@@ -44,7 +47,7 @@ public class OcorrenciaActivity extends AppCompatActivity implements Serializabl
         }
 
 
-        Ocorrencia ocorrencia = (Ocorrencia) getIntent().getSerializableExtra("Ocorrencia");
+        final Ocorrencia ocorrencia = (Ocorrencia) getIntent().getSerializableExtra("Ocorrencia");
 
 
         mTitulo = (TextView) findViewById(R.id.ocorrenciaTitulo);
@@ -52,9 +55,21 @@ public class OcorrenciaActivity extends AppCompatActivity implements Serializabl
         mTexto = (TextView) findViewById(R.id.ocorrenciaTexto);
         mLocal = (TextView) findViewById(R.id.ocorrenciaLocal);
         mEventos = (TextView) findViewById(R.id.ocorrenciaEventos);
+        mMapa = (TextView) findViewById(R.id.verMapa);
         mImage = (ImageView) findViewById(R.id.ocorrenciaImagem);
 
+
         setTitle(ocorrencia.getName());
+
+        mMapa.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(OcorrenciaActivity.this, MapsActivity.class);
+                intent.putExtra("longitude", ocorrencia.longitude);
+                intent.putExtra("latitude", ocorrencia.latitude);
+                startActivity(intent);
+            }
+        });
 
         mTitulo.setText(ocorrencia.getName());
         long time = ocorrencia.getCreationDate();

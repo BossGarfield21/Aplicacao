@@ -35,13 +35,13 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="28dp"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="16dp"
             android:gravity="center_vertical"
             android:maxLines="1"
             android:text="bombeirotuga"
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-            app:layout_constraintEnd_toStartOf="@+id/textView24"
+            app:layout_constraintEnd_toStartOf="@+id/riscoCalculado"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/userImage"
             app:layout_constraintTop_toTopOf="parent"/>
@@ -51,43 +51,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
             android:layout_marginTop="8dp"
             android:layout_weight="1"
             android:text="26/06 17:44"
-            app:layout_constraintEnd_toStartOf="@+id/riscoCalculado"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/userImage"
             app:layout_constraintTop_toBottomOf="@+id/userName"/>
 
 
         <TextView
-            android:id="@+id/textView24"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="40dp"
-            android:layout_weight="1"
-            android:gravity="bottom|center_horizontal"
-            android:text="Risco calculado"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
-
-        <TextView
             android:id="@+id/riscoCalculado"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginEnd="44dp"
+            android:layout_marginTop="16dp"
             android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:text="0.0"
+            android:gravity="bottom|center_horizontal"
+            android:text="Risco\n0.0"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.805"
-            app:layout_constraintStart_toEndOf="@+id/userImage"
-            app:layout_constraintTop_toBottomOf="@+id/textView24"/>
+            app:layout_constraintTop_toTopOf="parent"/>
 
 
         <View
@@ -111,8 +94,8 @@
             android:layout_marginEnd="@dimen/activity_horizontal_margin"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
             android:layout_marginTop="8dp"
-            android:maxLines="1"
             android:fontFamily="@font/roboto_light"
+            android:maxLines="1"
             android:text="TITULO DA OCORRENCIA"
             android:textColor="@color/colorTextToolbar"
             android:textSize="20sp"
@@ -135,9 +118,9 @@
                 android:id="@+id/imageReport"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:minHeight="220dp"
                 android:adjustViewBounds="true"
                 android:contentDescription="@string/image_report"
+                android:minHeight="220dp"
                 android:scaleType="fitCenter"/>
 
 
@@ -238,27 +221,6 @@
                 app:layout_constraintTop_toBottomOf="@+id/lin">
 
                 <ImageView
-                    android:id="@+id/imageFavorito"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:alpha="0.6"
-                    android:background="@android:color/transparent"
-                    android:contentDescription="TODO"
-                    app:layout_constraintEnd_toStartOf="@+id/imageComentar"
-                    app:layout_constraintStart_toEndOf="@+id/imageGosto"
-                    app:layout_constraintTop_toBottomOf="@+id/lin"
-                    app:srcCompat="@drawable/ic_star_border_black_24dp"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:layout_weight="1"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/lin">
-
-                <ImageView
                     android:id="@+id/imageComentar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -271,6 +233,16 @@
                     app:srcCompat="@drawable/ic_insert_comment_black_24dp"/>
             </LinearLayout>
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="40dp"
+            android:layout_marginTop="4dp"
+            android:text="Setubal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/riscoCalculado"/>
 
     </android.support.constraint.ConstraintLayout>
 

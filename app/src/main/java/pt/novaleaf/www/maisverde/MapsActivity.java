@@ -222,6 +222,8 @@ public class MapsActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().getItem(1).setChecked(true);
+
+
     }
 
 
@@ -252,7 +254,10 @@ public class MapsActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_help) {
+        if (id == R.id.legenda) {
+            Intent intent = new Intent(MapsActivity.this, LegendaMapaActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.action_help) {
             return true;
         } else if (id == R.id.action_logout) {
             //TODO: revogar token
@@ -771,11 +776,19 @@ public class MapsActivity extends AppCompatActivity
     public void startMap() {
         //lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
+        double longitude = (double) getIntent().getDoubleExtra("longitude", 0);
+        double latitude = (double) getIntent().getDoubleExtra("latitude", 0);
+
 
         // Add a marker in Sydney and move the camera
-        LatLng currrPos = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+        LatLng currrPos;
+
+        if (longitude != 0) {
+            currrPos = new LatLng(latitude, longitude);
+        } else
+            currrPos = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
         //mMap.addMarker(new MarkerOptions().position(currrPos).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currrPos, 15));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currrPos, 10));
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(final LatLng latLng) {
