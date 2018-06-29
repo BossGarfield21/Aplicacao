@@ -418,8 +418,13 @@ public class FeedActivity extends AppCompatActivity
                                                     getSharedPreferences("Prefs", MODE_PRIVATE).getString("username", "")))
                                                 origem = 2;
                                             else origem = 1;
+
+                                            String imag = null;
+                                            if (com.has("image"))
+                                                imag = com.getString("image");
+
                                             comentarios.put(comentID, new Comentario(comentID, com.getString("author"),
-                                                    com.getString("message"), com.getString("image"),
+                                                    com.getString("message"), imag,
                                                     com.getLong("creationDate"), origem));
 
                                         }

@@ -30,11 +30,13 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GruposActivity extends AppCompatActivity implements Serializable{
+public class GruposActivity extends AppCompatActivity implements Serializable {
 
     private Button mButtonPedido;
     private Button mButtonCancelar;
     private TextView mTextNumPessoas;
+    private TextView mDistrito;
+    private TextView mPontos;
     Grupo grupo;
 
     @Override
@@ -57,12 +59,35 @@ public class GruposActivity extends AppCompatActivity implements Serializable{
 
         grupo = (Grupo) getIntent().getSerializableExtra("grupo");
 
+
         setTitle(grupo.getName());
 
         mButtonPedido = (Button) findViewById(R.id.buttonPedido);
         mButtonCancelar = (Button) findViewById(R.id.buttonCancelar);
         mTextNumPessoas = (TextView) findViewById(R.id.textGrupoPessoas);
-        mTextNumPessoas.setText(grupo.getNumPessoas() + " pessoas");
+        mDistrito = (TextView) findViewById(R.id.textDistrito);
+        mPontos = (TextView) findViewById(R.id.textPontos);
+
+
+        long pontos = grupo.getPoints();
+        if (pontos != 1)
+            mPontos.setText(String.format("%d pontos", pontos));
+        else
+            mPontos.setText(String.format("%d ponto", pontos));
+
+
+        if (getIntent().getBooleanExtra("isMember", false)) {
+            mButtonPedido.setVisibility(View.GONE);
+        }
+
+
+        mDistrito.setText(String.format("%s", grupo.getDistrito().toUpperCase()));
+
+        if (grupo.getNumPessoas() > 1)
+            mTextNumPessoas.setText(String.format("%d pessoas", grupo.getNumPessoas()));
+        else
+            mTextNumPessoas.setText(String.format("%d pessoa", grupo.getNumPessoas()));
+
 
         mButtonCancelar.setVisibility(View.GONE);
         mButtonCancelar.setOnClickListener(new View.OnClickListener() {
@@ -179,7 +204,7 @@ public class GruposActivity extends AppCompatActivity implements Serializable{
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-       if (id == R.id.action_help) {
+        if (id == R.id.action_help) {
             return true;
         } else if (id == R.id.action_logout) {
             //TODO: sair da app
@@ -208,9 +233,6 @@ public class GruposActivity extends AppCompatActivity implements Serializable{
 
             AlertDialog alertDialog = alert.create();
             alertDialog.show();
-        } else if (id == R.id.detalhes_grupo) {
-            Intent intent = new Intent(GruposActivity.this, DetalhesGrupoActivity.class);
-            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);

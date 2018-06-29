@@ -272,8 +272,8 @@ public class GruposListActivity extends AppCompatActivity
             MenuInflater inflater = popup.getMenuInflater();
             inflater.inflate(R.menu.distritos_menu, popup.getMenu());
 
-            popup.getMenu().findItem(R.id.d0).setCheckable(true);
-            popup.getMenu().findItem(R.id.d0).setChecked(true);
+            popup.getMenu().findItem(R.id.meusGrupos).setCheckable(true);
+            popup.getMenu().findItem(R.id.meusGrupos).setChecked(true);
         }
         popup.show();
     }
@@ -282,7 +282,18 @@ public class GruposListActivity extends AppCompatActivity
 
         //tempGrupos.clear();
         Log.d("DITRITO", distrito);
-        if (!distrito.equals("tudo")) {
+
+        if (distrito.equals("meus grupos")){
+            tempGrupos.clear();
+            for (Grupo grupo : grupos) {
+                if (grupo.isMember()|| grupo.isAdmin())
+                    tempGrupos.add(grupo);
+            }
+            adapter.setDistrito("meus");
+            MyItemGrupoFragmentRecyclerViewAdapter.mValues = tempGrupos;
+            adapter.notifyDataSetChanged();
+        }
+        else if (!distrito.equals("tudo")) {
             tempGrupos.clear();
             adapter.setDistrito(distrito);
 
@@ -434,7 +445,10 @@ public class GruposListActivity extends AppCompatActivity
                                         if (!grupos.contains(grupo1))
                                             grupos.add(grupo1);
 
+
                                         adapter.notifyDataSetChanged();
+
+                                        showDistrict("meus grupos");
 
                                     }
                                 }

@@ -51,8 +51,9 @@ public class AdministrarGrupoActivity extends AppCompatActivity implements Seria
         lista.add("Convidar pessoas");
         lista.add("Atualizar informação");
         lista.add("Gerir membros");
-        //if (grupo.getPrivacy().equals("public"))
-            lista.add("Pedidos pendentes");
+        lista.add("Convites enviados");
+//        if (grupo.getPrivacy().equals("public"))
+          lista.add("Pedidos pendentes");
         listView = (ListView) findViewById(R.id.listAdmin);
 
         ArrayAdapter adapter = new ArrayAdapter(this,
@@ -71,7 +72,10 @@ public class AdministrarGrupoActivity extends AppCompatActivity implements Seria
                 else if (i==2)
                     intent = new Intent(AdministrarGrupoActivity.this, AdminGrupoMembrosActivity.class);
                 else if (i==3)
+                    intent = new Intent(AdministrarGrupoActivity.this, AdminGrupoConvitesActivity.class);
+                else if (i==4)
                     intent = new Intent(AdministrarGrupoActivity.this, AdminGrupoPedidosActivity.class);
+
 
                 intent.putExtra("grupo", grupo);
                 startActivity(intent);
@@ -130,9 +134,6 @@ public class AdministrarGrupoActivity extends AppCompatActivity implements Seria
 
             AlertDialog alertDialog = alert.create();
             alertDialog.show();
-        } else if (id == R.id.detalhes_grupo) {
-            Intent intent = new Intent(AdministrarGrupoActivity.this, DetalhesGrupoActivity.class);
-            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);

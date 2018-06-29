@@ -100,7 +100,7 @@ public class AdminGrupoMembrosActivity extends AppCompatActivity implements Seri
                 if (item.getItemId()==R.id.expulsar_user){
                     volleyExpulsarUser(s);
                 } else {
-
+                    volleyAdicionarAdmin(s);
                 }
                 return false;
             }
@@ -119,7 +119,7 @@ public class AdminGrupoMembrosActivity extends AppCompatActivity implements Seri
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId()==R.id.expulsar_admin){
-                    
+                    volleyRemoverAdmin(s);
                 } else {
                     volleyExpulsarUser(s);
                 }
@@ -171,4 +171,84 @@ public class AdminGrupoMembrosActivity extends AppCompatActivity implements Seri
 
         AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
     }
+
+    private void volleyAdicionarAdmin(String user) {
+
+        String tag_json_obj = "json_request";
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/new_admin/?group_id="
+                + grupo.getGroupId() + "&username=" + user;
+
+
+        SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+        JSONObject eventos = new JSONObject();
+        final String token = sharedPreferences.getString("tokenID", "erro");
+
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, url, eventos,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("erroLOGIN", "Error: " + error.getMessage());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+        };
+
+
+        AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
+    }
+
+
+    private void volleyRemoverAdmin(String user) {
+
+        String tag_json_obj = "json_request";
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/remove_admin/?group_id="
+                + grupo.getGroupId() + "&username=" + user;
+
+
+        SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+        JSONObject eventos = new JSONObject();
+        final String token = sharedPreferences.getString("tokenID", "erro");
+
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.DELETE, url, eventos,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("erroLOGIN", "Error: " + error.getMessage());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+        };
+
+
+        AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
+    }
+
 }

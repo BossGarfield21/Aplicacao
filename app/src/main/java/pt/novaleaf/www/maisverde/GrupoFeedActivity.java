@@ -193,6 +193,7 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
                             Log.d("name", name);
                             Log.d("groupId", groupId);
                             Log.d("tao crl" , admins.get(0));
+                            //Log.d("tao crl" , privacy);
 
 
                             novoGrupo = new Grupo(name, base_users, admins, points,
@@ -286,7 +287,9 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
             AlertDialog alertDialog = alert.create();
             alertDialog.show();
         } else if (id == R.id.detalhes_grupo) {
-            Intent intent = new Intent(GrupoFeedActivity.this, DetalhesGrupoActivity.class);
+            Intent intent = new Intent(GrupoFeedActivity.this, GruposActivity.class);
+            intent.putExtra("grupo", novoGrupo);
+            intent.putExtra("isMember", true);
             startActivity(intent);
         }
 

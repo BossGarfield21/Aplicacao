@@ -92,9 +92,10 @@ public class AdminGrupoConvidarActivity extends AppCompatActivity implements Ser
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                if (error.networkResponse.statusCode == 409)
-                    Toast.makeText(AdminGrupoConvidarActivity.this, user + " já está no grupo", Toast.LENGTH_SHORT).show();
-                else {
+                if (error.networkResponse != null) {
+                    if (error.networkResponse.statusCode == 409)
+                        Toast.makeText(AdminGrupoConvidarActivity.this, user + " já está no grupo", Toast.LENGTH_SHORT).show();
+                } else {
 
                     Toast.makeText(AdminGrupoConvidarActivity.this, "Username não encontrado", Toast.LENGTH_SHORT).show();
                     VolleyLog.d("erroJoingrupo", "Error: " + error.getMessage());

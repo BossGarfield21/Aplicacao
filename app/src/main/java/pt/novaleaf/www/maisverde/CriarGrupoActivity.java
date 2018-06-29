@@ -518,7 +518,7 @@ public class CriarGrupoActivity extends AppCompatActivity implements Serializabl
         } else {
             String id = UUID.randomUUID().toString();
 
-            enviarImagemVolley(imageBytes, id);
+            //enviarImagemVolley(imageBytes, id);
             criarGrupoVolley(nomeGrupo, privacy);
         }
     }
@@ -568,77 +568,5 @@ public class CriarGrupoActivity extends AppCompatActivity implements Serializabl
     }
 
 
-    private void enviarImagemVolley(final byte[] imageBytes, String id) {
 
-        String tag_json_obj = "octect_request";
-        final String url = "https://novaleaf-197719.appspot.com/gcs/novaleaf-197719.appspot.com/" + id;
-
-        SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
-        final String token = sharedPreferences.getString("tokenID", "erro");
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-
-                enviarImagemGrupo(url);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                VolleyLog.d("erroIMAGEM", "Error: " + error.getMessage());
-            }
-        }) {
-            @Override
-            public byte[] getBody() throws AuthFailureError {
-                return imageBytes;
-            }
-
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
-                headers.put("Authorization", token);
-                return headers;
-            }
-        };
-        AppController.getInstance().addToRequestQueue(stringRequest, tag_json_obj);
-    }
-
-    private void enviarImagemGrupo(String imagem) {
-
-        String tag_json_obj = "json_obj_req";
-        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/update";
-
-        JSONObject grupo = new JSONObject();
-        SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
-        final String token = sharedPreferences.getString("tokenID", "erro");
-
-        try {
-            grupo.put("image_uri", imagem);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, grupo,
-                    new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-
-                        }
-                    }, new Response.ErrorListener() {
-
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    VolleyLog.d("erroNOVAOCORRENCIA", "Error: " + error.getMessage());
-                }
-            }) {
-                @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {
-                    HashMap<String, String> headers = new HashMap<String, String>();
-                    headers.put("Authorization", token);
-                    return headers;
-                }
-
-            };
-            AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
-
-    }
 }

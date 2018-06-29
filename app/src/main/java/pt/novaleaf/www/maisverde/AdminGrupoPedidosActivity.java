@@ -60,20 +60,23 @@ public class AdminGrupoPedidosActivity extends AppCompatActivity implements Seri
 
         grupo = (Grupo) getIntent().getSerializableExtra("grupo");
 
-        volleyGetPedidos();
 
         pedidos = new ArrayList<>();
-
-        adapter = new ArrayAdapter(this,
-                android.R.layout.simple_list_item_1, pedidos);
 
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                popupPedidos(view, pedidos.get(i));
+                if (!pedidos.get(i).equals("Não há pedidos..."))
+                    popupPedidos(view, pedidos.get(i));
             }
         });
+
+        adapter = new ArrayAdapter(this,
+                android.R.layout.simple_list_item_1, pedidos);
+
+        listView.setAdapter(adapter);
+        volleyGetPedidos();
 
 
     }
@@ -87,7 +90,7 @@ public class AdminGrupoPedidosActivity extends AppCompatActivity implements Seri
                 if (item.getItemId() == R.id.aceitar_user) {
                     volleyAceitarUser(user);
                 } else {
-
+                    volleyRejeitarUser(user);
                 }
                 return false;
             }
@@ -142,11 +145,54 @@ public class AdminGrupoPedidosActivity extends AppCompatActivity implements Seri
                 addToRequestQueue(jsonObjectRequest, tag_json_obj);
     }
 
+    private void volleyRejeitarUser(String user) {
+        String tag_json_obj = "json_request";
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/refuse?group_id=" +
+                grupo.getGroupId() + "&username=" + user;
+
+        Log.d("ché bate só", url);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+        JSONObject eventos = new JSONObject();
+        final String token = sharedPreferences.getString("tokenID", "erro");
+
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, eventos,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                    }
+
+                }, new Response.ErrorListener()
+
+        {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("erroLOGIN", "Error: " + error.getMessage());
+            }
+        })
+
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+        };
+
+
+        AppController.getInstance().
+                addToRequestQueue(jsonObjectRequest, tag_json_obj);
+    }
+
 
     private void volleyGetPedidos() {
         String tag_json_obj = "json_request";
         String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/group_requests?group_id="
-                + grupo.getGroupId() + "cursor?startquery";
+                + grupo.getGroupId() + "&cursor=startquery";
 
         Log.d("ché bate só", url);
 
@@ -161,7 +207,7 @@ public class AdminGrupoPedidosActivity extends AppCompatActivity implements Seri
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            if (response.has("list")) {
+                            if (!response.isNull("list")) {
                                 JSONArray list = response.getJSONArray("list");
                                 for (int i = 0; i < list.length(); i++) {
 
@@ -170,9 +216,15 @@ public class AdminGrupoPedidosActivity extends AppCompatActivity implements Seri
                                     adapter.notifyDataSetChanged();
 
                                 }
+                            } else {
+                                Log.d("olá", "heheehehe");
+                                pedidos.add("Não há pedidos...");
+                                adapter.notifyDataSetChanged();
+
                             }
 
                         } catch (JSONException e) {
+
                             e.printStackTrace();
                         }
                     }

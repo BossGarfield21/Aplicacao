@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MyItemGrupoFragmentRecyclerViewAdapter extends RecyclerView.Adapter<MyItemGrupoFragmentRecyclerViewAdapter.ViewHolder>
-        implements Filterable{
+        implements Filterable {
 
     public static List<Grupo> mValues;
     private final ItemGruposFragment.OnListFragmentInteractionListener mListener;
@@ -50,7 +50,7 @@ public class MyItemGrupoFragmentRecyclerViewAdapter extends RecyclerView.Adapter
 
         holder.mNomeGrupo.setText(mValues.get(position).getName());
         //holder.mPrivacyGrupo.setText(mValues.get(position).getPrivacy());
-        if (mValues.get(position).getNumPessoas()>1)
+        if (mValues.get(position).getNumPessoas() > 1)
             holder.mNumPessoas.setText(String.format("%d pessoas", mValues.get(position).getNumPessoas()));
         else
             holder.mNumPessoas.setText(String.format("%d pessoa", mValues.get(position).getNumPessoas()));
@@ -114,8 +114,9 @@ public class MyItemGrupoFragmentRecyclerViewAdapter extends RecyclerView.Adapter
                     // We'll go through all the contacts and see
                     // if they contain the supplied string
                     for (Grupo grupo : GruposListActivity.grupos) {
-                        if (grupo.getName().toLowerCase().contains( charSequence.toString().toLowerCase() )
-                                && (distrito.isEmpty() || grupo.getDistrito().toLowerCase().equals(distrito.toLowerCase()))) {
+                        if (grupo.getName().toLowerCase().contains(charSequence.toString().toLowerCase())
+                                && (distrito.isEmpty() || grupo.getDistrito().toLowerCase().equals(distrito.toLowerCase())
+                        || (distrito.equals("meus"))&& (grupo.isAdmin() || grupo.isMember()))) {
                             // if `contains` == true then add it
                             // to our filtered list
                             Log.d("adicionou", grupo.getName());
@@ -134,7 +135,7 @@ public class MyItemGrupoFragmentRecyclerViewAdapter extends RecyclerView.Adapter
 
             @Override
             protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-                ArrayList<Grupo> g =(ArrayList<Grupo>) filterResults.values;
+                ArrayList<Grupo> g = (ArrayList<Grupo>) filterResults.values;
                 Log.d("RESULTS", g.size() + " BINA");
                 mValues = (ArrayList<Grupo>) filterResults.values;
                 Log.d("RESULTS", GruposListActivity.grupos.size() + " JORGINA");
@@ -146,7 +147,6 @@ public class MyItemGrupoFragmentRecyclerViewAdapter extends RecyclerView.Adapter
     }
 
 
-
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         public TextView mNomeGrupo;
@@ -155,7 +155,7 @@ public class MyItemGrupoFragmentRecyclerViewAdapter extends RecyclerView.Adapter
         public ConstraintLayout mContraintLayout;
         public ImageView mImageLogo;
 
-        public ViewHolder(View v){
+        public ViewHolder(View v) {
             super(v);
 
             mNomeGrupo = (TextView) v.findViewById(R.id.textNomeGrupo);
