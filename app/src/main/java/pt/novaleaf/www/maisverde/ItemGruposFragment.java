@@ -107,10 +107,6 @@ public class ItemGruposFragment extends Fragment {
         //       null, null, null, "2", "leiria", "bina", "hoje vamos limpar leiria\n" +
         //     "venham a leiria limpar\n" +
         //   "é essencial toda a ajuda"));
-        listGrupos.add(new Grupo("Binas churra", null, null, 0, 0,
-                null, null, "Público", "Setubal"));
-        listGrupos.add(new Grupo("Bombeir0's Crew", null, null, 0, 0,
-                null, null, "Público", "Porto"));
 
     }
 

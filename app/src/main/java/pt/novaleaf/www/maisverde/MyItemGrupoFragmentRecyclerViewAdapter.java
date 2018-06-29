@@ -1,5 +1,6 @@
 package pt.novaleaf.www.maisverde;
 
+import android.graphics.BitmapFactory;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -8,13 +9,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MyItemGrupoFragmentRecyclerViewAdapter extends RecyclerView.Adapter<MyItemGrupoFragmentRecyclerViewAdapter.ViewHolder>
-        implements Filterable{
+        implements Filterable {
 
     public static List<Grupo> mValues;
     private final ItemGruposFragment.OnListFragmentInteractionListener mListener;
@@ -47,8 +49,12 @@ public class MyItemGrupoFragmentRecyclerViewAdapter extends RecyclerView.Adapter
     public void onBindViewHolder(final MyItemGrupoFragmentRecyclerViewAdapter.ViewHolder holder, final int position) {
 
         holder.mNomeGrupo.setText(mValues.get(position).getName());
-        holder.mPrivacyGrupo.setText(mValues.get(position).getPrivacy());
-        holder.mNumPessoas.setText(mValues.get(position).getNumPessoas() + " pessoas");
+        //holder.mPrivacyGrupo.setText(mValues.get(position).getPrivacy());
+        if (mValues.get(position).getNumPessoas() > 1)
+            holder.mNumPessoas.setText(String.format("%d pessoas", mValues.get(position).getNumPessoas()));
+        else
+            holder.mNumPessoas.setText(String.format("%d pessoa", mValues.get(position).getNumPessoas()));
+
 
         holder.mContraintLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,6 +62,21 @@ public class MyItemGrupoFragmentRecyclerViewAdapter extends RecyclerView.Adapter
                 mListener.onGrupoInteraction(mValues.get(position));
             }
         });
+
+        if (mValues.get(position).getImage_uri() != null && mValues.get(position).getBitmap() != null) {
+            holder.mImageLogo.setAdjustViewBounds(true);
+
+            holder.mImageLogo.setImageBitmap(BitmapFactory.decodeByteArray(mValues.get(position).getBitmap(),
+                    0, mValues.get(position).getBitmap().length));
+
+            //receberImagemVolley(holder, position);
+        } else if (mValues.get(position).getImageID() != 0) {
+            holder.mImageLogo.setAdjustViewBounds(false);
+
+            holder.mImageLogo.setImageResource(mValues.get(position).getImageID());
+
+        }
+
 
     }
 
@@ -93,8 +114,9 @@ public class MyItemGrupoFragmentRecyclerViewAdapter extends RecyclerView.Adapter
                     // We'll go through all the contacts and see
                     // if they contain the supplied string
                     for (Grupo grupo : GruposListActivity.grupos) {
-                        if (grupo.getName().toUpperCase().contains( charSequence.toString().toUpperCase() )
-                                && (distrito.isEmpty() || grupo.getDistrito().equals(distrito))) {
+                        if (grupo.getName().toLowerCase().contains(charSequence.toString().toLowerCase())
+                                && (distrito.isEmpty() || grupo.getDistrito().toLowerCase().equals(distrito.toLowerCase())
+                        || (distrito.equals("meus"))&& (grupo.isAdmin() || grupo.isMember()))) {
                             // if `contains` == true then add it
                             // to our filtered list
                             Log.d("adicionou", grupo.getName());
@@ -113,7 +135,7 @@ public class MyItemGrupoFragmentRecyclerViewAdapter extends RecyclerView.Adapter
 
             @Override
             protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-                ArrayList<Grupo> g =(ArrayList<Grupo>) filterResults.values;
+                ArrayList<Grupo> g = (ArrayList<Grupo>) filterResults.values;
                 Log.d("RESULTS", g.size() + " BINA");
                 mValues = (ArrayList<Grupo>) filterResults.values;
                 Log.d("RESULTS", GruposListActivity.grupos.size() + " JORGINA");
@@ -125,21 +147,22 @@ public class MyItemGrupoFragmentRecyclerViewAdapter extends RecyclerView.Adapter
     }
 
 
-
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         public TextView mNomeGrupo;
         public TextView mPrivacyGrupo;
         public TextView mNumPessoas;
         public ConstraintLayout mContraintLayout;
+        public ImageView mImageLogo;
 
-        public ViewHolder(View v){
+        public ViewHolder(View v) {
             super(v);
 
             mNomeGrupo = (TextView) v.findViewById(R.id.textNomeGrupo);
             mPrivacyGrupo = (TextView) v.findViewById(R.id.textPrivacy);
             mNumPessoas = (TextView) v.findViewById(R.id.textNumPessoas);
             mContraintLayout = (ConstraintLayout) v.findViewById(R.id.constraintLayoutItemGrupo);
+            mImageLogo = (ImageView) v.findViewById(R.id.imageGrupo);
 
         }
     }

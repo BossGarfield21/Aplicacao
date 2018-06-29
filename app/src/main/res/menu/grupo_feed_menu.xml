@@ -10,7 +10,7 @@
     <item
         android:id="@+id/detalhes_grupo"
         android:orderInCategory="100"
-        android:title="Detalhes"
+        android:title="Vista do grupo"
         app:showAsAction="never"/>
     <item
         android:id="@+id/action_logout"

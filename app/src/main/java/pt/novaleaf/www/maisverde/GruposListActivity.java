@@ -3,6 +3,8 @@ package pt.novaleaf.www.maisverde;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -42,9 +44,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import utils.ByteRequest;
+
 import static pt.novaleaf.www.maisverde.EventoFragment.listEventos;
 import static pt.novaleaf.www.maisverde.EventoFragment.myEventoRecyclerViewAdapter;
 import static pt.novaleaf.www.maisverde.ItemGruposFragment.myItemGrupoFragmentRecyclerViewAdapter;
+import static pt.novaleaf.www.maisverde.LoginActivity.sharedPreferences;
+import static pt.novaleaf.www.maisverde.OcorrenciaFragment.myOcorrenciaRecyclerViewAdapter;
 
 
 /**
@@ -90,10 +96,10 @@ public class GruposListActivity extends AppCompatActivity
             @Override
             public void onGrupoInteraction(Grupo item) {
                 Intent intent;
-                if (false)
-                    intent = new Intent(GruposListActivity.this, GruposActivity.class);
-                else
+                if (item.isAdmin()||item.isMember())
                     intent = new Intent(GruposListActivity.this, GrupoFeedActivity.class);
+                else
+                    intent = new Intent(GruposListActivity.this, GruposActivity.class);
 
                 intent.putExtra("grupo", item);
                 startActivity(intent);
@@ -257,7 +263,7 @@ public class GruposListActivity extends AppCompatActivity
                         item.setCheckable(true);
                         item.setChecked(!item.isChecked());
                         setUncheckedMenu(popup, item);
-                        showDistrict(item.getTitle().toString());
+                        showDistrict(item.getTitle().toString().toLowerCase());
                     }
 
                     return false;
@@ -266,8 +272,8 @@ public class GruposListActivity extends AppCompatActivity
             MenuInflater inflater = popup.getMenuInflater();
             inflater.inflate(R.menu.distritos_menu, popup.getMenu());
 
-            popup.getMenu().findItem(R.id.d0).setCheckable(true);
-            popup.getMenu().findItem(R.id.d0).setChecked(true);
+            popup.getMenu().findItem(R.id.meusGrupos).setCheckable(true);
+            popup.getMenu().findItem(R.id.meusGrupos).setChecked(true);
         }
         popup.show();
     }
@@ -276,7 +282,18 @@ public class GruposListActivity extends AppCompatActivity
 
         //tempGrupos.clear();
         Log.d("DITRITO", distrito);
-        if (!distrito.equals("TUDO")) {
+
+        if (distrito.equals("meus grupos")){
+            tempGrupos.clear();
+            for (Grupo grupo : grupos) {
+                if (grupo.isMember()|| grupo.isAdmin())
+                    tempGrupos.add(grupo);
+            }
+            adapter.setDistrito("meus");
+            MyItemGrupoFragmentRecyclerViewAdapter.mValues = tempGrupos;
+            adapter.notifyDataSetChanged();
+        }
+        else if (!distrito.equals("tudo")) {
             tempGrupos.clear();
             adapter.setDistrito(distrito);
 
@@ -361,68 +378,81 @@ public class GruposListActivity extends AppCompatActivity
                             Log.d("nabo", cursorGrupos);
 
 
-                            JSONArray list = response.getJSONArray("list");
-                            if (!isFinishedGrupos) {
-                                isFinishedGrupos = response.getBoolean("isFinished");
-                                Log.d("ACABOU???", String.valueOf(isFinishedGrupos));
+                            if (response.has("list")) {
+                                JSONArray list = response.getJSONArray("list");
+                                if (!isFinishedGrupos) {
+                                    isFinishedGrupos = response.getBoolean("isFinished");
+                                    Log.d("ACABOU???", String.valueOf(isFinishedGrupos));
 
-                                for (int i = 0; i < list.length(); i++) {
+                                    for (int i = 0; i < list.length(); i++) {
 
-                                    String name = null;
-                                    List<String> base_users = new ArrayList<>();
-                                    List<String> admins = new ArrayList<>();
-                                    long points = 0;
-                                    long creationDate = 0;
-                                    String groupId = null;
-                                    String privacy = null;
-                                    String image_uri = null;
-                                    String distrito = null;
+                                        String name = null;
+                                        long numbMembers = 0;
+                                        long points = 0;
+                                        long creationDate = 0;
+                                        String groupId = null;
+                                        String privacy = null;
+                                        String image_uri = null;
+                                        String distrito = null;
+                                        boolean isMember = false;
+                                        boolean isAdmin = false;
 
-                                    JSONObject grupo = list.getJSONObject(i);
-                                    if (grupo.has("groupId"))
-                                        groupId = grupo.getString("groupId");
-                                    if (grupo.has("name"))
-                                        name = grupo.getString("name");
-                                    if (grupo.has("creationDate"))
-                                        creationDate = grupo.getLong("creationDate");
-                                    if (grupo.has("points"))
-                                        points = grupo.getLong("points");
-                                    if (grupo.has("image_uri"))
-                                        image_uri = grupo.getString("image_uri");
-                                    if (grupo.has("groupId"))
-                                        groupId = grupo.getString("groupId");
-                                    if (grupo.has("privacy"))
-                                        privacy = grupo.getString("privacy");
-                                    if (grupo.has("distrito"))
-                                        distrito = grupo.getString("distrito");
+                                        JSONObject grupo = list.getJSONObject(i);
+                                        if (grupo.has("groupId"))
+                                            groupId = grupo.getString("groupId");
+                                        if (grupo.has("name"))
+                                            name = grupo.getString("name");
+                                        if (grupo.has("creationDate"))
+                                            creationDate = grupo.getLong("creationDate");
+                                        if (grupo.has("points"))
+                                            points = grupo.getLong("points");
+                                        if (grupo.has("image_uri"))
+                                            image_uri = grupo.getString("image_uri");
+                                        if (grupo.has("groupId"))
+                                            groupId = grupo.getString("groupId");
+                                        if (grupo.has("privacy"))
+                                            privacy = grupo.getString("privacy");
+                                        if (grupo.has("district"))
+                                            distrito = grupo.getString("district");
 
-                                    if (grupo.has("base_users")) {
-                                        JSONArray users = grupo.getJSONArray("base_users");
-                                        for (int a = 0; a < users.length(); a++)
-                                            base_users.add(users.getString(a));
-                                    }
 
-                                    if (grupo.has("admins")) {
-                                        JSONArray adms = grupo.getJSONArray("admins");
-                                        for (int a = 0; a < adms.length(); a++)
-                                            admins.add(adms.getString(a));
-                                    }
+                                        if (grupo.has("isAdmin")) {
+                                            isAdmin = grupo.getBoolean("isAdmin");
+                                        }
+                                        if (grupo.has("isMember")) {
+                                            isMember = grupo.getBoolean("isMember");
+                                        }
+                                        if (grupo.has("numbMembers")) {
+                                            numbMembers = grupo.getLong("numbMembers");
+                                        }
 
-                                    Log.d("name", name);
-                                    Log.d("groupId", groupId);
+                                        Log.d("name", name);
+                                        Log.d("groupId", groupId);
 //                                    Log.d("privacy", privacy);
 
-                                    Grupo grupo1 = new Grupo(name, base_users, admins, points,
-                                            creationDate, image_uri, groupId, privacy, distrito);
+                                        Grupo grupo1 = new Grupo(name, null, null, points,
+                                                creationDate, image_uri, groupId, privacy, distrito, isAdmin, isMember,
+                                                numbMembers);
 
-                                    if (!grupos.contains(grupo1))
-                                        grupos.add(grupo1);
 
-                                    adapter.notifyDataSetChanged();
+                                        if (grupo1.getImage_uri() != null)
+                                            receberImagemVolley(grupo1);
+                                        else {
+                                            grupo1.setImageID(R.drawable.ic_people_black_24dp);
+                                        }
 
+
+                                        if (!grupos.contains(grupo1))
+                                            grupos.add(grupo1);
+
+
+                                        adapter.notifyDataSetChanged();
+
+                                        showDistrict("meus grupos");
+
+                                    }
                                 }
                             }
-
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -446,6 +476,43 @@ public class GruposListActivity extends AppCompatActivity
 
 
         AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
+
+    }
+
+    private void receberImagemVolley(final Grupo item) {
+        String tag_json_obj = "octect_request";
+        String url = item.getImage_uri();
+
+
+        final String token = sharedPreferences.getString("tokenID", "erro");
+        ByteRequest stringRequest = new ByteRequest(Request.Method.GET, url, new Response.Listener<byte[]>() {
+
+            @Override
+            public void onResponse(byte[] response) {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(response, 0, response.length);
+                item.setBitmap(response);
+                adapter.notifyDataSetChanged();
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("erroIMAGEMocorrencia", "Error: " + error.getMessage());
+
+                item.setImageID(R.drawable.ic_people_black_24dp);
+
+                adapter.notifyDataSetChanged();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+
+        };
+        AppController.getInstance().addToRequestQueue(stringRequest, tag_json_obj);
 
     }
 

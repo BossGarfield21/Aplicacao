@@ -40,17 +40,20 @@
 
         <activity
             android:name=".EntradaActivity"
-            android:theme="@style/Entrada3">
+            android:theme="@style/Entrada3"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity"/>
+        <activity android:name=".LoginActivity"
+                  android:configChanges="orientation|screenSize"/>
         <activity
             android:name=".FeedActivity"
-            android:label="Feed">
+            android:label="Feed"
+            android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH"/>
             </intent-filter>
@@ -72,7 +75,9 @@
         </activity>
         <activity
             android:name=".GruposListActivity"
-            android:label="Grupos"/>
+            android:label="Grupos"
+            android:configChanges="orientation|screenSize"
+            />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -100,13 +105,17 @@
         <activity
             android:name=".CriarOcorrenciaActivity"
             android:label="Criar ocorrência"
+            android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"/>
         <activity
             android:name=".CriarGrupoActivity"
-            android:label="Criar grupo"/>
+            android:label="Criar grupo"
+            android:configChanges="orientation|screenSize"
+            />
         <activity
             android:name=".AlterarDadosActivity"
             android:label="Perfil"
+            android:configChanges="orientation|screenSize"
             android:parentActivityName=".AreaPessoalActivity"/>
         <activity
             android:name=".MinhasOcorrenciasActivity"
@@ -114,20 +123,25 @@
         <activity android:name=".DetalheOcorrenciaActivity"/>
         <activity
             android:name=".AlterarPassActivity"
-            android:label="Mudar password"/>
+            android:label="Mudar password"
+            android:configChanges="orientation|screenSize"
+            />
         <activity
             android:name=".ComentariosActivity"
-            android:label="Comentários"/>
+            android:label="Comentários"
+            android:configChanges="orientation|screenSize"/>
         <activity
             android:name=".OcorrenciaActivity"
-            android:label="Ocorrência"/>
+            android:label="Ocorrência"
+            android:configChanges="orientation|screenSize"/>
         <activity
             android:name=".teste"
             android:label="@string/title_activity_teste"
             android:theme="@style/CustomTheme"/>
         <activity
             android:name=".EventoActivity"
-            android:label="Evento">
+            android:label="Evento"
+            android:configChanges="orientation|screenSize">
         </activity>
         <activity
             android:name=".TiposActivity"
@@ -138,25 +152,56 @@
         </activity>
         <activity
             android:name=".DetalhesGrupoActivity"
-            android:label="Detalhes">
+            android:label="Detalhes"
+            android:configChanges="orientation|screenSize">
         </activity>
         <activity
             android:name=".ProcurarGruposActivity"
-            android:label="Procurar grupo">
+            android:label="Procurar grupo"
+            android:configChanges="orientation|screenSize">
         </activity>
-        <activity android:name=".GrupoFeedActivity">
+        <activity android:name=".GrupoFeedActivity"
+                  android:configChanges="orientation|screenSize">
         </activity>
         <activity
             android:name=".AddPostActivity"
-            android:label="Criar publicação">
+            android:label="Criar publicação"
+            android:configChanges="orientation|screenSize">
         </activity>
         <activity
             android:name=".FeedEventosActivity"
-            android:label="Eventos">
+            android:label="Eventos"
+            android:configChanges="orientation|screenSize">
         </activity>
         <activity
             android:name=".AdministrarGrupoActivity"
-            android:label="Administrar grupo">
+            android:label="Administrar grupo"
+            android:configChanges="orientation|screenSize">
+        </activity>
+        <activity
+            android:name=".AdminGrupoConvidarActivity"
+            android:label="Convidar pessoas"
+            android:configChanges="orientation|screenSize">
+        </activity>
+        <activity
+            android:name=".AdminGrupoAtualizarActivity"
+            android:label="Atualizar informação"
+            android:configChanges="orientation|screenSize">
+        </activity>
+        <activity
+            android:name=".AdminGrupoMembrosActivity"
+            android:label="Gerir membros"
+            android:configChanges="orientation|screenSize">
+        </activity>
+        <activity
+            android:name=".AdminGrupoPedidosActivity"
+            android:label="Pedidos pendentes"
+            android:configChanges="orientation|screenSize">
+        </activity>
+        <activity
+            android:name=".AdminGrupoConvitesActivity"
+            android:label="Convites enviados"
+            android:configChanges="orientation|screenSize">
         </activity>
     </application>
 

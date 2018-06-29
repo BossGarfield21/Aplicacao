@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <item
-        android:id="@+id/acabar_grupo"
+        android:id="@+id/expulsar_admin"
         android:orderInCategory="100"
-        android:title="Dissolver grupo"
+        android:title="Expulsar de administrador"
         app:showAsAction="never"/>
     <item
-        android:id="@+id/action_logout"
+        android:id="@+id/expulsar_user"
         android:orderInCategory="100"
-        android:title="Sair do grupo"
+        android:title="Expulsar utilizador"
         app:showAsAction="never" />
+
 </menu>

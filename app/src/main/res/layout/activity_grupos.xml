@@ -41,7 +41,7 @@
                 android:layout_marginTop="8dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@mipmap/ic_bonfire_foreground"/>
+                app:srcCompat="@drawable/ic_people_black_24dp"/>
 
             <TextView
                 android:id="@+id/textGrupoPessoas"
@@ -67,18 +67,32 @@
                 app:layout_constraintTop_toBottomOf="@+id/imageView7"/>
 
             <TextView
-                android:id="@+id/textView25"
+                android:id="@+id/textDistrito"
                 android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_marginEnd="8dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/activity_horizontal_margin"
                 android:layout_marginStart="@dimen/activity_horizontal_margin"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:text="Admnistrado por bombeirotuga"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:text="Porto"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/view1"/>
+
+            <TextView
+                android:id="@+id/textPontos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="8dp"
+                android:text="0 pontos"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textDistrito"/>
 
             <View
                 android:id="@+id/view2"
@@ -88,35 +102,7 @@
                 android:background="#849d9d9d"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView25"/>
-
-            <TextView
-                android:id="@+id/textView26"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="@dimen/activity_horizontal_margin"
-                android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:text="Descrição:"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/view2"/>
-
-            <TextView
-                android:id="@+id/textView27"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/activity_horizontal_margin"
-                android:layout_marginStart="@dimen/activity_horizontal_margin"
-                android:layout_marginTop="8dp"
-                android:text="Somos ganda crew, é só matas limpas. Junta-te, envia pedidoSomos ganda crew, é só matas limpas. Junta-te, envia pedidoSomos ganda crew, é só matas limpas. Junta-te, envia pedidoSomos ganda crew, é só matas limpas. Junta-te, envia pedidoSomos ganda crew, é só matas limpas. Junta-te, envia pedidoSomos ganda crew, é só matas limpas. Junta-te, envia pedidoSomos ganda crew, é só matas limpas. Junta-te, envia pedidoSomos ganda crew, é só matas limpas. Junta-te, envia pedidoSomos ganda crew, é só matas limpas. Junta-te, envia pedidoSomos ganda crew, é só matas limpas. Junta-te, envia pedidoSomos ganda crew, é só matas limpas. Junta-te, envia pedidoSomos ganda crew, é só matas limpas. Junta-te, envia pedidoSomos ganda crew, é só matas limpas. Junta-te, envia pedidoSomos ganda crew, é só matas limpas. Junta-te, envia pedidoSomos ganda crew, é só matas limpas. Junta-te, envia pedidoSomos ganda crew, é só matas limpas. Junta-te, envia pedido"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView26"/>
+                app:layout_constraintTop_toBottomOf="@+id/textPontos"/>
 
             <Button
                 android:id="@+id/buttonPedido"
