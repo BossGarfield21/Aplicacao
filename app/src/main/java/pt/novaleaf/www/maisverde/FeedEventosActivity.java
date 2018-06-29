@@ -4,7 +4,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -133,7 +132,7 @@ public class FeedEventosActivity extends AppCompatActivity
             //finish();
 
         } else if (id == R.id.nav_area_pessoal) {
-            Intent i = new Intent(FeedEventosActivity.this, AlterarDadosActivity.class);
+            Intent i = new Intent(FeedEventosActivity.this, PerfilActivity.class);
             startActivityForResult(i, 0);
             //startActivity(i);
             //finish();

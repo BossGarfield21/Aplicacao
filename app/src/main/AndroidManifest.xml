@@ -112,7 +112,7 @@
             android:configChanges="orientation|screenSize"
             android:label="Criar grupo"/>
         <activity
-            android:name=".AlterarDadosActivity"
+            android:name=".PerfilActivity"
             android:configChanges="orientation|screenSize"
             android:label="Perfil"
             android:parentActivityName=".AreaPessoalActivity"/>
@@ -205,6 +205,10 @@
         <activity
             android:name=".LegendaMapaActivity"
             android:label="Legenda">
+        </activity>
+        <activity
+            android:name=".AlterarDadosActivity"
+            android:label="Alterar dados">
         </activity>
     </application>
 

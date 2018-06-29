@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -37,7 +36,6 @@ import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -200,7 +198,7 @@ public class FeedActivity extends AppCompatActivity
             //finish();
 
         } else if (id == R.id.nav_area_pessoal) {
-            Intent i = new Intent(FeedActivity.this, AlterarDadosActivity.class);
+            Intent i = new Intent(FeedActivity.this, PerfilActivity.class);
             startActivityForResult(i, 0);
             //startActivity(i);
             //finish();

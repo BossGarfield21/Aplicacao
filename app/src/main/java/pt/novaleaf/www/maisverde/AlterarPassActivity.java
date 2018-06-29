@@ -194,7 +194,7 @@ public class AlterarPassActivity extends AppCompatActivity {
                 editor.putString("password", myPassNova);
                 editor.commit();
                 // TODO: call the main activity (to be implemented) with data in the intent
-                Intent myIntent = new Intent(AlterarPassActivity.this, AlterarDadosActivity.class);
+                Intent myIntent = new Intent(AlterarPassActivity.this, PerfilActivity.class);
                 AlterarPassActivity.this.startActivity(myIntent);
                 finish();
             }else {

@@ -8,8 +8,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
@@ -41,16 +39,11 @@ import org.json.JSONObject;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import utils.ByteRequest;
 
-import static pt.novaleaf.www.maisverde.EventoFragment.listEventos;
-import static pt.novaleaf.www.maisverde.EventoFragment.myEventoRecyclerViewAdapter;
-import static pt.novaleaf.www.maisverde.ItemGruposFragment.myItemGrupoFragmentRecyclerViewAdapter;
 import static pt.novaleaf.www.maisverde.LoginActivity.sharedPreferences;
-import static pt.novaleaf.www.maisverde.OcorrenciaFragment.myOcorrenciaRecyclerViewAdapter;
 
 
 /**
@@ -332,7 +325,7 @@ public class GruposListActivity extends AppCompatActivity
             finish();
 
         } else if (id == R.id.nav_area_pessoal) {
-            Intent i = new Intent(GruposListActivity.this, AlterarDadosActivity.class);
+            Intent i = new Intent(GruposListActivity.this, PerfilActivity.class);
             startActivity(i);
             finish();
 
