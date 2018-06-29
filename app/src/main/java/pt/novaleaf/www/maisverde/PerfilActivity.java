@@ -3,6 +3,8 @@ package pt.novaleaf.www.maisverde;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.NavigationView;
@@ -14,12 +16,16 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,13 +35,23 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
+
+import utils.ByteRequest;
+
+import static pt.novaleaf.www.maisverde.LoginActivity.sharedPreferences;
+import static pt.novaleaf.www.maisverde.OcorrenciaFragment.myOcorrenciaRecyclerViewAdapter;
 
 
 /**
@@ -58,6 +74,9 @@ public class PerfilActivity extends AppCompatActivity
     Toolbar toolbar;
     ConstraintLayout constraintLayout;
     ActionBar actionBar;
+    private ImageView mImage;
+    private static final int PICK_IMAGE = 2;
+    private byte[] imageBytes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,16 +86,7 @@ public class PerfilActivity extends AppCompatActivity
         constraintLayout = (ConstraintLayout) findViewById(R.id.mConstr);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (changed) {
-                    changed = false;
-                    attemptSendData();
-                }
-                finish();
-            }
-        });
+
         actionBar = getSupportActionBar();
         if (actionBar != null) {
             // Show the Up button in the action bar.
@@ -87,6 +97,21 @@ public class PerfilActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+
+
+        mImage = (ImageView) findViewById(R.id.profile_pic);
+
+        String image = getSharedPreferences("Prefs", MODE_PRIVATE).getString("image_user", null);
+        if (image!=null)
+            receberImagemVolley(image);
+
+        mImage.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                popupImagem(view);
+                return false;
+            }
+        });
 
 
         textUsername = (TextView) findViewById(R.id.textUsername);
@@ -106,14 +131,14 @@ public class PerfilActivity extends AppCompatActivity
         arrayList = new ArrayList<>();
         //arrayList.add(new PerfilItem("Username", sharedPreferences.getString("username", "erro")));
         arrayList.add(new PerfilItem("Email", email));
-        arrayList.add(new PerfilItem("Nome", sharedPreferences.getString("name", "")));
-        arrayList.add(new PerfilItem("Aprovação dos reports", sharedPreferences.getString("approval_rate", "erro")));
-        arrayList.add(new PerfilItem("Reports efetuados", sharedPreferences.getString("numb_reports", "erro")));
-        arrayList.add(new PerfilItem("Morada", sharedPreferences.getString("firstaddress", "")));
-        arrayList.add(new PerfilItem("Morada complementar", sharedPreferences.getString("complementaryaddress", "")));
-        arrayList.add(new PerfilItem("Localidade", sharedPreferences.getString("locality", "")));
-        arrayList.add(new PerfilItem("Código Postal", sharedPreferences.getString("postalcode", "")));
-        arrayList.add(new PerfilItem("Telemóvel", sharedPreferences.getString("mobile_phone", "")));
+        arrayList.add(new PerfilItem("Nome", getSharedPreferences("Prefs", MODE_PRIVATE).getString("name", "")));
+        arrayList.add(new PerfilItem("Aprovação dos reports", getSharedPreferences("Prefs", MODE_PRIVATE).getString("approval_rate", "erro")));
+        arrayList.add(new PerfilItem("Reports efetuados", getSharedPreferences("Prefs", MODE_PRIVATE).getString("numb_reports", "erro")));
+        arrayList.add(new PerfilItem("Morada", getSharedPreferences("Prefs", MODE_PRIVATE).getString("firstaddress", "")));
+        arrayList.add(new PerfilItem("Morada complementar", getSharedPreferences("Prefs", MODE_PRIVATE).getString("complementaryaddress", "")));
+        arrayList.add(new PerfilItem("Localidade", getSharedPreferences("Prefs", MODE_PRIVATE).getString("locality", "")));
+        arrayList.add(new PerfilItem("Código Postal", getSharedPreferences("Prefs", MODE_PRIVATE).getString("postalcode", "")));
+        arrayList.add(new PerfilItem("Telemóvel", getSharedPreferences("Prefs", MODE_PRIVATE).getString("mobile_phone", "")));
         arrayList.add(new PerfilItem("Mudar a password", ""));
 
         adapter = new MyPerfilRecyclerViewAdapter(this, arrayList);
@@ -131,6 +156,52 @@ public class PerfilActivity extends AppCompatActivity
             chageData(getIntent());
     }
 
+    private void popupImagem(View view) {
+        PopupMenu popupMenu = new PopupMenu(PerfilActivity.this, view);
+
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == R.id.mudar_pic) {
+                    Intent intent = new Intent();
+                    intent.setType("image/*");
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
+                }
+                return false;
+            }
+        });
+
+        MenuInflater inflater = popupMenu.getMenuInflater();
+        inflater.inflate(R.menu.mudar_imagem_menu, popupMenu.getMenu());
+        popupMenu.show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 2) {
+            if (resultCode == RESULT_OK) {
+                try {
+                    InputStream inputStream = this.getContentResolver().openInputStream(data.getData());
+                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                    mImage.setImageBitmap(bitmap);
+
+
+                    ByteArrayOutputStream bao = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, bao);
+                    imageBytes = bao.toByteArray();
+
+
+                    String id = UUID.randomUUID().toString();
+                    enviarImagemVolley(imageBytes, id);
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     private void chageData(Intent intent) {
         String email, nome, morada, morada_complementar, localidade, codigo_postal, telemovel;
 
@@ -144,47 +215,49 @@ public class PerfilActivity extends AppCompatActivity
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
 
-        if (!email.isEmpty()){
+        if (!TextUtils.isEmpty(email)) {
             arrayList.remove(0);
             arrayList.add(0, new PerfilItem("Email", email));
             editor.putString("email", email);
         }
 
-        if (!nome.isEmpty()){
+        if (!TextUtils.isEmpty(nome)) {
             arrayList.remove(1);
             arrayList.add(1, new PerfilItem("Nome", nome));
             editor.putString("nome", nome);
         }
 
-        if (!morada.isEmpty()){
+        if (!TextUtils.isEmpty(morada)) {
             arrayList.remove(4);
             arrayList.add(4, new PerfilItem("Morada", morada));
             editor.putString("firstaddress", morada);
         }
 
-        if (!morada_complementar.isEmpty()){
+        if (!TextUtils.isEmpty(morada_complementar)) {
             arrayList.remove(5);
             arrayList.add(5, new PerfilItem("Morada complementar", morada_complementar));
             editor.putString("complementaryaddress", morada_complementar);
         }
 
-        if (!localidade.isEmpty()){
+        if (!TextUtils.isEmpty(localidade)) {
             arrayList.remove(6);
             arrayList.add(6, new PerfilItem("Localidade", localidade));
             editor.putString("locality", localidade);
         }
 
-        if (!codigo_postal.isEmpty()){
+        if (!TextUtils.isEmpty(codigo_postal)) {
             arrayList.remove(7);
             arrayList.add(7, new PerfilItem("Código postal", codigo_postal));
             editor.putString("postalcode", codigo_postal);
         }
 
-        if (!telemovel.isEmpty()){
+        if (!TextUtils.isEmpty(telemovel)) {
             arrayList.remove(8);
             arrayList.add(8, new PerfilItem("Telemóvel", telemovel));
             editor.putString("mobile_phone", telemovel);
         }
+
+        editor.commit();
 
     }
     //
@@ -229,8 +302,6 @@ public class PerfilActivity extends AppCompatActivity
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
-                            if (changed)
-                                attemptSendData();
                             editor.clear();
                             editor.commit();
                             Intent intent = new Intent(PerfilActivity.this, LoginActivity.class);
@@ -256,37 +327,6 @@ public class PerfilActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onBackPressed() {
-        if (changed) {
-            changed = false;
-            attemptSendData();
-        }
-        //navigationView.getMenu().getItem(0).setChecked(true);
-        finish();
-    }
-
-
-    /**
-     * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
-     * errors are presented and no actual login attempt is made.
-     */
-    private void attemptSendData() {
-
-        String email = sharedPreferences.getString("email", "");
-        String firstaddress = sharedPreferences.getString("firstaddress", "");
-        String complementaryaddress = sharedPreferences.getString("complementaryaddress", "");
-        String locality = sharedPreferences.getString("locality", "");
-        String mobile_phone = sharedPreferences.getString("mobile_phone", "");
-        String postalcode = sharedPreferences.getString("postalcode", "");
-
-
-        //alterarDadosVolley(email, firstaddress, complementaryaddress, locality, mobile_phone, postalcode);
-
-    }
-
-
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -304,8 +344,7 @@ public class PerfilActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_mapa) {
 
-            if (changed)
-                attemptSendData();
+
             Intent i = new Intent(PerfilActivity.this, MapsActivity.class);
             startActivity(i);
             finish();
@@ -314,8 +353,7 @@ public class PerfilActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_grupos) {
 
-            if (changed)
-                attemptSendData();
+
             Intent i = new Intent(PerfilActivity.this, GruposListActivity.class);
             startActivity(i);
             finish();
@@ -331,6 +369,110 @@ public class PerfilActivity extends AppCompatActivity
         return true;
     }
 
+    private void alterarDadosVolley(String image) {
+
+        String tag_json_obj = "json_obj_req";
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/users/complete_profile";
+
+        JSONObject profileInfo = new JSONObject();
+        final String token = getSharedPreferences("Prefs", MODE_PRIVATE).getString("tokenID", "erro");
+        try {
+
+            profileInfo.put("image", image);
+            Log.d("ya BINA", profileInfo.toString());
+
+
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, profileInfo,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                        }
+                    }, new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    VolleyLog.d("erroLOGIN", "Error: " + error.getMessage());
+                }
+            }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    HashMap<String, String> headers = new HashMap<String, String>();
+                    headers.put("Authorization", token);
+                    return headers;
+                }
+            };
+            AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private void enviarImagemVolley(final byte[] imageBytes, String id) {
+
+        String tag_json_obj = "octect_request";
+        final String url = "https://novaleaf-197719.appspot.com/gcs/novaleaf-197719.appspot.com/" + id;
+
+        SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+        final String token = sharedPreferences.getString("tokenID", "erro");
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
+
+                editor.putString("image_user", url);
+                editor.commit();
+                alterarDadosVolley(url);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("erroIMAGEM", "Error: " + error.getMessage());
+            }
+        }) {
+            @Override
+            public byte[] getBody() throws AuthFailureError {
+                return imageBytes;
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+        };
+        AppController.getInstance().addToRequestQueue(stringRequest, tag_json_obj);
+
+    }
+
+    private void receberImagemVolley(final String url) {
+        String tag_json_obj = "octect_request";
+
+        final String token = getSharedPreferences("Prefs", MODE_PRIVATE).getString("tokenID", "erro");
+        ByteRequest stringRequest = new ByteRequest(Request.Method.GET, url, new Response.Listener<byte[]>() {
+
+            @Override
+            public void onResponse(byte[] response) {
+
+                mImage.setImageBitmap(BitmapFactory.decodeByteArray(response, 0, response.length));
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+
+        };
+        AppController.getInstance().addToRequestQueue(stringRequest, tag_json_obj);
+
+    }
 
 }
 

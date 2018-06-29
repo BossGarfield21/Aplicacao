@@ -335,7 +335,7 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
 
                     isImage = true;
                     ByteArrayOutputStream bao = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 70, bao);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, bao);
                     imageBytes = bao.toByteArray();
 
                     Snackbar snackbar = Snackbar

@@ -350,7 +350,7 @@ public class CriarGrupoActivity extends AppCompatActivity implements Serializabl
                 imageView.setImageBitmap(rotatedBitmap);
                 isImage = true;
                 ByteArrayOutputStream bao = new ByteArrayOutputStream();
-                rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 70, bao);
+                rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 50, bao);
                 imageBytes = bao.toByteArray();
 
                 Snackbar snackbar = Snackbar
@@ -392,7 +392,7 @@ public class CriarGrupoActivity extends AppCompatActivity implements Serializabl
 
                     isImage = true;
                     ByteArrayOutputStream bao = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 70, bao);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, bao);
                     imageBytes = bao.toByteArray();
 
                     Snackbar snackbar = Snackbar

@@ -6,6 +6,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,6 +35,7 @@ public class AlterarDadosActivity extends AppCompatActivity {
     private TextInputEditText mLocalidade;
     private TextInputEditText mCodigoPostal;
     private TextInputEditText mTelemovel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,8 +54,6 @@ public class AlterarDadosActivity extends AppCompatActivity {
             // Show the Up button in the action bar.
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-
-
 
 
         mEmail = (TextInputEditText) findViewById(R.id.alterarEmail);
@@ -91,18 +92,39 @@ public class AlterarDadosActivity extends AppCompatActivity {
         String codigo_postal = mCodigoPostal.getText().toString();
         String telemovel = mTelemovel.getText().toString();
 
+        if (TextUtils.isEmpty(email))
+            email = null;
+
+        if (TextUtils.isEmpty(nome))
+            nome = null;
+
+        if (TextUtils.isEmpty(morada))
+            morada = null;
+
+        if (TextUtils.isEmpty(morada_complementar))
+            morada_complementar= null;
+
+        if (TextUtils.isEmpty(localidade))
+            localidade = null;
+
+        if (TextUtils.isEmpty(telemovel))
+            telemovel = null;
+
+        if (TextUtils.isEmpty(codigo_postal))
+            codigo_postal = null;
+
         alterarDadosVolley(email, morada, morada_complementar, localidade, telemovel, codigo_postal, nome);
 
 
         Intent intent = new Intent(AlterarDadosActivity.this, PerfilActivity.class);
-        intent.putExtra("email" , email);
-        intent.putExtra("nome" , nome);
-        intent.putExtra("morada" , morada);
-        intent.putExtra("morada_complementar" , morada_complementar);
-        intent.putExtra("localidade" , localidade);
-        intent.putExtra("codigo_postal" , codigo_postal);
-        intent.putExtra("telemovel" , telemovel);
-        intent.putExtra("mudou" , true);
+        intent.putExtra("email", email);
+        intent.putExtra("nome", nome);
+        intent.putExtra("morada", morada);
+        intent.putExtra("morada_complementar", morada_complementar);
+        intent.putExtra("localidade", localidade);
+        intent.putExtra("codigo_postal", codigo_postal);
+        intent.putExtra("telemovel", telemovel);
+        intent.putExtra("mudou", true);
         startActivity(intent);
         finish();
         //super.onBackPressed();
@@ -110,7 +132,7 @@ public class AlterarDadosActivity extends AppCompatActivity {
 
     private void alterarDadosVolley(final String email, final String firstaddress, final String complementaryaddress,
                                     final String locality, final String mobile_phone,
-                                    final String postalcode, String nome) {
+                                    final String postalcode, String name) {
 
         String tag_json_obj = "json_obj_req";
         String url = "https://novaleaf-197719.appspot.com/rest/withtoken/users/complete_profile";
@@ -125,7 +147,9 @@ public class AlterarDadosActivity extends AppCompatActivity {
             profileInfo.put("locality", locality);
             profileInfo.put("mobile_phone", mobile_phone);
             profileInfo.put("postalcode", postalcode);
-            profileInfo.put("name", nome);
+            profileInfo.put("name", name);
+            profileInfo.put("name", name);
+            Log.d("ya BINA", profileInfo.toString());
 
 
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, profileInfo,

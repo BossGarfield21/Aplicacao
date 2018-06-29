@@ -29,13 +29,27 @@
                             <entry key="launcher">
                               <value>
                                 <PersistentState>
+                                  <option name="children">
+                                    <map>
+                                      <entry key="foregroundImage">
+                                        <value>
+                                          <PersistentState>
+                                            <option name="values">
+                                              <map>
+                                                <entry key="scalingPercent" value="161" />
+                                              </map>
+                                            </option>
+                                          </PersistentState>
+                                        </value>
+                                      </entry>
+                                    </map>
+                                  </option>
                                   <option name="values">
                                     <map>
                                       <entry key="backgroundLayerName" value="ic_launcher_background" />
-                                      <entry key="foregroundImage" value="D:\Transferências\baseline-done-black-24\1x\baseline_done_black_24dp.png" />
+                                      <entry key="foregroundImage" value="C:\Users\Hugo Mochão\Desktop\woods-tree-summer-road.jpg" />
                                       <entry key="foregroundLayerName" value="ic_confirmation_foreground2" />
-                                      <entry key="outputName" value="ic_feed" />
-                                      <entry key="previewDensity" value="MEDIUM" />
+                                      <entry key="outputName" value="ic_woods" />
                                     </map>
                                   </option>
                                 </PersistentState>

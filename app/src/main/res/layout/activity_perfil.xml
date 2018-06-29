@@ -48,37 +48,47 @@
             android:layout_height="wrap_content"
             android:paddingTop="?attr/actionBarSize">
 
-            <LinearLayout
+            <ImageView
                 android:id="@+id/linearLayout3"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
-                android:background="#1d7e1d"
+                android:src="@mipmap/ic_confirmation_foreground2"
                 android:orientation="horizontal"
+                android:scaleType="fitXY"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-            </LinearLayout>
+            </ImageView>
 
-            <ImageView
+            <LinearLayout
                 android:id="@+id/profile_image"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
+                android:background="@drawable/img"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
                 android:layout_marginBottom="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:background="@drawable/img"
-                android:scaleType="centerCrop"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/linearLayout3"
                 app:layout_constraintHorizontal_bias="0.029"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/linearLayout3"
-                app:layout_constraintVertical_bias="0.441" />
+                app:layout_constraintVertical_bias="0.441">
+
+                <ImageView
+                    android:id="@+id/profile_pic"
+                    android:layout_width="98dp"
+                    android:layout_height="98dp"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="1dp"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/ic_person_black_24dp"/>
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/textUsername"
@@ -88,10 +98,10 @@
                 android:layout_marginTop="32dp"
                 android:fontFamily="@font/roboto_bold"
                 android:textAllCaps="true"
-                android:textSize="24sp"
                 android:textColor="@color/snow"
+                android:textSize="24sp"
                 app:layout_constraintStart_toEndOf="@+id/profile_image"
-                app:layout_constraintTop_toTopOf="@+id/linearLayout3" />
+                app:layout_constraintTop_toTopOf="@+id/linearLayout3"/>
 
             <TextView
                 android:id="@+id/textView23"
