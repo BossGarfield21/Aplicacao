@@ -306,6 +306,6 @@
             app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
 
 
-    </ScrollView>
+</LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
