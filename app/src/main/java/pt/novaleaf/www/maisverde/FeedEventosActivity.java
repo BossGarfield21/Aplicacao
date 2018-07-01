@@ -3,6 +3,8 @@ package pt.novaleaf.www.maisverde;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -32,8 +34,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import utils.ByteRequest;
+
 import static pt.novaleaf.www.maisverde.EventoFragment.listEventos;
 import static pt.novaleaf.www.maisverde.EventoFragment.myEventoRecyclerViewAdapter;
+import static pt.novaleaf.www.maisverde.LoginActivity.sharedPreferences;
+import static pt.novaleaf.www.maisverde.OcorrenciaFragment.myOcorrenciaRecyclerViewAdapter;
 
 public class FeedEventosActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, EventoFragment.OnListFragmentInteractionListener {
@@ -58,6 +64,8 @@ public class FeedEventosActivity extends AppCompatActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().getItem(2).setChecked(true);
+
+        volleyGetEventos();
     }
 
     @Override
@@ -227,101 +235,108 @@ public class FeedEventosActivity extends AppCompatActivity
 
 
                             JSONArray list = response.getJSONArray("list");
-                            if (!isFinishedEventos) {
-                                isFinishedEventos = response.getBoolean("isFinished");
-                                Log.d("ACABOU???", String.valueOf(isFinishedEventos));
+                            if (!response.isNull("list")) {
+                                if (!isFinishedEventos) {
+                                    isFinishedEventos = response.getBoolean("isFinished");
+                                    Log.d("ACABOU???", String.valueOf(isFinishedEventos));
 
-                                for (int i = 0; i < list.length(); i++) {
+                                    for (int i = 0; i < list.length(); i++) {
 
-                                    String name = null;
-                                    String creator = null;
-                                    long creationDate = 0;
-                                    long meetupDate = 0;
-                                    long endDate = 0;
-                                    List<String> interests = new ArrayList<>();
-                                    List<String> confirmations = new ArrayList<>();
-                                    List<String> admin = new ArrayList<>();
-                                    String image_uri = null;
-                                    String id = null;
-                                    String location = null;
-                                    String alert = null;
-                                    String description = null;
-                                    String weather = null;
-                                    double longitudeMeetUp = 0;
-                                    double latitudeMeetUp = 0;
-                                    double latitudeCenter = 0;
-                                    double longitudeCenter = 0;
-                                    double radious = 0;
+                                        String name = null;
+                                        String creator = null;
+                                        long creationDate = 0;
+                                        long meetupDate = 0;
+                                        long endDate = 0;
+                                        List<String> interests = new ArrayList<>();
+                                        List<String> confirmations = new ArrayList<>();
+                                        List<String> admin = new ArrayList<>();
+                                        String image_uri = null;
+                                        String id = null;
+                                        String location = null;
+                                        String alert = null;
+                                        String description = null;
+                                        String weather = null;
+                                        double longitudeMeetUp = 0;
+                                        double latitudeMeetUp = 0;
+                                        double latitudeCenter = 0;
+                                        double longitudeCenter = 0;
+                                        double radious = 0;
 
-                                    JSONObject evento = list.getJSONObject(i);
-                                    if (evento.has("id"))
-                                        id = evento.getString("alert");
-                                    if (evento.has("name"))
-                                        name = evento.getString("name");
-                                    if (evento.has("creator"))
-                                        creator = evento.getString("creator");
-                                    if (evento.has("description"))
-                                        description = evento.getString("description");
-                                    if (evento.has("creator"))
-                                        creator = evento.getString("creator");
-                                    if (evento.has("location"))
-                                        location = evento.getString("location");
-                                    if (evento.has("alert"))
-                                        alert = evento.getString("alert");
-                                    if (evento.has("creationDate"))
-                                        creationDate = evento.getLong("creationDate");
-                                    if (evento.has("meetupDate"))
-                                        meetupDate = evento.getLong("meetupDate");
-                                    if (evento.has("radious"))
-                                        radious = evento.getLong("radious");
-                                    if (evento.has("endDate"))
-                                        endDate = evento.getLong("endDate");
-                                    if (evento.has("image_uri"))
-                                        image_uri = evento.getString("image_uri");
-                                    if (evento.has("weather"))
-                                        weather = evento.getString("weather");
+                                        JSONObject evento = list.getJSONObject(i);
+                                        if (evento.has("id"))
+                                            id = evento.getString("alert");
+                                        if (evento.has("name"))
+                                            name = evento.getString("name");
+                                        if (evento.has("creator"))
+                                            creator = evento.getString("creator");
+                                        if (evento.has("description"))
+                                            description = evento.getString("description");
+                                        if (evento.has("creator"))
+                                            creator = evento.getString("creator");
+                                        if (evento.has("location"))
+                                            location = evento.getString("location");
+                                        if (evento.has("alert"))
+                                            alert = evento.getString("alert");
+                                        if (evento.has("creationDate"))
+                                            creationDate = evento.getLong("creationDate");
+                                        if (evento.has("meetupDate"))
+                                            meetupDate = evento.getLong("meetupDate");
+                                        if (evento.has("radious"))
+                                            radious = evento.getLong("radious");
+                                        if (evento.has("endDate"))
+                                            endDate = evento.getLong("endDate");
+                                        if (evento.has("image_uri"))
+                                            image_uri = evento.getString("image_uri");
+                                        if (evento.has("weather"))
+                                            weather = evento.getString("weather");
 
-                                    if (evento.has("interests")) {
-                                        JSONArray interest = evento.getJSONArray("interests");
-                                        for (int a = 0; a < interest.length(); a++)
-                                            interests.add(interest.getString(a));
+                                        if (evento.has("interests")) {
+                                            JSONArray interest = evento.getJSONArray("interests");
+                                            for (int a = 0; a < interest.length(); a++)
+                                                interests.add(interest.getString(a));
+                                        }
+
+                                        if (evento.has("confirmations")) {
+                                            JSONArray confirmation = evento.getJSONArray("confirmations");
+                                            for (int a = 0; a < confirmation.length(); a++)
+                                                confirmations.add(confirmation.getString(a));
+                                        }
+
+                                        if (evento.has("admin")) {
+                                            JSONArray admins = evento.getJSONArray("admin");
+                                            for (int a = 0; a < admins.length(); a++)
+                                                admin.add(admins.getString(a));
+                                        }
+
+                                        if (evento.has("meetupPoint")) {
+                                            JSONObject coordinates = evento.getJSONObject("coordinates");
+                                            latitudeMeetUp = coordinates.getDouble("latitude");
+                                            longitudeMeetUp = coordinates.getDouble("longitude");
+                                        }
+
+                                        if (evento.has("center")) {
+                                            JSONObject coordinates = evento.getJSONObject("coordinates");
+                                            latitudeCenter = coordinates.getDouble("latitude");
+                                            longitudeCenter = coordinates.getDouble("longitude");
+                                        }
+
+
+                                        Evento evento1 = new Evento(name, creator, creationDate, meetupDate, endDate,
+                                                interests, confirmations, admin, id, location, alert, description, weather, image_uri,
+                                                latitudeMeetUp, longitudeMeetUp, latitudeCenter, longitudeCenter, radious);
+
+                                        if (image_uri != null)
+                                            receberImagemVolley(evento1);
+
+                                        listEventos.add(evento1);
+                                        myEventoRecyclerViewAdapter.notifyDataSetChanged();
+
                                     }
-
-                                    if (evento.has("confirmations")) {
-                                        JSONArray confirmation = evento.getJSONArray("confirmations");
-                                        for (int a = 0; a < confirmation.length(); a++)
-                                            confirmations.add(confirmation.getString(a));
-                                    }
-
-                                    if (evento.has("admin")) {
-                                        JSONArray admins = evento.getJSONArray("admin");
-                                        for (int a = 0; a < admins.length(); a++)
-                                            admin.add(admins.getString(a));
-                                    }
-
-                                    if (evento.has("meetupPoint")) {
-                                        JSONObject coordinates = evento.getJSONObject("coordinates");
-                                        latitudeMeetUp = coordinates.getDouble("latitude");
-                                        longitudeMeetUp = coordinates.getDouble("longitude");
-                                    }
-
-                                    if (evento.has("center")) {
-                                        JSONObject coordinates = evento.getJSONObject("coordinates");
-                                        latitudeCenter = coordinates.getDouble("latitude");
-                                        longitudeCenter = coordinates.getDouble("longitude");
-                                    }
-
-
-                                    Evento evento1 = new Evento(name, creator, creationDate, meetupDate, endDate,
-                                            interests, confirmations, admin, id, location, alert, description, weather, image_uri,
-                                            latitudeMeetUp, longitudeMeetUp, latitudeCenter, longitudeCenter, radious);
-                                    listEventos.add(evento1);
-
-                                    myEventoRecyclerViewAdapter.notifyDataSetChanged();
-
                                 }
-                            }
 
+                            } else {
+                                isFinishedEventos = true;
+                            }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -348,5 +363,43 @@ public class FeedEventosActivity extends AppCompatActivity
 
 
     }
+
+    private void receberImagemVolley(final Evento item) {
+        String tag_json_obj = "octect_request";
+        String url = item.getImage_uri();
+
+
+        final String token = sharedPreferences.getString("tokenID", "erro");
+        ByteRequest stringRequest = new ByteRequest(Request.Method.GET, url, new Response.Listener<byte[]>() {
+
+            @Override
+            public void onResponse(byte[] response) {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(response, 0, response.length);
+                item.setBitmap(response);
+                myOcorrenciaRecyclerViewAdapter.notifyDataSetChanged();
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("erroIMAGEMocorrencia", "Error: " + error.getMessage());
+
+                item.setImageID(R.mipmap.ic_grass_foreground);
+
+                myOcorrenciaRecyclerViewAdapter.notifyDataSetChanged();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+
+        };
+        AppController.getInstance().addToRequestQueue(stringRequest, tag_json_obj);
+
+    }
+
 
 }

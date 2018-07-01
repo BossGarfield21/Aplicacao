@@ -25,6 +25,8 @@ public class Evento {
     public String alert;
     public String description;
     public String weather; //??
+    private byte[] bitmap;
+    private int imageID;
 
     public boolean interesse;
     public boolean ir;
@@ -53,6 +55,8 @@ public class Evento {
         this.meetupPointLatitude = meetupPointLatitude;
         this.meetupPointLongitude = meetupPointLongitude;
         this.radious = radious;
+        this.bitmap = null;
+        this.imageID = 0;
     }
 
     public double getRadious() {
@@ -148,4 +152,11 @@ public class Evento {
     }
 
 
+    public void setBitmap(byte[] bitmap) {
+        this.bitmap = bitmap;
+    }
+
+    public void setImageID(int imageID) {
+        this.imageID = imageID;
+    }
 }

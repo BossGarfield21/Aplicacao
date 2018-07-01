@@ -46,6 +46,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.google.android.gms.maps.model.LatLng;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -57,12 +58,16 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import static pt.novaleaf.www.maisverde.MapsActivity.markers;
+import static pt.novaleaf.www.maisverde.OcorrenciaFragment.listOcorrencias;
+import static pt.novaleaf.www.maisverde.OcorrenciaFragment.myOcorrenciaRecyclerViewAdapter;
 
 
 /**
@@ -770,9 +775,129 @@ public class CriarOcorrenciaActivity extends AppCompatActivity implements Serial
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
-                            Intent i = new Intent(CriarOcorrenciaActivity.this, FeedActivity.class);
-                            startActivity(i);
-                            finish();
+
+                            try {
+
+
+                                String id = null;
+                                String titulo = null;
+                                String descricao = null;
+                                String owner = null;
+                                String type = null;
+                                boolean hasLiked = false;
+                                String image_uri = null;
+                                List<String> likers = new ArrayList<>();
+                                long creationDate = 0;
+                                String district = null;
+                                double risk = 0;
+                                long likes = 0;
+                                long status = 0;
+                                double latitude = 0;
+                                double longitude = 0;
+                                Map<String, Comentario> comentarios = new HashMap<>();
+
+                                JSONObject ocorrencia = response;
+                                if (ocorrencia.has("id"))
+                                    id = ocorrencia.getString("id");
+                                if (ocorrencia.has("name"))
+                                    titulo = ocorrencia.getString("name");
+                                if (ocorrencia.has("description"))
+                                    descricao = ocorrencia.getString("description");
+                                if (ocorrencia.has("owner"))
+                                    owner = ocorrencia.getString("owner");
+                                if (ocorrencia.has("risk"))
+                                    risk = ocorrencia.getInt("risk");
+                                if (ocorrencia.has("likes"))
+                                    likes = ocorrencia.getInt("likes");
+                                if (ocorrencia.has("status"))
+                                    status = ocorrencia.getLong("status");
+                                if (ocorrencia.has("type"))
+                                    type = ocorrencia.getString("type");
+                                JSONObject image = null;
+                                if (ocorrencia.has("image_uri")) {
+                                    image = ocorrencia.getJSONObject("image_uri");
+                                    if (image.has("value"))
+                                        image_uri = image.getString("value");
+                                }
+
+                                if (ocorrencia.has("hasLike"))
+                                    hasLiked = ocorrencia.getBoolean("hasLike");
+                                if (ocorrencia.has("creationDate"))
+                                    creationDate = ocorrencia.getLong("creationDate");
+
+
+                                Log.d("HASLIKE???", hasLiked + "FDPDPDPD");
+                                if (ocorrencia.has("comments")) {
+                                    JSONArray coms = ocorrencia.getJSONArray("comments");
+
+
+                                    for (int a = 0; a < coms.length(); a++) {
+                                        int origem;
+                                        JSONObject com = coms.getJSONObject(a);
+                                        if (com.getString("author").equals(
+                                                getSharedPreferences("Prefs", MODE_PRIVATE).getString("username", "")))
+                                            origem = 1;
+                                        else origem = 2;
+
+                                        String imag = null;
+                                        if (com.has("image"))
+                                            imag = com.getString("image");
+
+                                        String comentID = com.getString("id");
+
+
+                                        comentarios.put(comentID, new Comentario(comentID, com.getString("author"),
+                                                com.getString("message"), imag,
+                                                com.getLong("creation_date"), origem, id));
+
+                                    }
+                                }
+                                if (ocorrencia.has("coordinates")) {
+                                    JSONObject coordinates = ocorrencia.getJSONObject("coordinates");
+                                    latitude = coordinates.getDouble("latitude");
+                                    longitude = coordinates.getDouble("longitude");
+                                }
+
+                                if (ocorrencia.has("likers")) {
+                                    JSONArray lik = ocorrencia.getJSONArray("likers");
+                                    for (int a = 0; a < lik.length(); a++)
+                                        likers.add(lik.getString(a));
+                                }
+
+
+                                Ocorrencia ocorrencia1 = new Ocorrencia(titulo, risk, "23:12", id,
+                                        descricao, owner, likers, status, latitude, longitude, likes, type, image_uri,
+                                        comentarios, creationDate, district, hasLiked);
+                                if (ocorrencia1.getImage_uri() != null)
+                                    ocorrencia1.setBitmap(imageBytes);
+                                else {
+                                    String tipo = ocorrencia1.getType();
+                                    if (tipo.equals("bonfire")) {
+                                        ocorrencia1.setImageID(R.mipmap.ic_bonfire_foreground);
+                                    } else if (tipo.equals("fire")) {
+                                        ocorrencia1.setImageID(R.mipmap.ic_fire_foreground);
+                                    } else if (tipo.equals("trash")) {
+                                        ocorrencia1.setImageID(R.mipmap.ic_garbage_foreground);
+                                    } else {
+                                        ocorrencia1.setImageID(R.mipmap.ic_grass_foreground);
+                                    }
+                                }
+
+
+                                if (!listOcorrencias.contains(ocorrencia1))
+                                    listOcorrencias.add(ocorrencia1);
+                                Log.d("ID", id);
+                                Log.d("titulo", titulo);
+                                Log.d("desc", descricao);
+                                myOcorrenciaRecyclerViewAdapter.notifyDataSetChanged();
+                                Intent i = new Intent(CriarOcorrenciaActivity.this, FeedActivity.class);
+                                startActivity(i);
+                                finish();
+
+                            } catch (JSONException e) {
+
+                                e.printStackTrace();
+                            }
                         }
                     }, new Response.ErrorListener() {
 
