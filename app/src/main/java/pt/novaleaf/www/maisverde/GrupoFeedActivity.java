@@ -486,7 +486,7 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
                                             else origem = 1;
                                             comments.put(comentID, new Comentario(comentID, com.getString("author"),
                                                     com.getString("message"), com.getString("image"),
-                                                    com.getLong("creationDate"), origem));
+                                                    com.getLong("creationDate"), origem, id));
 
                                         }
                                     }

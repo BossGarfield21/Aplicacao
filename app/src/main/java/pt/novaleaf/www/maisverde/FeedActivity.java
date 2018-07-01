@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -21,7 +22,9 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -43,6 +46,7 @@ import java.util.Map;
 
 import utils.ByteRequest;
 
+import static pt.novaleaf.www.maisverde.ComentariosActivity.comentarios;
 import static pt.novaleaf.www.maisverde.EventoFragment.listEventos;
 import static pt.novaleaf.www.maisverde.EventoFragment.myEventoRecyclerViewAdapter;
 import static pt.novaleaf.www.maisverde.LoginActivity.sharedPreferences;
@@ -87,16 +91,15 @@ public class FeedActivity extends AppCompatActivity
         //updateEventos();
 
 
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment fragment = fragmentManager.findFragmentById(R.id.container);
+        if (fragment == null) {
+            fragment = OcorrenciaFragment.newInstance(1);
 
-         FragmentManager fragmentManager = getSupportFragmentManager();
-         Fragment fragment = fragmentManager.findFragmentById(R.id.container);
-         if (fragment==null){
-         fragment = OcorrenciaFragment.newInstance(1);
-
-         fragmentManager.beginTransaction()
-         .add(R.id.container, fragment)
-         .commit();
-         }
+            fragmentManager.beginTransaction()
+                    .add(R.id.container, fragment)
+                    .commit();
+        }
 
         // FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         //fab.setVisibility(View.GONE);
@@ -186,11 +189,10 @@ public class FeedActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_eventos){
+        if (id == R.id.nav_eventos) {
             Intent i = new Intent(FeedActivity.this, FeedEventosActivity.class);
             startActivityForResult(i, 0);
-        }
-        else if (id == R.id.nav_mapa) {
+        } else if (id == R.id.nav_mapa) {
 
             Intent i = new Intent(FeedActivity.this, MapsActivity.class);
             startActivityForResult(i, 0);
@@ -277,11 +279,37 @@ public class FeedActivity extends AppCompatActivity
         //Toast.makeText(FeedActivity.this, "IR PARA A PAGINA DOS COMENTARIOS", Toast.LENGTH_SHORT).show();
 
         Intent i = new Intent(FeedActivity.this, ComentariosActivity.class);
+        List<Comentario> comentarios = new ArrayList<>(item.getComments().values());
+        i.putExtra("comentarios", (Serializable) item);
         startActivity(i);
     }
 
     @Override
-    public void onFavoritoInteraction(Ocorrencia item) {
+    public void onEditInteraction(final Ocorrencia itemm, View view) {
+
+        PopupMenu popup = new PopupMenu(this, view);
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+
+                if (item.getItemId()==R.id.editar_informacoes) {
+                    Intent intent = new Intent(FeedActivity.this, CriarOcorrenciaActivity.class);
+                    intent.putExtra("ocorrencia", (Serializable) itemm);
+                    startActivity(intent);
+                }
+                else{
+                    Intent intent = new Intent(FeedActivity.this, MapsActivity.class);
+                    intent.putExtra("ocorrencia", (Serializable) itemm);
+                    startActivity(intent);
+                }
+
+                return false;
+            }
+        });// to implement on click event on items of menu
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.menu_editar_ocorrencia, popup.getMenu());
+        popup.show();
+
     }
 
     @Override
@@ -402,28 +430,29 @@ public class FeedActivity extends AppCompatActivity
                                         creationDate = ocorrencia.getLong("creationDate");
 
 
-
                                     Log.d("HASLIKE???", hasLiked + "FDPDPDPD");
                                     if (ocorrencia.has("comments")) {
-                                        JSONObject coms = ocorrencia.getJSONObject("comments");
+                                        JSONArray coms = ocorrencia.getJSONArray("comments");
 
-                                        Iterator<String> comentario = coms.keys();
-                                        while (comentario.hasNext()) {
-                                            String comentID = comentario.next();
-                                            int origem = 1;
-                                            JSONObject com = coms.getJSONObject(comentID);
+
+                                        for (int a = 0; a < coms.length(); a++) {
+                                            int origem;
+                                            JSONObject com = coms.getJSONObject(a);
                                             if (com.getString("author").equals(
                                                     getSharedPreferences("Prefs", MODE_PRIVATE).getString("username", "")))
-                                                origem = 2;
-                                            else origem = 1;
+                                                origem = 1;
+                                            else origem = 2;
 
                                             String imag = null;
                                             if (com.has("image"))
                                                 imag = com.getString("image");
 
+                                            String comentID = com.getString("id");
+
+
                                             comentarios.put(comentID, new Comentario(comentID, com.getString("author"),
                                                     com.getString("message"), imag,
-                                                    com.getLong("creationDate"), origem));
+                                                    com.getLong("creation_date"), origem, id));
 
                                         }
                                     }
@@ -445,7 +474,7 @@ public class FeedActivity extends AppCompatActivity
                                             comentarios, creationDate, district, hasLiked);
                                     if (ocorrencia1.getImage_uri() != null)
                                         receberImagemVolley(ocorrencia1);
-                                    else{
+                                    else {
                                         String tipo = ocorrencia1.getType();
                                         if (tipo.equals("bonfire")) {
                                             ocorrencia1.setImageID(R.mipmap.ic_bonfire_foreground);
@@ -457,9 +486,6 @@ public class FeedActivity extends AppCompatActivity
                                             ocorrencia1.setImageID(R.mipmap.ic_grass_foreground);
                                         }
                                     }
-
-
-
 
 
                                     if (!listOcorrencias.contains(ocorrencia1))
@@ -506,138 +532,12 @@ public class FeedActivity extends AppCompatActivity
 
     public void updateEventos() {
 
-        volleyGetEventos();
+        //volleyGetEventos();
 
 
     }
 
-    public void volleyGetEventos() {
 
-        String tag_json_obj = "json_request";
-        String url;
-        if (cursorEventos.equals(""))
-            url = "https://novaleaf-197719.appspot.com/rest/withtoken/events/?cursor=startquery";
-        else
-            url = "https://novaleaf-197719.appspot.com/rest/withtoken/events/?cursor=" + cursorEventos;
-
-        Log.d("ché bate só", url);
-
-        SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
-        JSONObject eventos = new JSONObject();
-        final String token = sharedPreferences.getString("tokenID", "erro");
-
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, eventos,
-                new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            Log.d("nabo", cursorEventos + "pixa");
-                            cursorEventos = response.getString("cursor");
-                            Log.d("nabo", cursorEventos);
-
-                            String name = null;
-                            String creator = null;
-                            long creationDate = 0;
-                            long meetupDate = 0;
-                            long endDate = 0;
-                            List<String> interests = new ArrayList<>();
-                            List<String> confirmations = new ArrayList<>();
-                            List<String> admin = new ArrayList<>();
-                            String image_uri = null;
-                            String id = null;
-                            String location = null;
-                            String alert = null;
-                            String description = null;
-                            String weather = null;
-                            JSONArray list = response.getJSONArray("list");
-                            if (!isFinishedEventos) {
-                                isFinishedEventos = response.getBoolean("isFinished");
-                                Log.d("ACABOU???", String.valueOf(isFinishedEventos));
-
-                                for (int i = 0; i < list.length(); i++) {
-
-                                    JSONObject evento = list.getJSONObject(i);
-                                    if (evento.has("alert"))
-                                        id = evento.getString("alert");
-                                    if (evento.has("name"))
-                                        name = evento.getString("name");
-                                    if (evento.has("creator"))
-                                        creator = evento.getString("creator");
-                                    if (evento.has("description"))
-                                        description = evento.getString("description");
-                                    if (evento.has("creator"))
-                                        creator = evento.getString("creator");
-                                    if (evento.has("location"))
-                                        location = evento.getString("location");
-                                    if (evento.has("alert"))
-                                        alert = evento.getString("alert");
-                                    if (evento.has("creationDate"))
-                                        creationDate = evento.getLong("creationDate");
-                                    if (evento.has("meetupDate"))
-                                        meetupDate = evento.getLong("meetupDate");
-                                    if (evento.has("endDate"))
-                                        endDate = evento.getLong("endDate");
-                                    if (evento.has("image_uri"))
-                                        image_uri = evento.getString("image_uri");
-                                    if (evento.has("weather"))
-                                        weather = evento.getString("weather");
-
-                                    if (evento.has("interests")) {
-                                        JSONArray interest = evento.getJSONArray("interests");
-                                        for (int a = 0; a < interest.length(); a++)
-                                            interests.add(interest.getString(a));
-                                    }
-
-                                    if (evento.has("confirmations")) {
-                                        JSONArray confirmation = evento.getJSONArray("confirmations");
-                                        for (int a = 0; a < confirmation.length(); a++)
-                                            confirmations.add(confirmation.getString(a));
-                                    }
-
-                                    if (evento.has("admin")) {
-                                        JSONArray admins = evento.getJSONArray("admin");
-                                        for (int a = 0; a < admins.length(); a++)
-                                            admin.add(admins.getString(a));
-                                    }
-
-
-                                    Evento evento1 = new Evento(name, creator, creationDate, meetupDate, endDate,
-                                            interests, confirmations, admin, id, location, alert, description, weather, image_uri);
-                                    listEventos.add(evento1);
-
-                                    myEventoRecyclerViewAdapter.notifyDataSetChanged();
-
-                                }
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-
-                }, new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                VolleyLog.d("erroLOGIN", "Error: " + error.getMessage());
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
-                headers.put("Authorization", token);
-                return headers;
-            }
-        };
-
-
-        AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
-
-
-    }
 
     /**
      * private void receberImagemVolley() {

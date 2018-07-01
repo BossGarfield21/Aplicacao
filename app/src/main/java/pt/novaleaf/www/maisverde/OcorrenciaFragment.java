@@ -131,7 +131,7 @@ public class OcorrenciaFragment extends Fragment {
 
         void onCommentInteraction(Ocorrencia item);
 
-        void onFavoritoInteraction(Ocorrencia item);
+        void onEditInteraction(Ocorrencia item, View view);
 
         void onImagemInteraction(Ocorrencia item);
     }

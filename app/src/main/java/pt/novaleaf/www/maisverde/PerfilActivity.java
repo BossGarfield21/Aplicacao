@@ -192,7 +192,7 @@ public class PerfilActivity extends AppCompatActivity
                     imageBytes = bao.toByteArray();
 
 
-                    String id = UUID.randomUUID().toString();
+                    String id = UUID.randomUUID().toString().concat(String.valueOf(System.currentTimeMillis()));
                     enviarImagemVolley(imageBytes, id);
 
                 } catch (FileNotFoundException e) {

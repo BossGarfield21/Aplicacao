@@ -77,7 +77,6 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         //holder.mImageReport.setImageResource(mValues.get(position).getImgId());
 
-        Ocorrencia ocorrencia = mValues.get(position);
         holder.titulo.setText(mValues.get(position).getName());
 
         if (mValues.get(position).isLiked()) {
@@ -168,7 +167,22 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
 
         }
 
+        holder.time.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onEditInteraction(mValues.get(position), view);
+            }
+        });
+
         holder.mRisco.setText(String.format("Risco\n%s", mValues.get(position).getRisk()));
+
+        int numComentarios = mValues.get(position).getComments().size();
+
+        if (numComentarios!=1)
+            holder.mTextComentarios.setText(String.format("%d comentários", numComentarios));
+        else
+            holder.mTextComentarios.setText(String.format("%d comentário", numComentarios));
+
 
 
     }
@@ -187,6 +201,7 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
         public LinearLayout mLinearInfo;
         public TextView mTextNumLikes;
         public TextView mRisco;
+        public TextView mTextComentarios;
         public ImageView mImageGosto;
         public ImageView mImageComentario;
 
@@ -197,6 +212,7 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
             username = (TextView) v.findViewById(R.id.userName);
             time = (TextView) v.findViewById(R.id.time);
             mRisco = (TextView) v.findViewById(R.id.riscoCalculado);
+            mTextComentarios = (TextView) v.findViewById(R.id.comentarios);
             mRelative = (ConstraintLayout) v.findViewById(R.id.relative);
             mLinearInfo = (LinearLayout) v.findViewById(R.id.linearInfo);
             mTextNumLikes = (TextView) v.findViewById(R.id.likes);

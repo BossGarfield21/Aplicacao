@@ -12,13 +12,35 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static pt.novaleaf.www.maisverde.EventoFragment.listEventos;
+import static pt.novaleaf.www.maisverde.EventoFragment.myEventoRecyclerViewAdapter;
 
 public class FeedEventosActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, EventoFragment.OnListFragmentInteractionListener {
 
     NavigationView navigationView;
+    private String cursorEventos = "";
+    private boolean isFinishedEventos = false;
 
 
     @Override
@@ -176,4 +198,155 @@ public class FeedEventosActivity extends AppCompatActivity
     public void onImagemInteraction(Evento item) {
 
     }
+
+    public void volleyGetEventos() {
+
+        String tag_json_obj = "json_request";
+        String url;
+        if (cursorEventos.equals(""))
+            url = "https://novaleaf-197719.appspot.com/rest/withtoken/events/?cursor=startquery";
+        else
+            url = "https://novaleaf-197719.appspot.com/rest/withtoken/events/?cursor=" + cursorEventos;
+
+        Log.d("ché bate só", url);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+        JSONObject eventos = new JSONObject();
+        final String token = sharedPreferences.getString("tokenID", "erro");
+
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, eventos,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            Log.d("nabo", cursorEventos + "pixa");
+                            cursorEventos = response.getString("cursor");
+                            Log.d("nabo", cursorEventos);
+
+
+                            JSONArray list = response.getJSONArray("list");
+                            if (!isFinishedEventos) {
+                                isFinishedEventos = response.getBoolean("isFinished");
+                                Log.d("ACABOU???", String.valueOf(isFinishedEventos));
+
+                                for (int i = 0; i < list.length(); i++) {
+
+                                    String name = null;
+                                    String creator = null;
+                                    long creationDate = 0;
+                                    long meetupDate = 0;
+                                    long endDate = 0;
+                                    List<String> interests = new ArrayList<>();
+                                    List<String> confirmations = new ArrayList<>();
+                                    List<String> admin = new ArrayList<>();
+                                    String image_uri = null;
+                                    String id = null;
+                                    String location = null;
+                                    String alert = null;
+                                    String description = null;
+                                    String weather = null;
+                                    double longitudeMeetUp = 0;
+                                    double latitudeMeetUp = 0;
+                                    double latitudeCenter = 0;
+                                    double longitudeCenter = 0;
+                                    double radious = 0;
+
+                                    JSONObject evento = list.getJSONObject(i);
+                                    if (evento.has("id"))
+                                        id = evento.getString("alert");
+                                    if (evento.has("name"))
+                                        name = evento.getString("name");
+                                    if (evento.has("creator"))
+                                        creator = evento.getString("creator");
+                                    if (evento.has("description"))
+                                        description = evento.getString("description");
+                                    if (evento.has("creator"))
+                                        creator = evento.getString("creator");
+                                    if (evento.has("location"))
+                                        location = evento.getString("location");
+                                    if (evento.has("alert"))
+                                        alert = evento.getString("alert");
+                                    if (evento.has("creationDate"))
+                                        creationDate = evento.getLong("creationDate");
+                                    if (evento.has("meetupDate"))
+                                        meetupDate = evento.getLong("meetupDate");
+                                    if (evento.has("radious"))
+                                        radious = evento.getLong("radious");
+                                    if (evento.has("endDate"))
+                                        endDate = evento.getLong("endDate");
+                                    if (evento.has("image_uri"))
+                                        image_uri = evento.getString("image_uri");
+                                    if (evento.has("weather"))
+                                        weather = evento.getString("weather");
+
+                                    if (evento.has("interests")) {
+                                        JSONArray interest = evento.getJSONArray("interests");
+                                        for (int a = 0; a < interest.length(); a++)
+                                            interests.add(interest.getString(a));
+                                    }
+
+                                    if (evento.has("confirmations")) {
+                                        JSONArray confirmation = evento.getJSONArray("confirmations");
+                                        for (int a = 0; a < confirmation.length(); a++)
+                                            confirmations.add(confirmation.getString(a));
+                                    }
+
+                                    if (evento.has("admin")) {
+                                        JSONArray admins = evento.getJSONArray("admin");
+                                        for (int a = 0; a < admins.length(); a++)
+                                            admin.add(admins.getString(a));
+                                    }
+
+                                    if (evento.has("meetupPoint")) {
+                                        JSONObject coordinates = evento.getJSONObject("coordinates");
+                                        latitudeMeetUp = coordinates.getDouble("latitude");
+                                        longitudeMeetUp = coordinates.getDouble("longitude");
+                                    }
+
+                                    if (evento.has("center")) {
+                                        JSONObject coordinates = evento.getJSONObject("coordinates");
+                                        latitudeCenter = coordinates.getDouble("latitude");
+                                        longitudeCenter = coordinates.getDouble("longitude");
+                                    }
+
+
+                                    Evento evento1 = new Evento(name, creator, creationDate, meetupDate, endDate,
+                                            interests, confirmations, admin, id, location, alert, description, weather, image_uri,
+                                            latitudeMeetUp, longitudeMeetUp, latitudeCenter, longitudeCenter, radious);
+                                    listEventos.add(evento1);
+
+                                    myEventoRecyclerViewAdapter.notifyDataSetChanged();
+
+                                }
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("erroLOGIN", "Error: " + error.getMessage());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+        };
+
+
+        AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
+
+
+    }
+
 }

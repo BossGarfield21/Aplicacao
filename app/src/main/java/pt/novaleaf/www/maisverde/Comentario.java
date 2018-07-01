@@ -1,18 +1,20 @@
 package pt.novaleaf.www.maisverde;
 
+import java.io.Serializable;
+
 /**
  * Created by Hugo Mochão on 16/05/2018.
  */
 
-public class Comentario {
+public class Comentario implements Serializable{
 
-    public String id, author, message;
+    public String id, author, message, markerid;
     public String image;
     public long creation_date;
     private int origem;
 
 
-    public Comentario(String id, String author, String message, String image, long creation_date, int origem) {
+    public Comentario(String id, String author, String message, String image, long creation_date, int origem, String markerid) {
 
         this.id = id;
         this.author = author;
@@ -20,7 +22,12 @@ public class Comentario {
         this.image = image;
         this.creation_date = creation_date;
         this.origem = origem;
+        this.markerid = markerid;
 
+    }
+
+    public String getMarkerid() {
+        return markerid;
     }
 
     public String getMessage() {

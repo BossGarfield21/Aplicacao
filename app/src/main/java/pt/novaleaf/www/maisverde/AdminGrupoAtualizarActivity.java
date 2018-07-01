@@ -101,7 +101,7 @@ public class AdminGrupoAtualizarActivity extends AppCompatActivity implements Se
                 mNomeGrupo.setError(null);
                 if (!TextUtils.isEmpty(mNomeGrupo.getText().toString())) {
                     if (imageBytes != null) {
-                        String id = UUID.randomUUID().toString();
+                        String id = UUID.randomUUID().toString().concat(String.valueOf(System.currentTimeMillis()));
                         enviarImagemVolley(imageBytes, id);
                         volleyUpdateGrupo(id);
                     } else

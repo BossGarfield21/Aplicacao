@@ -197,5 +197,28 @@ public class Ocorrencia implements Serializable, ClusterItem{
         return this.getId().equals(ocorrencia.getId());
     }
 
-    
+
+    public void addComentario(Comentario com) {
+        comments.put(com.getId(), com);
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 }

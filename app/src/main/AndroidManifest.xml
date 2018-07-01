@@ -133,10 +133,6 @@
             android:configChanges="orientation|screenSize"
             android:label="Ocorrência"/>
         <activity
-            android:name=".teste"
-            android:label="@string/title_activity_teste"
-            android:theme="@style/CustomTheme"/>
-        <activity
             android:name=".EventoActivity"
             android:configChanges="orientation|screenSize"
             android:label="Evento">

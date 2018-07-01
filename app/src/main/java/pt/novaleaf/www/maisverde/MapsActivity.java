@@ -604,7 +604,7 @@ public class MapsActivity extends AppCompatActivity
                                             else origem = 1;
                                             comentarios.put(comentID, new Comentario(comentID, com.getString("author"),
                                                     com.getString("message"), com.getString("image"),
-                                                    com.getLong("creationDate"), origem));
+                                                    com.getLong("creationDate"), origem, id));
 
                                         }
                                     }
@@ -774,47 +774,112 @@ public class MapsActivity extends AppCompatActivity
         double longitude = (double) getIntent().getDoubleExtra("longitude", 0);
         double latitude = (double) getIntent().getDoubleExtra("latitude", 0);
 
+        final Ocorrencia ocorrencia = (Ocorrencia) getIntent().getSerializableExtra("ocorrencia");
 
-        // Add a marker in Sydney and move the camera
-        LatLng currrPos;
+        final LatLng currrPos;
 
-        if (longitude != 0) {
+        if (ocorrencia != null) {
+            currrPos = new LatLng(ocorrencia.getLatitude(), ocorrencia.getLongitude());
+
+            mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+                @Override
+                public void onMapLongClick(final LatLng latLng) {
+
+                    AlertDialog.Builder alert = new AlertDialog.Builder(MapsActivity.this);
+                    alert.setTitle("Atualizar coordenadas");
+                    alert
+                            .setMessage("É esta a nova localização?")
+                            .setCancelable(false)
+                            .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    atualizarOcorrenciaVolley(currrPos, ocorrencia);
+                                }
+                            })
+                            .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.cancel();
+                                }
+                            });
+
+                    AlertDialog alertDialog = alert.create();
+                    alertDialog.show();
+
+                }
+            });
+
+        } else if (longitude != 0) {
             currrPos = new LatLng(latitude, longitude);
-        } else
+            mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+                @Override
+                public void onMapLongClick(final LatLng latLng) {
+
+                    AlertDialog.Builder alert = new AlertDialog.Builder(MapsActivity.this);
+                    alert.setTitle("Criar report");
+                    alert
+                            .setMessage("Quer fazer um report nesta localização?")
+                            .setCancelable(false)
+                            .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    Intent intent = new Intent(MapsActivity.this, CriarOcorrenciaActivity.class);
+                                    intent.putExtra("lat", latLng.latitude);
+                                    intent.putExtra("lon", latLng.longitude);
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            })
+                            .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.cancel();
+                                }
+                            });
+
+                    AlertDialog alertDialog = alert.create();
+                    alertDialog.show();
+
+                }
+            });
+        } else {
             currrPos = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+
+            mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+                @Override
+                public void onMapLongClick(final LatLng latLng) {
+
+                    AlertDialog.Builder alert = new AlertDialog.Builder(MapsActivity.this);
+                    alert.setTitle("Criar report");
+                    alert
+                            .setMessage("Quer fazer um report nesta localização?")
+                            .setCancelable(false)
+                            .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    Intent intent = new Intent(MapsActivity.this, CriarOcorrenciaActivity.class);
+                                    intent.putExtra("lat", latLng.latitude);
+                                    intent.putExtra("lon", latLng.longitude);
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            })
+                            .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.cancel();
+                                }
+                            });
+
+                    AlertDialog alertDialog = alert.create();
+                    alertDialog.show();
+
+                }
+            });
+        }
         //mMap.addMarker(new MarkerOptions().position(currrPos).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currrPos, 10));
-        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
-            @Override
-            public void onMapLongClick(final LatLng latLng) {
 
-                AlertDialog.Builder alert = new AlertDialog.Builder(MapsActivity.this);
-                alert.setTitle("Criar report");
-                alert
-                        .setMessage("Quer fazer um report nesta localização?")
-                        .setCancelable(false)
-                        .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                Intent intent = new Intent(MapsActivity.this, CriarOcorrenciaActivity.class);
-                                intent.putExtra("lat", latLng.latitude);
-                                intent.putExtra("lon", latLng.longitude);
-                                startActivity(intent);
-                                finish();
-                            }
-                        })
-                        .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.cancel();
-                            }
-                        });
-
-                AlertDialog alertDialog = alert.create();
-                alertDialog.show();
-
-            }
-        });
 
         mMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
             @Override
@@ -825,6 +890,55 @@ public class MapsActivity extends AppCompatActivity
                 //setUpClusterer();
             }
         });
+    }
+
+
+    private void atualizarOcorrenciaVolley(final LatLng currPos, final Ocorrencia ocorrencia) {
+        String tag_json_obj = "json_obj_req";
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/mapsupport/update";
+
+        JSONObject marker = new JSONObject();
+        SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+        final String token = sharedPreferences.getString("tokenID", "erro");
+        try {
+
+            JSONObject coordinates = new JSONObject();
+            coordinates.put("latitude", currPos.latitude);
+            coordinates.put("longitude", currPos.longitude);
+            marker.put("coordinates", coordinates);
+
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, url, marker,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            mClusterManager.removeItem(ocorrencia);
+                            int index = OcorrenciaFragment.listOcorrencias.indexOf(ocorrencia);
+                            OcorrenciaFragment.listOcorrencias.get(index).setLatitude(currPos.latitude);
+                            OcorrenciaFragment.listOcorrencias.get(index).setLongitude(currPos.longitude);
+                            OcorrenciaFragment.myOcorrenciaRecyclerViewAdapter.notifyDataSetChanged();
+                            mClusterManager.addItem(OcorrenciaFragment.listOcorrencias.get(index));
+
+
+                        }
+                    }, new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    VolleyLog.d("erroNOVAOCORRENCIA", "Error: " + error.getMessage());
+                }
+            }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    HashMap<String, String> headers = new HashMap<String, String>();
+                    headers.put("Authorization", token);
+                    return headers;
+                }
+
+            };
+            AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
 

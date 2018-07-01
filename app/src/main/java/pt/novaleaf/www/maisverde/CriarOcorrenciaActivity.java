@@ -2,7 +2,6 @@ package pt.novaleaf.www.maisverde;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,7 +13,6 @@ import android.graphics.Matrix;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.ExifInterface;
-import android.media.Image;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -36,25 +34,17 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -64,26 +54,22 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
+import java.io.Serializable;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.UUID;
 
-import utils.ByteRequest;
-
 import static pt.novaleaf.www.maisverde.MapsActivity.markers;
-import static pt.novaleaf.www.maisverde.OcorrenciaFragment.listOcorrencias;
 
 
 /**
  * Author: Hugo Mochao
  * Atividade responsavel por criar ocorrencias
  */
-public class CriarOcorrenciaActivity extends AppCompatActivity {
+public class CriarOcorrenciaActivity extends AppCompatActivity implements Serializable {
 
     private ReportTask mReportTask = null;
     private AutoCompleteTextView mTituloView;
@@ -123,25 +109,6 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
         }
 
 
-        //Verificar que atividade antecedeu esta, ou maps ou feed
-        //Consoante a atividade proceder corretamente:
-        //Se veio do feed, quer dizer que nao e preciso ir ao mapa
-        Intent intent = getIntent();
-
-        final boolean estaLocal = intent.getBooleanExtra("estaLocal", false);
-        if (estaLocal) {
-
-            setLocal();
-
-        } else {
-            latitude = intent.getDoubleExtra("lat", -1);
-            longitude = intent.getDoubleExtra("lon", -1);
-
-            Log.i("Main Latitude", String.valueOf(latitude));
-            Log.i("Main Longitude", String.valueOf(longitude));
-        }
-
-
         constraintLayout = (ConstraintLayout) findViewById(R.id.constrOco);
         imageView = (ImageView) findViewById(R.id.imageView3);
         imageView4 = (ImageView) findViewById(R.id.imageView4);
@@ -150,6 +117,87 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
         mDescricaoView = (AutoCompleteTextView) findViewById(R.id.descricao);
         bCriar = (Button) findViewById(R.id.bCriar);
         bTipos = (Button) findViewById(R.id.bTipos);
+
+        final Ocorrencia ocorrencia = (Ocorrencia) getIntent().getSerializableExtra("ocorrencia");
+
+        if (ocorrencia != null) {
+            if (ocorrencia.getBitmap() != null) {
+                isImage = true;
+                imageButton.setVisibility(View.GONE);
+                imageView.setVisibility(View.VISIBLE);
+                imageBytes = ocorrencia.getBitmap();
+                imageView.setImageBitmap(BitmapFactory.decodeByteArray(ocorrencia.getBitmap(),
+                        0, ocorrencia.getBitmap().length));
+
+                Snackbar snackbar = Snackbar
+                        .make(constraintLayout, "Fotografia escolhida", Snackbar.LENGTH_INDEFINITE)
+                        .setAction("Mudar fotografia", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                choosePicture();
+                            }
+                        });
+
+                snackbar.show();
+            }
+
+            setTitle("Atualizar ocorrência");
+
+            String tipoButton = null;
+            tipo = ocorrencia.getType();
+
+            if (tipo.equals("trash"))
+                tipoButton = "lixo";
+            else if (tipo.equals("fire"))
+                tipoButton = "incêndio";
+            else if (tipo.equals("bonfire"))
+                tipoButton = "queimada";
+            else if (tipo.equals("dirty_woods"))
+                tipoButton = "mata suja";
+
+            bCriar.setText("Enviar");
+            bTipos.setText(tipoButton);
+
+            mTituloView.setText(ocorrencia.getName());
+            mDescricaoView.setText(ocorrencia.getDescription());
+
+            bCriar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    attemptAddReport("velho", ocorrencia);
+                }
+            });
+
+        } else {
+
+            bCriar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    attemptAddReport("novo", null);
+                }
+            });
+
+            //Verificar que atividade antecedeu esta, ou maps ou feed
+            //Consoante a atividade proceder corretamente:
+            //Se veio do feed, quer dizer que nao e preciso ir ao mapa
+            Intent intent = getIntent();
+
+            final boolean estaLocal = intent.getBooleanExtra("estaLocal", false);
+            if (estaLocal) {
+
+                setLocal();
+
+            } else {
+                latitude = intent.getDoubleExtra("lat", -1);
+                longitude = intent.getDoubleExtra("lon", -1);
+
+                Log.i("Main Latitude", String.valueOf(latitude));
+                Log.i("Main Longitude", String.valueOf(longitude));
+            }
+
+        }
 
 
         bTipos.setOnClickListener(new View.OnClickListener() {
@@ -160,13 +208,6 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
             }
         });
 
-
-        bCriar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptAddReport();
-            }
-        });
 
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -584,7 +625,7 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
     /**
      * Tentativa de adicionar ocorrencia
      */
-    private void attemptAddReport() {
+    private void attemptAddReport(String dados, Ocorrencia ocorrencia) {
         if (mReportTask != null) {
             return;
         }
@@ -623,9 +664,17 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
             // form field with an error.
             focusView.requestFocus();
         } else {
-            String id = UUID.randomUUID().toString();
-            enviarImagemVolley(imageBytes, id);
-            enviarOcorrenciaVolley(titulo, descricao, id);
+
+            String id = null;
+            if (imageBytes != null) {
+                id = UUID.randomUUID().toString().concat(String.valueOf(System.currentTimeMillis()));
+                enviarImagemVolley(imageBytes, id);
+
+            }
+            if (dados.equals("novo"))
+                enviarOcorrenciaVolley(titulo, descricao, id);
+            else
+                atualizarOcorrenciaVolley(titulo, descricao, id, ocorrencia);
             //receberImagemVolley();
             //mReportTask = new ReportTask(titulo, descricao);
             //mReportTask.execute((Void) null);
@@ -710,7 +759,8 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
             marker.put("owner", sharedPreferences.getString("username", "erro"));
             marker.put("description", descricao);
             marker.put("type", tipo);
-            marker.put("image_uri", "https://novaleaf-197719.appspot.com/gcs/novaleaf-197719.appspot.com/" + id);
+            if (id != null)
+                marker.put("image_uri", "https://novaleaf-197719.appspot.com/gcs/novaleaf-197719.appspot.com/" + id);
             JSONObject coordinates = new JSONObject();
             coordinates.put("latitude", latitude);
             coordinates.put("longitude", longitude);
@@ -720,6 +770,61 @@ public class CriarOcorrenciaActivity extends AppCompatActivity {
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
+                            Intent i = new Intent(CriarOcorrenciaActivity.this, FeedActivity.class);
+                            startActivity(i);
+                            finish();
+                        }
+                    }, new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    VolleyLog.d("erroNOVAOCORRENCIA", "Error: " + error.getMessage());
+                }
+            }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    HashMap<String, String> headers = new HashMap<String, String>();
+                    headers.put("Authorization", token);
+                    return headers;
+                }
+
+            };
+            AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private void atualizarOcorrenciaVolley(final String titulo, final String descricao, final String id, final Ocorrencia ocorrencia) {
+        String tag_json_obj = "json_obj_req";
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/mapsupport/update";
+
+        JSONObject marker = new JSONObject();
+        SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+        final String token = sharedPreferences.getString("tokenID", "erro");
+        try {
+
+            marker.put("name", titulo);
+            marker.put("description", descricao);
+            marker.put("type", tipo);
+            if (id != null)
+                marker.put("image_uri", "https://novaleaf-197719.appspot.com/gcs/novaleaf-197719.appspot.com/" + id);
+            //JSONObject coordinates = new JSONObject();
+            //coordinates.put("latitude", latitude);
+            //coordinates.put("longitude", longitude);
+            //marker.put("coordinates", coordinates);
+
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, url, marker,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            int index = OcorrenciaFragment.listOcorrencias.indexOf(ocorrencia);
+                            OcorrenciaFragment.listOcorrencias.get(index).setName(titulo);
+                            OcorrenciaFragment.listOcorrencias.get(index).setDescription(descricao);
+                            OcorrenciaFragment.listOcorrencias.get(index).setType(tipo);
+
+                            OcorrenciaFragment.myOcorrenciaRecyclerViewAdapter.notifyDataSetChanged();
                             Intent i = new Intent(CriarOcorrenciaActivity.this, FeedActivity.class);
                             startActivity(i);
                             finish();

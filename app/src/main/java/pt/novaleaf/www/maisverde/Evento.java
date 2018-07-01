@@ -9,21 +9,30 @@ public class Evento {
     public long creationDate;
     public long meetupDate;
     public long endDate;
+    public String image_uri;
     public List<String> interests;
     public List<String> confirmations;
     public List<String> admin;
+    //public List<GeoPt> area;
+    public double radious;
+    //public GeoPt center;
+    public double meetupPointLatitude;
+    public double meetupPointLongitude;
+    public double centerPointLongitude;
+    public double centerPointLatitude;
     public String id;
     public String location;
     public String alert;
     public String description;
-    private String weather;
-    private String image_uri;
+    public String weather; //??
+
     public boolean interesse;
     public boolean ir;
 
     public Evento(String name, String creator, long creationDate, long meetupDate, long endDate, List<String> interests,
                   List<String> confirmations, List<String> admin, String id, String location, String alert, String description,
-                  String weather, String image_uri){
+                  String weather, String image_uri, double meetupPointLatitude, double meetupPointLongitude,
+                  double centerPointLatitude, double centerPointLongitude, double radious){
 
         this.name = name;
         this.creator = creator;
@@ -39,6 +48,31 @@ public class Evento {
         this.description = description;
         this.weather = weather;
         this.image_uri = image_uri;
+        this.centerPointLatitude = centerPointLatitude;
+        this.centerPointLongitude = centerPointLongitude;
+        this.meetupPointLatitude = meetupPointLatitude;
+        this.meetupPointLongitude = meetupPointLongitude;
+        this.radious = radious;
+    }
+
+    public double getRadious() {
+        return radious;
+    }
+
+    public double getCenterPointLatitude() {
+        return centerPointLatitude;
+    }
+
+    public double getMeetupPointLatitude() {
+        return meetupPointLatitude;
+    }
+
+    public double getCenterPointLongitude() {
+        return centerPointLongitude;
+    }
+
+    public double getMeetupPointLongitude() {
+        return meetupPointLongitude;
     }
 
     public String getName() {
