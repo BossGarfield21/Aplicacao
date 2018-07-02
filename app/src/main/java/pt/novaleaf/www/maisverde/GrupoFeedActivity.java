@@ -22,6 +22,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -118,7 +119,7 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
     private void volleyGetGrupo() {
 
         String tag_json_obj = "json_request";
-        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/detail_info?group_id=" + group.getGroupId();
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/detail_info?group_id=" + group.getGroupId();
 
         Log.d("ché bate só", url);
 
@@ -157,8 +158,12 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
                                 creationDate = grupo.getLong("creationDate");
                             if (grupo.has("points"))
                                 points = grupo.getLong("points");
-                            if (grupo.has("image_uri"))
-                                image_uri = grupo.getString("image_uri");
+                            JSONObject imag = null;
+                            if (grupo.has("image_uri")) {
+                                imag = grupo.getJSONObject("image_uri");
+                                if (imag.has("value"))
+                                    image_uri = imag.getString("value");
+                            }
                             if (grupo.has("groupId"))
                                 groupId = grupo.getString("groupId");
                             if (grupo.has("privacy"))
@@ -300,17 +305,17 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
 
         String groupID = "id";
         String tag_json_obj = "json_obj_req";
-        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/leave_group?group_id=" + groupID;
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/leave_group?group_id=" + groupID;
 
         JSONObject grupo = new JSONObject();
         SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
         final String token = sharedPreferences.getString("tokenID", "erro");
 
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, grupo,
-                new Response.Listener<JSONObject>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(String response) {
                         Intent intent = new Intent(GrupoFeedActivity.this, GruposListActivity.class);
                         startActivity(intent);
                         finish();
@@ -331,7 +336,7 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
             }
 
         };
-        AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
+        AppController.getInstance().addToRequestQueue(stringRequest, tag_json_obj);
 
     }
 
@@ -339,7 +344,7 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
 
         String groupID = "id";
         String tag_json_obj = "json_obj_req";
-        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/like?group_id=" + group.getGroupId() +
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/like?group_id=" + group.getGroupId() +
                 "&publication=" + item.getId();
 
         JSONObject grupo = new JSONObject();
@@ -347,10 +352,10 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
         final String token = sharedPreferences.getString("tokenID", "erro");
 
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, grupo,
-                new Response.Listener<JSONObject>() {
+        StringRequest jsonObjectRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(String response) {
                     }
                 }, new Response.ErrorListener() {
 
@@ -375,7 +380,7 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
     private void takeLikePostVolley(final Post item) {
 
         String tag_json_obj = "json_obj_req";
-        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/remove_like?group_id=" + group.getGroupId() +
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/remove_like?group_id=" + group.getGroupId() +
                 "&publication=" + item.getId();
 
         JSONObject grupo = new JSONObject();
@@ -383,10 +388,10 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
         final String token = sharedPreferences.getString("tokenID", "erro");
 
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, grupo,
-                new Response.Listener<JSONObject>() {
+        StringRequest jsonObjectRequest = new StringRequest(Request.Method.DELETE, url,
+                new Response.Listener<String>() {
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(String response) {
 
                     }
                 }, new Response.ErrorListener() {
@@ -413,10 +418,10 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
         String tag_json_obj = "json_request";
         String url;
         if (cursorPosts.equals(""))
-            url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/feed?group_id=" +
+            url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/feed?group_id=" +
                     group.getGroupId() + "&cursor=startquery";
         else
-            url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/feed?cursor=" + cursorPosts;
+            url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/feed?cursor=" + cursorPosts;
 
         Log.d("ché bate só", url);
 

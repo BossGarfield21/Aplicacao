@@ -121,4 +121,12 @@ public class Grupo implements Serializable{
     public boolean isMember() {
         return isMember;
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPrivacy(String privacy) {
+        this.privacy = privacy;
+    }
 }

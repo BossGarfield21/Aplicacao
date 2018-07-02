@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -20,6 +21,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -104,7 +106,7 @@ public class AdminGrupoPedidosActivity extends AppCompatActivity implements Seri
 
     private void volleyAceitarUser(String user) {
         String tag_json_obj = "json_request";
-        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/accept?group_id=" +
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/gadmin/accept?group_id=" +
                 grupo.getGroupId() + "&username=" + user;
 
         Log.d("ché bate só", url);
@@ -114,11 +116,11 @@ public class AdminGrupoPedidosActivity extends AppCompatActivity implements Seri
         final String token = sharedPreferences.getString("tokenID", "erro");
 
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, eventos,
-                new Response.Listener<JSONObject>() {
+        StringRequest jsonObjectRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
 
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(String response) {
                     }
 
                 }, new Response.ErrorListener()
@@ -127,6 +129,7 @@ public class AdminGrupoPedidosActivity extends AppCompatActivity implements Seri
 
             @Override
             public void onErrorResponse(VolleyError error) {
+                Toast.makeText(AdminGrupoPedidosActivity.this, "Erro", Toast.LENGTH_SHORT).show();
                 VolleyLog.d("erroLOGIN", "Error: " + error.getMessage());
             }
         })
@@ -147,7 +150,7 @@ public class AdminGrupoPedidosActivity extends AppCompatActivity implements Seri
 
     private void volleyRejeitarUser(String user) {
         String tag_json_obj = "json_request";
-        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/refuse?group_id=" +
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/gadmin/refuse?group_id=" +
                 grupo.getGroupId() + "&username=" + user;
 
         Log.d("ché bate só", url);
@@ -157,11 +160,11 @@ public class AdminGrupoPedidosActivity extends AppCompatActivity implements Seri
         final String token = sharedPreferences.getString("tokenID", "erro");
 
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, eventos,
-                new Response.Listener<JSONObject>() {
+        StringRequest jsonObjectRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
 
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(String response) {
                     }
 
                 }, new Response.ErrorListener()
@@ -170,6 +173,7 @@ public class AdminGrupoPedidosActivity extends AppCompatActivity implements Seri
 
             @Override
             public void onErrorResponse(VolleyError error) {
+                Toast.makeText(AdminGrupoPedidosActivity.this, "Erro", Toast.LENGTH_SHORT).show();
                 VolleyLog.d("erroLOGIN", "Error: " + error.getMessage());
             }
         })
@@ -191,7 +195,7 @@ public class AdminGrupoPedidosActivity extends AppCompatActivity implements Seri
 
     private void volleyGetPedidos() {
         String tag_json_obj = "json_request";
-        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/group_requests?group_id="
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/gadmin/group_requests?group_id="
                 + grupo.getGroupId() + "&cursor=startquery";
 
         Log.d("ché bate só", url);

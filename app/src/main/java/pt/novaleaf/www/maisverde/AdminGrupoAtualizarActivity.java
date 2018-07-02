@@ -124,38 +124,45 @@ public class AdminGrupoAtualizarActivity extends AppCompatActivity implements Se
 
     private void volleyUpdateGrupo(String id) {
         String tag_json_obj = "json_request";
-        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/update";
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/gadmin/update";
 
         Log.d("ché bate só", url);
 
         SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
-        JSONObject grupo = new JSONObject();
+        final JSONObject grupo = new JSONObject();
         final String token = sharedPreferences.getString("tokenID", "erro");
+        final String privaci;
+        boolean privacy = mSwitch.isChecked();
+        if (privacy)
+            privaci= "private";
+        else
+            privaci = "public";
 
         try {
-            boolean privacy = mSwitch.isChecked();
-            String privaci;
-            if (privacy)
-                privaci= "private";
-            else
-                privaci = "public";
 
-            grupo.put("group_id", this.grupo.getGroupId());
+
+            grupo.put("groupId", this.grupo.getGroupId());
             grupo.put("privacy", privaci);
-            grupo.put("name", this.grupo.getName());
+            grupo.put("name", mNomeGrupo.getText().toString());
             if (id!=null)
-                grupo.put("image_uri", id);
+                grupo.put("image_uri", "https://novaleaf-197719.appspot.com/gcs/novaleaf-197719.appspot.com/"+id);
 
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, grupo,
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, url, grupo,
                 new Response.Listener<JSONObject>() {
 
                     @Override
                     public void onResponse(JSONObject response) {
+                        int index = GruposListActivity.grupos.indexOf(grupo);
+                        GruposListActivity.grupos.get(index).setName(mNomeGrupo.getText().toString());
+
+                        GruposListActivity.grupos.get(index).setPrivacy(privaci);
+                        GruposListActivity.adapter.notifyDataSetChanged();
+
                         Toast.makeText(AdminGrupoAtualizarActivity.this, "Alterações efetuadas", Toast.LENGTH_SHORT).show();
                     }
 
@@ -217,11 +224,17 @@ public class AdminGrupoAtualizarActivity extends AppCompatActivity implements Se
             @Override
             public void onResponse(String response) {
 
+                int index = GruposListActivity.grupos.indexOf(grupo);
+                GruposListActivity.grupos.get(index).setBitmap(imageBytes);
+                GruposListActivity.adapter.notifyDataSetChanged();
+
+
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 VolleyLog.d("erroIMAGEM", "Error: " + error.getMessage());
+
             }
         }) {
             @Override

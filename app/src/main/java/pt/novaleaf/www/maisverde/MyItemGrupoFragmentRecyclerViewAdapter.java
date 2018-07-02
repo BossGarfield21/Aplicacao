@@ -59,19 +59,20 @@ public class MyItemGrupoFragmentRecyclerViewAdapter extends RecyclerView.Adapter
         holder.mContraintLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mListener.onGrupoInteraction(mValues.get(position));
+                if (mListener != null)
+                    mListener.onGrupoInteraction(mValues.get(position));
             }
         });
 
         if (mValues.get(position).getImage_uri() != null && mValues.get(position).getBitmap() != null) {
-            holder.mImageLogo.setAdjustViewBounds(true);
+            //holder.mImageLogo.setAdjustViewBounds(true);
 
             holder.mImageLogo.setImageBitmap(BitmapFactory.decodeByteArray(mValues.get(position).getBitmap(),
                     0, mValues.get(position).getBitmap().length));
 
             //receberImagemVolley(holder, position);
         } else if (mValues.get(position).getImageID() != 0) {
-            holder.mImageLogo.setAdjustViewBounds(false);
+            //holder.mImageLogo.setAdjustViewBounds(false);
 
             holder.mImageLogo.setImageResource(mValues.get(position).getImageID());
 
@@ -116,7 +117,7 @@ public class MyItemGrupoFragmentRecyclerViewAdapter extends RecyclerView.Adapter
                     for (Grupo grupo : GruposListActivity.grupos) {
                         if (grupo.getName().toLowerCase().contains(charSequence.toString().toLowerCase())
                                 && (distrito.isEmpty() || grupo.getDistrito().toLowerCase().equals(distrito.toLowerCase())
-                        || (distrito.equals("meus"))&& (grupo.isAdmin() || grupo.isMember()))) {
+                                || (distrito.equals("meus")) && (grupo.isAdmin() || grupo.isMember()))) {
                             // if `contains` == true then add it
                             // to our filtered list
                             Log.d("adicionou", grupo.getName());

@@ -285,6 +285,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
                     try {
 
+//                        pDialog.hide();
                         String jsonString = new String(response.data,
                                 HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
                         JSONObject jsonResponse = new JSONObject(response.headers);

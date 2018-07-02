@@ -452,7 +452,7 @@ public class AddPostActivity extends AppCompatActivity {
 
         String groupID = "id";
         String tag_json_obj = "json_obj_req";
-        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/publish?group_id=" + groupID;
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/publish?group_id=" + groupID;
 
         JSONObject grupo = new JSONObject();
         SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);

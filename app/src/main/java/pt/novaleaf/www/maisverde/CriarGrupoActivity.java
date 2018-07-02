@@ -29,6 +29,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -529,44 +530,37 @@ public class CriarGrupoActivity extends AppCompatActivity implements Serializabl
         String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/create?group=" + nomeGrupo + "&privacy=" +
                 privacy + "&district=" + distrito;
 
-        JSONObject grupo = new JSONObject();
         SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
         final String token = sharedPreferences.getString("tokenID", "erro");
-        try {
 
-            grupo.put("name", nomeGrupo);
-            grupo.put("privacy", privacy);
 
-            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, grupo,
-                    new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            Intent i = new Intent(CriarGrupoActivity.this, GruposListActivity.class);
-                            startActivity(i);
-                            finish();
-                        }
-                    }, new Response.ErrorListener() {
+        StringRequest jsonObjectRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Intent i = new Intent(CriarGrupoActivity.this, GruposListActivity.class);
+                        startActivity(i);
+                        finish();
+                    }
+                }, new Response.ErrorListener() {
 
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    VolleyLog.d("erroNOVAOCORRENCIA", "Error: " + error.getMessage());
-                }
-            }) {
-                @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {
-                    HashMap<String, String> headers = new HashMap<String, String>();
-                    headers.put("Authorization", token);
-                    return headers;
-                }
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(CriarGrupoActivity.this, "Erro", Toast.LENGTH_SHORT).show();
+                VolleyLog.d("erroNOVAOCORRENCIA", "Error: " + error.getMessage());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
 
-            };
-            AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        };
+        AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
 
     }
-
 
 
 }

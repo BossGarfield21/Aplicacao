@@ -131,11 +131,11 @@ public class ComentariosActivity extends AppCompatActivity implements Serializab
 
     }
 
-    private void volleyAdicionarComentario(Comentario com) {
+    private void volleyAdicionarComentario(final Comentario com) {
 
         String tag_json_obj = "json_obj_req";
         String url = "https://novaleaf-197719.appspot.com/rest/withtoken/social/addcomment?markerid="
-                + ocorrencia.getId() + "commentid=" + com.getId();
+                + ocorrencia.getId();
 
         JSONObject grupo = new JSONObject();
         SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
@@ -147,6 +147,7 @@ public class ComentariosActivity extends AppCompatActivity implements Serializab
             grupo.put("message", com.getMessage());
             grupo.put("image", com.getImage());
             grupo.put("creation_date", com.getCreation_date());
+            grupo.put("id", com.getId());
 
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, url, grupo,
                     new Response.Listener<JSONObject>() {
@@ -157,8 +158,11 @@ public class ComentariosActivity extends AppCompatActivity implements Serializab
 
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    Toast.makeText(ComentariosActivity.this, "Falhou o envio", Toast.LENGTH_SHORT).show();
-                    VolleyLog.d("erroNOVAOCORRENCIA", "Error: " + error.getMessage());
+                    if (error.networkResponse != null) {
+                        comentarios.remove(comentarios.size()-1);
+                        Toast.makeText(ComentariosActivity.this, "Falhou o envio", Toast.LENGTH_SHORT).show();
+                        VolleyLog.d("erroNOVAOCORRENCIA", "Error: " + error.getMessage());
+                    }
                 }
             }) {
                 @Override
@@ -188,7 +192,6 @@ public class ComentariosActivity extends AppCompatActivity implements Serializab
 
         return true;
     }
-
 
 
     @Override

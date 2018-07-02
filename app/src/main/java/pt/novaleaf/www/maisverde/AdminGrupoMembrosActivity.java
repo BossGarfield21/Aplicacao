@@ -136,7 +136,7 @@ public class AdminGrupoMembrosActivity extends AppCompatActivity implements Seri
     private void volleyExpulsarUser(String user) {
 
         String tag_json_obj = "json_request";
-        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/kick_user/?group_id="
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/gadmin/kick_user/?group_id="
                 + grupo.getGroupId() + "&username=" + user;
 
 
@@ -175,7 +175,7 @@ public class AdminGrupoMembrosActivity extends AppCompatActivity implements Seri
     private void volleyAdicionarAdmin(String user) {
 
         String tag_json_obj = "json_request";
-        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/new_admin/?group_id="
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/gadmin/new_admin/?group_id="
                 + grupo.getGroupId() + "&username=" + user;
 
 
@@ -215,7 +215,7 @@ public class AdminGrupoMembrosActivity extends AppCompatActivity implements Seri
     private void volleyRemoverAdmin(String user) {
 
         String tag_json_obj = "json_request";
-        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/remove_admin/?group_id="
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/gadmin/remove_admin/?group_id="
                 + grupo.getGroupId() + "&username=" + user;
 
 

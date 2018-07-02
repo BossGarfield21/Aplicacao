@@ -3,6 +3,7 @@ package pt.novaleaf.www.maisverde;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -13,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +32,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import utils.ByteRequest;
+
 public class GruposActivity extends AppCompatActivity implements Serializable {
 
     private Button mButtonPedido;
@@ -37,6 +41,7 @@ public class GruposActivity extends AppCompatActivity implements Serializable {
     private TextView mTextNumPessoas;
     private TextView mDistrito;
     private TextView mPontos;
+    private ImageView mImage;
     Grupo grupo;
 
     @Override
@@ -67,6 +72,7 @@ public class GruposActivity extends AppCompatActivity implements Serializable {
         mTextNumPessoas = (TextView) findViewById(R.id.textGrupoPessoas);
         mDistrito = (TextView) findViewById(R.id.textDistrito);
         mPontos = (TextView) findViewById(R.id.textPontos);
+        mImage = (ImageView) findViewById(R.id.imageView7);
 
 
         long pontos = grupo.getPoints();
@@ -78,9 +84,15 @@ public class GruposActivity extends AppCompatActivity implements Serializable {
 
         if (getIntent().getBooleanExtra("isMember", false)) {
             mButtonPedido.setVisibility(View.GONE);
+
         }
 
 
+        if (grupo.getImage_uri() != null) {
+            receberImagemVolley();
+        } else {
+            mImage.setImageResource(R.drawable.ic_people_black_24dp);
+        }
         mDistrito.setText(String.format("%s", grupo.getDistrito().toUpperCase()));
 
         if (grupo.getNumPessoas() > 1)
@@ -107,8 +119,12 @@ public class GruposActivity extends AppCompatActivity implements Serializable {
                 mButtonCancelar.setVisibility(View.VISIBLE);
             }
         });
-
-
+/**
+        if (grupo.getBitmap() != null) {
+            mImage.setImageBitmap(BitmapFactory.decodeByteArray(grupo.getBitmap(), 0, grupo.getBitmap().length));
+        } else {
+            mImage.setImageResource(R.drawable.ic_people_black_24dp);
+        }*/
     }
 
     private void cancelJoinGroupVolley() {
@@ -154,7 +170,7 @@ public class GruposActivity extends AppCompatActivity implements Serializable {
 
         String groupID = "id";
         String tag_json_obj = "json_obj_req";
-        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/request?group_id=" + groupID;
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/request?group_id=" + grupo.getGroupId();
 
         JSONObject grupo = new JSONObject();
         SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
@@ -236,6 +252,39 @@ public class GruposActivity extends AppCompatActivity implements Serializable {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void receberImagemVolley() {
+        String tag_json_obj = "octect_request";
+        String url = grupo.getImage_uri();
+
+
+        final String token = getSharedPreferences("Prefs", MODE_PRIVATE).getString("tokenID", "erro");
+        ByteRequest stringRequest = new ByteRequest(Request.Method.GET, url, new Response.Listener<byte[]>() {
+
+            @Override
+            public void onResponse(byte[] response) {
+                mImage.setImageBitmap(BitmapFactory.decodeByteArray(response, 0, response.length));
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("erroIMAGEMocorrencia", "Error: " + error.getMessage());
+
+                mImage.setImageResource(R.drawable.ic_people_black_24dp);
+
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+
+        };
+        AppController.getInstance().addToRequestQueue(stringRequest, tag_json_obj);
+
     }
 
 

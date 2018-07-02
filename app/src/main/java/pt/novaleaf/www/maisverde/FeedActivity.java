@@ -25,6 +25,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -32,6 +33,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -528,7 +530,6 @@ public class FeedActivity extends AppCompatActivity
     }
 
 
-
     /**
      * private void receberImagemVolley() {
      * String tag_json_obj = "octect_request";
@@ -589,7 +590,29 @@ public class FeedActivity extends AppCompatActivity
         SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
         final String token = sharedPreferences.getString("tokenID", "erro");
 
+        // StringRequest stringRequest = new StringRequest()
 
+        StringRequest stringRequest = new StringRequest(method, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                item.like();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+        };
+
+/**
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(method, url, grupo,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -613,8 +636,8 @@ public class FeedActivity extends AppCompatActivity
                 return headers;
             }
 
-        };
-        AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
+        };*/
+        AppController.getInstance().addToRequestQueue(stringRequest, tag_json_obj);
     }
 
     private void receberImagemVolley(final Ocorrencia item) {

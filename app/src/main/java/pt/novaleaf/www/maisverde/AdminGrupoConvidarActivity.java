@@ -73,7 +73,7 @@ public class AdminGrupoConvidarActivity extends AppCompatActivity implements Ser
     private void volleyConvidarGrupo(final String user) {
 
         String tag_json_obj = "json_obj_req";
-        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/invite?group_id=" + grupo.getGroupId() +
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/gadmin/invite?group_id=" + grupo.getGroupId() +
                 "&username=" + user;
 
         JSONObject grupo = new JSONObject();

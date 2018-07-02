@@ -99,7 +99,7 @@ public class AdminGrupoConvitesActivity extends AppCompatActivity implements Ser
     private void volleyGetConvites() {
 
         String tag_json_obj = "json_request";
-        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/invites?group_id="
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/gadmin/invites?group_id="
                 + grupo.getGroupId() + "&cursor=startquery";
 
         Log.d("ché bate só", url);

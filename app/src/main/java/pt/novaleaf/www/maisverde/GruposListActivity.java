@@ -24,6 +24,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -31,6 +32,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -55,7 +57,7 @@ public class GruposListActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, Serializable {
 
     NavigationView navigationView;
-    MyItemGrupoFragmentRecyclerViewAdapter adapter;
+    static MyItemGrupoFragmentRecyclerViewAdapter adapter;
     static ArrayList<Grupo> grupos = new ArrayList<>();
     static ArrayList<Grupo> tempGrupos = new ArrayList<>();
     private ItemGruposFragment.OnListFragmentInteractionListener mListener;
@@ -88,6 +90,7 @@ public class GruposListActivity extends AppCompatActivity
         mListener = new ItemGruposFragment.OnListFragmentInteractionListener() {
             @Override
             public void onGrupoInteraction(Grupo item) {
+
                 Intent intent;
                 if (item.isAdmin()||item.isMember())
                     intent = new Intent(GruposListActivity.this, GrupoFeedActivity.class);
@@ -96,6 +99,8 @@ public class GruposListActivity extends AppCompatActivity
 
                 intent.putExtra("grupo", item);
                 startActivity(intent);
+
+                //Toast.makeText(GruposListActivity.this, item.getImage_uri(), Toast.LENGTH_SHORT).show();
             }
         };
 
@@ -122,10 +127,11 @@ public class GruposListActivity extends AppCompatActivity
  null, null, "Público", "Porto"));
  */
 
-        adapter = new MyItemGrupoFragmentRecyclerViewAdapter(grupos, mListener);
 
         volleyGetGrupos();
 
+
+        adapter = new MyItemGrupoFragmentRecyclerViewAdapter(grupos, mListener);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.gruposLinear);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -366,6 +372,7 @@ public class GruposListActivity extends AppCompatActivity
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
+
                             Log.d("nabo", cursorGrupos + "pixa");
                             cursorGrupos = response.getString("cursor");
                             Log.d("nabo", cursorGrupos);
@@ -399,8 +406,12 @@ public class GruposListActivity extends AppCompatActivity
                                             creationDate = grupo.getLong("creationDate");
                                         if (grupo.has("points"))
                                             points = grupo.getLong("points");
-                                        if (grupo.has("image_uri"))
-                                            image_uri = grupo.getString("image_uri");
+                                        JSONObject image = null;
+                                        if (grupo.has("image_uri")) {
+                                            image = grupo.getJSONObject("image_uri");
+                                            if (image.has("value"))
+                                                image_uri = image.getString("value");
+                                        }
                                         if (grupo.has("groupId"))
                                             groupId = grupo.getString("groupId");
                                         if (grupo.has("privacy"))
@@ -428,22 +439,20 @@ public class GruposListActivity extends AppCompatActivity
                                                 numbMembers);
 
 
-                                        if (grupo1.getImage_uri() != null)
-                                            receberImagemVolley(grupo1);
-                                        else {
-                                            grupo1.setImageID(R.drawable.ic_people_black_24dp);
-                                        }
-
-
                                         if (!grupos.contains(grupo1))
                                             grupos.add(grupo1);
 
+                                        if (grupo1.getImage_uri() != null) {
+                                            receberImagemVolley(grupo1);
+                                        }else {
+                                            grupo1.setImageID(R.drawable.ic_people_black_24dp);
+                                        }
 
-                                        adapter.notifyDataSetChanged();
+                                        //adapter.notifyDataSetChanged();
 
-                                        showDistrict("meus grupos");
 
                                     }
+                                    showDistrict("meus grupos");
                                 }
                             }
                         } catch (JSONException e) {
@@ -477,13 +486,17 @@ public class GruposListActivity extends AppCompatActivity
         String url = item.getImage_uri();
 
 
-        final String token = sharedPreferences.getString("tokenID", "erro");
+        final String token = getSharedPreferences("Prefs", MODE_PRIVATE).getString("tokenID", "erro");
         ByteRequest stringRequest = new ByteRequest(Request.Method.GET, url, new Response.Listener<byte[]>() {
 
             @Override
             public void onResponse(byte[] response) {
-                Bitmap bitmap = BitmapFactory.decodeByteArray(response, 0, response.length);
-                item.setBitmap(response);
+                int index = grupos.indexOf(item);
+                //grupos.get(index).setBitmap(response);
+                if (response.length<512000)
+                    item.setBitmap(response);
+                item.setImageID(R.drawable.ic_people_black_24dp);
+
                 adapter.notifyDataSetChanged();
 
             }
@@ -493,6 +506,7 @@ public class GruposListActivity extends AppCompatActivity
                 VolleyLog.d("erroIMAGEMocorrencia", "Error: " + error.getMessage());
 
                 item.setImageID(R.drawable.ic_people_black_24dp);
+
 
                 adapter.notifyDataSetChanged();
             }

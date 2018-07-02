@@ -44,6 +44,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -421,6 +422,7 @@ public class PerfilActivity extends AppCompatActivity
                 SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
 
                 editor.putString("image_user", url);
+                editor.putString("image_bytes", Arrays.toString(imageBytes));
                 editor.commit();
                 alterarDadosVolley(url);
             }
@@ -454,6 +456,10 @@ public class PerfilActivity extends AppCompatActivity
 
             @Override
             public void onResponse(byte[] response) {
+                SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
+
+                editor.putString("image_bytes", Arrays.toString(response));
+                editor.commit();
 
                 mImage.setImageBitmap(BitmapFactory.decodeByteArray(response, 0, response.length));
             }
