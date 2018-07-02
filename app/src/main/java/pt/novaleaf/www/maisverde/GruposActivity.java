@@ -65,7 +65,10 @@ public class GruposActivity extends AppCompatActivity implements Serializable {
         grupo = (Grupo) getIntent().getSerializableExtra("grupo");
 
 
-        setTitle(grupo.getName());
+        if (grupo != null)
+            setTitle(grupo.getName());
+        else
+            setTitle("Sem ligação");
 
         mButtonPedido = (Button) findViewById(R.id.buttonPedido);
         mButtonCancelar = (Button) findViewById(R.id.buttonCancelar);
@@ -75,7 +78,9 @@ public class GruposActivity extends AppCompatActivity implements Serializable {
         mImage = (ImageView) findViewById(R.id.imageView7);
 
 
-        long pontos = grupo.getPoints();
+        long pontos = 0;
+        if (grupo != null)
+            pontos = grupo.getPoints();
         if (pontos != 1)
             mPontos.setText(String.format("%d pontos", pontos));
         else
@@ -88,17 +93,20 @@ public class GruposActivity extends AppCompatActivity implements Serializable {
         }
 
 
-        if (grupo.getImage_uri() != null) {
-            receberImagemVolley();
-        } else {
-            mImage.setImageResource(R.drawable.ic_people_black_24dp);
-        }
-        mDistrito.setText(String.format("%s", grupo.getDistrito().toUpperCase()));
+        if (grupo != null)
+            if (grupo.getImage_uri() != null) {
+                receberImagemVolley();
+            } else {
+                mImage.setImageResource(R.drawable.ic_people_black_24dp);
+            }
+        if (grupo != null)
+            mDistrito.setText(String.format("%s", grupo.getDistrito().toUpperCase()));
 
-        if (grupo.getNumPessoas() > 1)
-            mTextNumPessoas.setText(String.format("%d pessoas", grupo.getNumPessoas()));
-        else
-            mTextNumPessoas.setText(String.format("%d pessoa", grupo.getNumPessoas()));
+        if (grupo != null)
+            if (grupo.getNumPessoas() > 1)
+                mTextNumPessoas.setText(String.format("%d pessoas", grupo.getNumPessoas()));
+            else
+                mTextNumPessoas.setText(String.format("%d pessoa", grupo.getNumPessoas()));
 
 
         mButtonCancelar.setVisibility(View.GONE);
@@ -120,11 +128,11 @@ public class GruposActivity extends AppCompatActivity implements Serializable {
             }
         });
 /**
-        if (grupo.getBitmap() != null) {
-            mImage.setImageBitmap(BitmapFactory.decodeByteArray(grupo.getBitmap(), 0, grupo.getBitmap().length));
-        } else {
-            mImage.setImageResource(R.drawable.ic_people_black_24dp);
-        }*/
+ if (grupo.getBitmap() != null) {
+ mImage.setImageBitmap(BitmapFactory.decodeByteArray(grupo.getBitmap(), 0, grupo.getBitmap().length));
+ } else {
+ mImage.setImageResource(R.drawable.ic_people_black_24dp);
+ }*/
     }
 
     private void cancelJoinGroupVolley() {
