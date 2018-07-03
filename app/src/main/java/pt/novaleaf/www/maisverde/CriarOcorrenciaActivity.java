@@ -310,8 +310,8 @@ public class CriarOcorrenciaActivity extends AppCompatActivity implements Serial
                 imageView.setImageBitmap(rotatedBitmap);
                 isImage = true;
                 ByteArrayOutputStream bao = new ByteArrayOutputStream();
-                rotatedBitmap = Bitmap.createScaledBitmap(rotatedBitmap, rotatedBitmap.getWidth()/7, rotatedBitmap.getHeight()/7, true);
-                rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bao);
+                rotatedBitmap = Bitmap.createScaledBitmap(rotatedBitmap, rotatedBitmap.getWidth()/2, rotatedBitmap.getHeight()/2, true);
+                rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 20, bao);
 
                 imageBytes = bao.toByteArray();
 
@@ -381,8 +381,8 @@ public class CriarOcorrenciaActivity extends AppCompatActivity implements Serial
 
                     isImage = true;
                     ByteArrayOutputStream bao = new ByteArrayOutputStream();
-                    bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth()/7, bitmap.getHeight()/7, true);
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bao);
+                    bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth()/2, bitmap.getHeight()/2, true);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 20, bao);
 
                     imageBytes = bao.toByteArray();
 
@@ -671,6 +671,7 @@ public class CriarOcorrenciaActivity extends AppCompatActivity implements Serial
             // form field with an error.
             focusView.requestFocus();
         } else {
+            bCriar.setClickable(false);
 
             String id = null;
             if (imageBytes != null) {
@@ -905,6 +906,7 @@ public class CriarOcorrenciaActivity extends AppCompatActivity implements Serial
 
                 @Override
                 public void onErrorResponse(VolleyError error) {
+                    bCriar.setClickable(true);
                     VolleyLog.d("erroNOVAOCORRENCIA", "Error: " + error.getMessage());
                 }
             }) {

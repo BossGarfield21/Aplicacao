@@ -94,7 +94,7 @@ public class AdminGrupoConvidarActivity extends AppCompatActivity implements Ser
             public void onErrorResponse(VolleyError error) {
                 if (error.networkResponse != null) {
                     if (error.networkResponse.statusCode == 409)
-                        Toast.makeText(AdminGrupoConvidarActivity.this, user + " já está no grupo", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AdminGrupoConvidarActivity.this, user + " já está no grupo ou já foi convidado", Toast.LENGTH_SHORT).show();
                 } else {
 
                     Toast.makeText(AdminGrupoConvidarActivity.this, "Username não encontrado", Toast.LENGTH_SHORT).show();
