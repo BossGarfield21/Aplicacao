@@ -848,7 +848,7 @@ public class CriarOcorrenciaActivity extends AppCompatActivity implements Serial
 
                                         comentarios.put(comentID, new Comentario(comentID, com.getString("author"),
                                                 com.getString("message"), imag,
-                                                com.getLong("creation_date"), origem, id));
+                                                com.getLong("creation_date"), origem, id, null, null));
 
                                     }
                                 }
@@ -885,7 +885,7 @@ public class CriarOcorrenciaActivity extends AppCompatActivity implements Serial
 
 
                                 if (!listOcorrencias.contains(ocorrencia1))
-                                    listOcorrencias.add(ocorrencia1);
+                                    listOcorrencias.add(0,ocorrencia1);
                                 Log.d("ID", id);
                                 Log.d("titulo", titulo);
                                 Log.d("desc", descricao);

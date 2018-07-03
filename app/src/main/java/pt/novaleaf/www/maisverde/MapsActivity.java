@@ -604,7 +604,7 @@ public class MapsActivity extends AppCompatActivity
                                             else origem = 1;
                                             comentarios.put(comentID, new Comentario(comentID, com.getString("author"),
                                                     com.getString("message"), com.getString("image"),
-                                                    com.getLong("creationDate"), origem, id));
+                                                    com.getLong("creationDate"), origem, id, null, null));
 
                                         }
                                     }

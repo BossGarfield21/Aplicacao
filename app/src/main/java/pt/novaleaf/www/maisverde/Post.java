@@ -6,9 +6,10 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public class Post {
+public class Post implements Serializable{
 
     public String id;
+    public String groupId;
     public String author;
     public String message;
     public String image;
@@ -20,7 +21,7 @@ public class Post {
 
 
     public Post(String id, String author, String message, String image, List<String> likers,
-                Map<String, Comentario> comments_map, long likes, boolean liked) {
+                Map<String, Comentario> comments_map, long likes, boolean liked, String groupId) {
 
         this.id = id;
         this.author = author;
@@ -30,7 +31,7 @@ public class Post {
         this.comments = comments_map;
         this.likes = likes;
         this.liked = liked;
-
+        this.groupId = groupId;
     }
 
     public String getId() {
@@ -71,5 +72,19 @@ public class Post {
 
     public long getCreationDate() {
         return creationDate;
+    }
+
+    public void addComentario(Comentario com) {
+        comments.put(com.getId(), com);
+    }
+
+    public String getGroupId() {
+        return groupId;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        Post post = (Post) obj;
+        return this.getId().equals(post.getId());
     }
 }
