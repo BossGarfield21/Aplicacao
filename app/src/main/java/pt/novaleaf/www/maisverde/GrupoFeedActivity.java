@@ -39,8 +39,8 @@ import java.util.Map;
 public class GrupoFeedActivity extends AppCompatActivity implements Serializable {
 
 
-    MyPostRecyclerViewAdapter adapter;
-    private static ArrayList<Post> posts = new ArrayList<>();
+    static MyPostRecyclerViewAdapter adapter;
+    public static ArrayList<Post> posts = new ArrayList<>();
     private PostFragment.OnListFragmentInteractionListener mListener;
     private boolean isFinishedPosts = false;
     private String cursorPosts = "";
@@ -75,7 +75,6 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
         //group = (Grupo) getIntent().getSerializableExtra("grupo");
 
 
-
         //volleyGetPosts();
 
         mListener = new PostFragment.OnListFragmentInteractionListener() {
@@ -95,6 +94,7 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
             public void onCommentInteraction(Post item) {
 
                 Intent intent = new Intent(GrupoFeedActivity.this, ComentariosActivity.class);
+                intent.putExtra("post", (Serializable) item);
                 startActivity(intent);
             }
 
@@ -182,29 +182,28 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
                                 numbMembers = grupo.getLong("numbMembers");
                             }
 
-                            if (grupo.has("admins")){
+                            if (grupo.has("admins")) {
                                 JSONArray ads = grupo.getJSONArray("admins");
-                                for (int i = 0; i< ads.length(); i++)
+                                for (int i = 0; i < ads.length(); i++)
                                     admins.add(ads.getString(i));
                             }
 
-                            if (grupo.has("base_users")){
+                            if (grupo.has("base_users")) {
                                 JSONArray base = grupo.getJSONArray("base_users");
-                                for (int i = 0; i< base.length(); i++)
+                                for (int i = 0; i < base.length(); i++)
                                     base_users.add(base.getString(i));
                             }
 
 
                             Log.d("name", name);
                             Log.d("groupId", groupId);
-                            Log.d("tao crl" , admins.get(0));
+                            Log.d("tao crl", admins.get(0));
                             //Log.d("tao crl" , privacy);
 
 
                             novoGrupo = new Grupo(name, base_users, admins, points,
                                     creationDate, image_uri, groupId, privacy, distrito, isAdmin, isMember,
                                     numbMembers);
-
 
 
                         } catch (JSONException e) {
@@ -442,73 +441,81 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
 
 
                             JSONArray list = response.getJSONArray("list");
-                            if (!isFinishedPosts) {
-                                isFinishedPosts = response.getBoolean("isFinished");
-                                Log.d("ACABOU???", String.valueOf(isFinishedPosts));
+                            if (!response.isNull("list"))
+                                if (!isFinishedPosts) {
+                                    isFinishedPosts = response.getBoolean("isFinished");
+                                    Log.d("ACABOU???", String.valueOf(isFinishedPosts));
 
-                                for (int i = 0; i < list.length(); i++) {
+                                    for (int i = 0; i < list.length(); i++) {
 
-                                    String id = null;
-                                    String author = null;
-                                    String message = null;
-                                    String image = null;
-                                    List<String> likers = new ArrayList<>();
-                                    Map<String, Comentario> comments = new HashMap<>();
-                                    long likes = 0;
-                                    boolean liked = false;
+                                        String id = null;
+                                        String author = null;
+                                        String message = null;
+                                        String image = null;
+                                        List<String> likers = new ArrayList<>();
+                                        Map<String, Comentario> comments = new HashMap<>();
+                                        long likes = 0;
+                                        boolean liked = false;
 
-                                    JSONObject post = list.getJSONObject(i);
-                                    if (post.has("id"))
-                                        id = post.getString("id");
-                                    if (post.has("author"))
-                                        author = post.getString("author");
-                                    if (post.has("message"))
-                                        message = post.getString("message");
-                                    if (post.has("image"))
-                                        message = post.getString("image");
-                                    if (post.has("likes"))
-                                        likes = post.getLong("likes");
-                                    if (post.has("liked"))
-                                        liked = post.getBoolean("liked");
+                                        JSONObject post = list.getJSONObject(i);
+                                        if (post.has("id"))
+                                            id = post.getString("id");
+                                        if (post.has("author"))
+                                            author = post.getString("author");
+                                        if (post.has("message"))
+                                            message = post.getString("message");
+                                        if (post.has("image"))
+                                            message = post.getString("image");
+                                        if (post.has("likes"))
+                                            likes = post.getLong("likes");
+                                        if (post.has("liked"))
+                                            liked = post.getBoolean("liked");
 
-                                    if (post.has("likers")) {
-                                        JSONArray lik = post.getJSONArray("likers");
-                                        for (int a = 0; a < lik.length(); a++)
-                                            likers.add(lik.getString(a));
-                                    }
-
-                                    if (post.has("comments")) {
-                                        JSONObject coms = post.getJSONObject("comments");
-
-                                        Iterator<String> comentario = coms.keys();
-                                        while (comentario.hasNext()) {
-                                            String comentID = comentario.next();
-                                            int origem = 1;
-                                            JSONObject com = coms.getJSONObject(comentID);
-                                            if (com.getString("author").equals(
-                                                    getSharedPreferences("Prefs", MODE_PRIVATE).getString("username", "")))
-                                                origem = 2;
-                                            else origem = 1;
-                                            comments.put(comentID, new Comentario(comentID, com.getString("author"),
-                                                    com.getString("message"), com.getString("image"),
-                                                    com.getLong("creationDate"), origem, id));
-
+                                        if (post.has("likers")) {
+                                            JSONArray lik = post.getJSONArray("likers");
+                                            for (int a = 0; a < lik.length(); a++)
+                                                likers.add(lik.getString(a));
                                         }
-                                    }
+
+                                        if (post.has("comments")) {
+                                            JSONArray coms = post.getJSONArray("comments");
+
+
+                                            for (int a = 0; a < coms.length(); a++) {
+                                                int origem;
+                                                JSONObject com = coms.getJSONObject(a);
+                                                if (com.getString("author").equals(
+                                                        getSharedPreferences("Prefs", MODE_PRIVATE).getString("username", "")))
+                                                    origem = 1;
+                                                else origem = 2;
+
+                                                String imag = null;
+                                                if (com.has("image"))
+                                                    imag = com.getString("image");
+
+                                                String comentID = com.getString("id");
+
+
+                                                comments.put(comentID, new Comentario(comentID, com.getString("author"),
+                                                        com.getString("message"), imag,
+                                                        com.getLong("creation_date"), origem, null, id, group.getGroupId()));
+
+                                            }
+                                        }
 
 //                                    Log.d("POST???", id);
 
 
-                                    if (id != null) {
-                                        Post post1 = new Post(id, author, message, image, likers, comments, likes, liked);
-                                        if (!posts.contains(post1))
-                                            posts.add(post1);
+                                        if (id != null) {
+                                            Post post1 = new Post(id, author, message, image, likers, comments, likes, liked, group.getGroupId());
+                                            if (!posts.contains(post1))
+                                                posts.add(post1);
 
-                                        adapter.notifyDataSetChanged();
+                                            adapter.notifyDataSetChanged();
+                                        }
+
                                     }
-
                                 }
-                            }
 
                         } catch (JSONException e) {
                             e.printStackTrace();

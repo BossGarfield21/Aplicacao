@@ -450,7 +450,7 @@ public class FeedActivity extends AppCompatActivity
 
                                                 comentarios.put(comentID, new Comentario(comentID, com.getString("author"),
                                                         com.getString("message"), imag,
-                                                        com.getLong("creation_date"), origem, id));
+                                                        com.getLong("creation_date"), origem, id, null, null));
 
                                             }
                                         }

@@ -25,6 +25,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -153,7 +154,10 @@ public class MyComentariosRecyclerViewAdapter extends RecyclerView.Adapter {
             public boolean onMenuItemClick(MenuItem item) {
 
 
-                volleyEliminarComentario(comentarios.get(position));
+                if (comentarios.get(position).getMarkerid() != null)
+                    volleyEliminarComentarioOcorrencia(comentarios.get(position));
+                else
+                    volleyEliminarComentarioPost(comentarios.get(position));
                 return false;
             }
         });// to implement on click event on items of menu
@@ -161,7 +165,6 @@ public class MyComentariosRecyclerViewAdapter extends RecyclerView.Adapter {
         inflater.inflate(R.menu.eliminar_comentario_menu, popup.getMenu());
         popup.show();
     }
-
 
 
     private class ReceivedMessageHolder extends RecyclerView.ViewHolder {
@@ -193,26 +196,68 @@ public class MyComentariosRecyclerViewAdapter extends RecyclerView.Adapter {
         }
     }
 
-    private void volleyEliminarComentario(Comentario com) {
+    private void volleyEliminarComentarioOcorrencia(final Comentario com) {
 
         String tag_json_obj = "json_obj_req";
         String url = "https://novaleaf-197719.appspot.com/rest/withtoken/social/removecomment?markerid="
                 + com.getMarkerid() + "&commentid=" + com.getId();
+
+
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences("Prefs", Context.MODE_PRIVATE);
+        final String token = sharedPreferences.getString("tokenID", "erro");
+
+        StringRequest jsonObjectRequest = new StringRequest(Request.Method.PUT, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        comentarios.remove(com);
+                        notifyDataSetChanged();
+                        OcorrenciaFragment.myOcorrenciaRecyclerViewAdapter.notifyDataSetChanged();
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(mContext, "Erro de ligação", Toast.LENGTH_SHORT).show();
+                VolleyLog.d("erroNOVAOCORRENCIA", "Error: " + error.getMessage());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+
+        };
+        AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
+
+    }
+
+    private void volleyEliminarComentarioPost(final Comentario com) {
+
+        String tag_json_obj = "json_obj_req";
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/comment?group_id="
+                + com.getGroupId() + "&publication_id=" + com.getPostId() + "&comment_id=" + com.getId();
 
         JSONObject grupo = new JSONObject();
 
         SharedPreferences sharedPreferences = mContext.getSharedPreferences("Prefs", Context.MODE_PRIVATE);
         final String token = sharedPreferences.getString("tokenID", "erro");
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, url, grupo,
-                new Response.Listener<JSONObject>() {
+        StringRequest jsonObjectRequest = new StringRequest(Request.Method.PUT, url,
+                new Response.Listener<String >() {
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(String  response) {
+                        comentarios.remove(com);
+                        notifyDataSetChanged();
+                        OcorrenciaFragment.myOcorrenciaRecyclerViewAdapter.notifyDataSetChanged();
                     }
                 }, new Response.ErrorListener() {
 
             @Override
             public void onErrorResponse(VolleyError error) {
+                Toast.makeText(mContext, "Erro de ligação", Toast.LENGTH_SHORT).show();
                 VolleyLog.d("erroNOVAOCORRENCIA", "Error: " + error.getMessage());
             }
         }) {
