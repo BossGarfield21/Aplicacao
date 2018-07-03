@@ -31,13 +31,12 @@
             app:layout_constraintHorizontal_bias="0.051"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@mipmap/ic_logo_round"/>
+            app:srcCompat="@mipmap/ic_logo_round" />
 
         <TextView
             android:id="@+id/userName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
             android:layout_marginTop="16dp"
             android:fontFamily="@font/roboto_light"
@@ -46,10 +45,8 @@
             android:text="Bombeirotuga"
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"
             android:textSize="22sp"
-            app:layout_constraintEnd_toStartOf="@+id/riscoCalculado"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/userImage"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/time"
@@ -65,21 +62,6 @@
             app:layout_constraintTop_toBottomOf="@+id/userName" />
 
 
-        <TextView
-            android:id="@+id/riscoCalculado"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="44dp"
-            android:layout_marginTop="16dp"
-            android:layout_weight="1"
-            android:gravity="bottom|center_horizontal"
-            android:text="Risco\n0.0"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textSize="12sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-
         <View
             android:id="@+id/view1"
             android:layout_width="match_parent"
@@ -89,7 +71,7 @@
             android:background="#849d9d9d"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/userImage"/>
+            app:layout_constraintTop_toBottomOf="@+id/userImage" />
 
         <TextView
             android:id="@+id/tituloReport"
@@ -109,7 +91,7 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/view1"/>
+            app:layout_constraintTop_toBottomOf="@+id/view1" />
 
         <android.support.v7.widget.CardView
             android:id="@+id/card"
@@ -129,7 +111,7 @@
                 android:adjustViewBounds="true"
                 android:contentDescription="@string/image_report"
                 android:minHeight="220dp"
-                android:scaleType="fitCenter"/>
+                android:scaleType="fitCenter" />
 
 
         </android.support.v7.widget.CardView>
@@ -149,7 +131,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="#849d9d9d"/>
+                android:background="#849d9d9d" />
 
             <LinearLayout
                 android:id="@+id/linearInfo"
@@ -195,7 +177,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="#849d9d9d"/>
+                android:background="#849d9d9d" />
 
         </LinearLayout>
 
@@ -226,7 +208,7 @@
                     android:contentDescription="TODO"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/lin"
-                    app:srcCompat="@drawable/ic_favorite_border_black_24dp"/>
+                    app:srcCompat="@drawable/ic_favorite_border_black_24dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -246,19 +228,20 @@
                     android:contentDescription="TODO"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/lin"
-                    app:srcCompat="@drawable/ic_outline_comment_24px"/>
+                    app:srcCompat="@drawable/ic_outline_comment_24px" />
             </LinearLayout>
         </LinearLayout>
 
         <TextView
             android:id="@+id/textView6"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="40dp"
-            android:layout_marginTop="4dp"
+            android:layout_width="54dp"
+            android:layout_height="16dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="8dp"
             android:text="Setubal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/riscoCalculado"/>
+            android:textSize="12sp"
+            app:layout_constraintStart_toEndOf="@+id/time"
+            app:layout_constraintTop_toBottomOf="@+id/userName" />
 
     </android.support.constraint.ConstraintLayout>
 
