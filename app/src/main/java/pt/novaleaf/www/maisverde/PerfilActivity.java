@@ -189,7 +189,9 @@ public class PerfilActivity extends AppCompatActivity
 
 
                     ByteArrayOutputStream bao = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, bao);
+                    bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth()/7, bitmap.getHeight()/7, true);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bao);
+
                     imageBytes = bao.toByteArray();
 
 

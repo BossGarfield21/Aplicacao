@@ -174,7 +174,7 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
             }
         });
 
-        holder.mRisco.setText(String.format("Risco\n%s", mValues.get(position).getRisk()));
+//        holder.mRisco.setText(String.format("Risco\n%s", mValues.get(position).getRisk()));
 
         int numComentarios = mValues.get(position).getComments().size();
 
@@ -211,7 +211,7 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
             titulo = (TextView) v.findViewById(R.id.tituloReport);
             username = (TextView) v.findViewById(R.id.userName);
             time = (TextView) v.findViewById(R.id.time);
-            mRisco = (TextView) v.findViewById(R.id.riscoCalculado);
+            //mRisco = (TextView) v.findViewById(R.id.riscoCalculado);
             mTextComentarios = (TextView) v.findViewById(R.id.comentarios);
             mRelative = (ConstraintLayout) v.findViewById(R.id.relative);
             mLinearInfo = (LinearLayout) v.findViewById(R.id.linearInfo);

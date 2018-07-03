@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -29,7 +30,8 @@ public class OcorrenciaFragment extends Fragment {
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
-    private RecyclerView myRecyclerView;
+    public static RecyclerView myRecyclerView;
+    private static Context mContext;
     public static List<Ocorrencia> listOcorrencias =  new ArrayList<>();
     public static MyOcorrenciaRecyclerViewAdapter myOcorrenciaRecyclerViewAdapter;
 
@@ -42,9 +44,10 @@ public class OcorrenciaFragment extends Fragment {
 
     // TODO: Customize parameter initialization
 
-    public static OcorrenciaFragment newInstance(int columnCount) {
+    public static OcorrenciaFragment newInstance(int columnCount, Context context) {
         OcorrenciaFragment fragment = new OcorrenciaFragment();
         updateList();
+        mContext = context;
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
@@ -81,6 +84,19 @@ public class OcorrenciaFragment extends Fragment {
             myOcorrenciaRecyclerViewAdapter =
                     new MyOcorrenciaRecyclerViewAdapter(listOcorrencias, mListener);
             myRecyclerView.setAdapter(myOcorrenciaRecyclerViewAdapter);
+
+            OcorrenciaFragment.myRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                    super.onScrollStateChanged(recyclerView, newState);
+
+                    if (!recyclerView.canScrollVertically(1)) {
+                        Toast.makeText(mContext,"YA BINA",Toast.LENGTH_LONG).show();
+
+
+                    }
+                }
+            });
 
         }
         return view;

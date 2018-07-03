@@ -13,7 +13,9 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -25,6 +27,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -62,19 +65,20 @@ import static pt.novaleaf.www.maisverde.OcorrenciaFragment.myOcorrenciaRecyclerV
  */
 
 public class FeedActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OcorrenciaFragment.OnListFragmentInteractionListener, EventoFragment.OnListFragmentInteractionListener,
+        implements NavigationView.OnNavigationItemSelectedListener, EventoFragment.OnListFragmentInteractionListener,
         Serializable {
 
     NavigationView navigationView;
-    private SectionsPagerAdapter mSectionsPagerAdapter;
     private String cursorOcorrencias = "";
     private boolean isFinishedOcorrencias = false;
     Fragment ocorrenciaFragment;
+    private LinearLayout linearLayout;
+    public static List<Ocorrencia> ocorrencias = new ArrayList<>();
+    OcorrenciaFragment.OnListFragmentInteractionListener mListener;
+    public static MyOcorrenciaRecyclerViewAdapter adapter;
+    RecyclerView recyclerView;
+    private boolean canScroll = false;
 
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    private ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,16 +93,95 @@ public class FeedActivity extends AppCompatActivity
         updateOcorrencias();
         //updateEventos();
 
+//        linearLayout = (LinearLayout) findViewById(R.id.container);
+/**
+ FragmentManager fragmentManager = getSupportFragmentManager();
+ Fragment fragment = fragmentManager.findFragmentById(R.id.container);
+ if (fragment == null) {
+ fragment = OcorrenciaFragment.newInstance(1, FeedActivity.this);
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment fragment = fragmentManager.findFragmentById(R.id.container);
-        if (fragment == null) {
-            fragment = OcorrenciaFragment.newInstance(1);
+ fragmentManager.beginTransaction()
+ .add(R.id.container, fragment)
+ .commit();
 
-            fragmentManager.beginTransaction()
-                    .add(R.id.container, fragment)
-                    .commit();
-        }
+
+ }*/
+
+        mListener = new OcorrenciaFragment.OnListFragmentInteractionListener() {
+            @Override
+            public void onLikeInteraction(Ocorrencia item) {
+
+                Log.d("TAS LIKE???", item.isLiked() + " PUTA");
+
+                likeReportVolley(item, !item.isLiked());
+                //item.like();
+
+
+            }
+
+            @Override
+            public void onCommentInteraction(Ocorrencia item) {
+                //Toast.makeText(FeedActivity.this, "IR PARA A PAGINA DOS COMENTARIOS", Toast.LENGTH_SHORT).show();
+
+                Intent i = new Intent(FeedActivity.this, ComentariosActivity.class);
+                List<Comentario> comentarios = new ArrayList<>(item.getComments().values());
+                i.putExtra("comentarios", (Serializable) item);
+                startActivity(i);
+            }
+
+            @Override
+            public void onEditInteraction(final Ocorrencia itemm, View view) {
+
+                PopupMenu popup = new PopupMenu(FeedActivity.this, view);
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+
+                        if (item.getItemId() == R.id.editar_informacoes) {
+                            Intent intent = new Intent(FeedActivity.this, CriarOcorrenciaActivity.class);
+                            intent.putExtra("ocorrencia", (Serializable) itemm);
+                            startActivity(intent);
+                        } else {
+                            Intent intent = new Intent(FeedActivity.this, MapsActivity.class);
+                            intent.putExtra("ocorrencia", (Serializable) itemm);
+                            startActivity(intent);
+                        }
+
+                        return false;
+                    }
+                });// to implement on click event on items of menu
+                MenuInflater inflater = popup.getMenuInflater();
+                inflater.inflate(R.menu.menu_editar_ocorrencia, popup.getMenu());
+                popup.show();
+
+            }
+
+            @Override
+            public void onImagemInteraction(Ocorrencia item) {
+                //Toast.makeText(FeedActivity.this, "IR PARA A PAGINA DA OCORRENCIA", Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(FeedActivity.this, OcorrenciaActivity.class);
+                i.putExtra("Ocorrencia", (Serializable) item);
+                startActivity(i);
+            }
+        };
+
+        adapter = new MyOcorrenciaRecyclerViewAdapter(ocorrencias, mListener);
+        recyclerView = (RecyclerView) findViewById(R.id.container);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+                if (!recyclerView.canScrollVertically(1) && canScroll) {
+                    volleyGetOcorrencias();
+
+                }
+            }
+        });
 
         // FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         //fab.setVisibility(View.GONE);
@@ -235,87 +318,6 @@ public class FeedActivity extends AppCompatActivity
         }
     }
 
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter implements Serializable {
-
-        public SectionsPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            Fragment fragment;
-            switch (position) {
-                case 0:
-                    ocorrenciaFragment = OcorrenciaFragment.newInstance(1);
-                    return ocorrenciaFragment;
-                case 1:
-                    fragment = EventoFragment.newInstance(1);
-                    return fragment;
-                default:
-                    return null;
-            }
-
-            //return PlaceholderFragment.newInstance(position + 1);
-        }
-
-        @Override
-        public int getCount() {
-            // Show 2 total pages.
-            return 2;
-        }
-    }
-
-
-    @Override
-    public void onCommentInteraction(Ocorrencia item) {
-        //Toast.makeText(FeedActivity.this, "IR PARA A PAGINA DOS COMENTARIOS", Toast.LENGTH_SHORT).show();
-
-        Intent i = new Intent(FeedActivity.this, ComentariosActivity.class);
-        List<Comentario> comentarios = new ArrayList<>(item.getComments().values());
-        i.putExtra("comentarios", (Serializable) item);
-        startActivity(i);
-    }
-
-    @Override
-    public void onEditInteraction(final Ocorrencia itemm, View view) {
-
-        PopupMenu popup = new PopupMenu(this, view);
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-
-                if (item.getItemId() == R.id.editar_informacoes) {
-                    Intent intent = new Intent(FeedActivity.this, CriarOcorrenciaActivity.class);
-                    intent.putExtra("ocorrencia", (Serializable) itemm);
-                    startActivity(intent);
-                } else {
-                    Intent intent = new Intent(FeedActivity.this, MapsActivity.class);
-                    intent.putExtra("ocorrencia", (Serializable) itemm);
-                    startActivity(intent);
-                }
-
-                return false;
-            }
-        });// to implement on click event on items of menu
-        MenuInflater inflater = popup.getMenuInflater();
-        inflater.inflate(R.menu.menu_editar_ocorrencia, popup.getMenu());
-        popup.show();
-
-    }
-
-    @Override
-    public void onImagemInteraction(Ocorrencia item) {
-        //Toast.makeText(FeedActivity.this, "IR PARA A PAGINA DA OCORRENCIA", Toast.LENGTH_SHORT).show();
-        Intent i = new Intent(FeedActivity.this, OcorrenciaActivity.class);
-        i.putExtra("Ocorrencia", (Serializable) item);
-        startActivity(i);
-    }
 
     @Override
     public void onLikeInteraction(Evento item) {
@@ -372,14 +374,14 @@ public class FeedActivity extends AppCompatActivity
                             Log.d("nabo", cursorOcorrencias + "pixa");
                             cursorOcorrencias = response.getString("cursor");
                             Log.d("nabo", cursorOcorrencias);
-                            isFinishedOcorrencias = response.getBoolean("isFinished");
-                            Log.d("ACABOU???", String.valueOf(isFinishedOcorrencias));
 
 
                             JSONArray list = response.getJSONArray("list");
                             if (!response.isNull("list")) {
+                                Log.d("nao é null", list.toString());
                                 if (!isFinishedOcorrencias)
                                     for (int i = 0; i < list.length(); i++) {
+                                        Log.d("bina, empina?", list.toString());
 
                                         String id = null;
                                         String titulo = null;
@@ -486,14 +488,20 @@ public class FeedActivity extends AppCompatActivity
                                         }
 
 
-                                        if (!listOcorrencias.contains(ocorrencia1))
-                                            listOcorrencias.add(ocorrencia1);
+                                        if (!ocorrencias.contains(ocorrencia1))
+                                            ocorrencias.add(ocorrencia1);
                                         Log.d("ID", id);
                                         Log.d("titulo", titulo);
                                         Log.d("desc", descricao);
-                                        myOcorrenciaRecyclerViewAdapter.notifyDataSetChanged();
+                                        adapter.notifyDataSetChanged();
 
                                     }
+                                isFinishedOcorrencias = response.getBoolean("isFinished");
+                                if (list.length() < 15 || isFinishedOcorrencias)
+                                    canScroll = false;
+                                else
+                                    canScroll = true;
+                                Log.d("ACABOU???", String.valueOf(isFinishedOcorrencias));
                             } else {
                                 isFinishedOcorrencias = true;
                             }
@@ -561,16 +569,6 @@ public class FeedActivity extends AppCompatActivity
      * }
      */
 
-    @Override
-    public void onLikeInteraction(Ocorrencia item) {
-
-        Log.d("TAS LIKE???", item.isLiked() + " PUTA");
-
-        likeReportVolley(item, !item.isLiked());
-        //item.like();
-
-
-    }
 
     private void likeReportVolley(final Ocorrencia item, boolean like) {
 
@@ -613,30 +611,27 @@ public class FeedActivity extends AppCompatActivity
         };
 
 /**
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(method, url, grupo,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                    }
-                }, new Response.ErrorListener() {
+ JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(method, url, grupo,
+ new Response.Listener<JSONObject>() {
+@Override public void onResponse(JSONObject response) {
+}
+}, new Response.ErrorListener() {
 
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                if (error.networkResponse == null) {
-                    VolleyLog.d("errolike", "Error: " + error.getMessage());
-                } else
-                    item.like();
+@Override public void onErrorResponse(VolleyError error) {
+if (error.networkResponse == null) {
+VolleyLog.d("errolike", "Error: " + error.getMessage());
+} else
+item.like();
 
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
-                headers.put("Authorization", token);
-                return headers;
-            }
+}
+}) {
+@Override public Map<String, String> getHeaders() throws AuthFailureError {
+HashMap<String, String> headers = new HashMap<String, String>();
+headers.put("Authorization", token);
+return headers;
+}
 
-        };*/
+};*/
         AppController.getInstance().addToRequestQueue(stringRequest, tag_json_obj);
     }
 
@@ -645,14 +640,14 @@ public class FeedActivity extends AppCompatActivity
         String url = item.getImage_uri();
 
 
-        final String token = sharedPreferences.getString("tokenID", "erro");
+        final String token = getSharedPreferences("Prefs", MODE_PRIVATE).getString("tokenID", "erro");
         ByteRequest stringRequest = new ByteRequest(Request.Method.GET, url, new Response.Listener<byte[]>() {
 
             @Override
             public void onResponse(byte[] response) {
                 Bitmap bitmap = BitmapFactory.decodeByteArray(response, 0, response.length);
                 item.setBitmap(response);
-                myOcorrenciaRecyclerViewAdapter.notifyDataSetChanged();
+                adapter.notifyDataSetChanged();
 
             }
         }, new Response.ErrorListener() {

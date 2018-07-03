@@ -377,7 +377,7 @@ public class MapsActivity extends AppCompatActivity
 
 
         // Add ten cluster items in close proximity, for purposes of this example.
-        for (Ocorrencia ocorrencia : OcorrenciaFragment.listOcorrencias) {
+        for (Ocorrencia ocorrencia : FeedActivity.ocorrencias) {
             mClusterManager.addItem(ocorrencia);
 
         }
@@ -912,11 +912,11 @@ public class MapsActivity extends AppCompatActivity
                         @Override
                         public void onResponse(JSONObject response) {
                             mClusterManager.removeItem(ocorrencia);
-                            int index = OcorrenciaFragment.listOcorrencias.indexOf(ocorrencia);
-                            OcorrenciaFragment.listOcorrencias.get(index).setLatitude(currPos.latitude);
-                            OcorrenciaFragment.listOcorrencias.get(index).setLongitude(currPos.longitude);
-                            OcorrenciaFragment.myOcorrenciaRecyclerViewAdapter.notifyDataSetChanged();
-                            mClusterManager.addItem(OcorrenciaFragment.listOcorrencias.get(index));
+                            int index = FeedActivity.ocorrencias.indexOf(ocorrencia);
+                            FeedActivity.ocorrencias.get(index).setLatitude(currPos.latitude);
+                            FeedActivity.ocorrencias.get(index).setLongitude(currPos.longitude);
+                            FeedActivity.adapter.notifyDataSetChanged();
+                            mClusterManager.addItem(FeedActivity.ocorrencias.get(index));
 
 
                         }

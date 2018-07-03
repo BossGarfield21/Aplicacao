@@ -66,8 +66,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import static pt.novaleaf.www.maisverde.MapsActivity.markers;
-import static pt.novaleaf.www.maisverde.OcorrenciaFragment.listOcorrencias;
-import static pt.novaleaf.www.maisverde.OcorrenciaFragment.myOcorrenciaRecyclerViewAdapter;
 
 
 /**
@@ -312,7 +310,9 @@ public class CriarOcorrenciaActivity extends AppCompatActivity implements Serial
                 imageView.setImageBitmap(rotatedBitmap);
                 isImage = true;
                 ByteArrayOutputStream bao = new ByteArrayOutputStream();
-                rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 50, bao);
+                rotatedBitmap = Bitmap.createScaledBitmap(rotatedBitmap, rotatedBitmap.getWidth()/7, rotatedBitmap.getHeight()/7, true);
+                rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bao);
+
                 imageBytes = bao.toByteArray();
 
                 Snackbar snackbar = Snackbar
@@ -381,7 +381,9 @@ public class CriarOcorrenciaActivity extends AppCompatActivity implements Serial
 
                     isImage = true;
                     ByteArrayOutputStream bao = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, bao);
+                    bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth()/7, bitmap.getHeight()/7, true);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bao);
+
                     imageBytes = bao.toByteArray();
 
                     Snackbar snackbar = Snackbar
@@ -884,12 +886,12 @@ public class CriarOcorrenciaActivity extends AppCompatActivity implements Serial
                                 }
 
 
-                                if (!listOcorrencias.contains(ocorrencia1))
-                                    listOcorrencias.add(0,ocorrencia1);
+                                if (!FeedActivity.ocorrencias.contains(ocorrencia1))
+                                    FeedActivity.ocorrencias.add(0,ocorrencia1);
                                 Log.d("ID", id);
                                 Log.d("titulo", titulo);
                                 Log.d("desc", descricao);
-                                myOcorrenciaRecyclerViewAdapter.notifyDataSetChanged();
+                                FeedActivity.adapter.notifyDataSetChanged();
                                 Intent i = new Intent(CriarOcorrenciaActivity.this, FeedActivity.class);
                                 startActivity(i);
                                 finish();
@@ -944,12 +946,12 @@ public class CriarOcorrenciaActivity extends AppCompatActivity implements Serial
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
-                            int index = OcorrenciaFragment.listOcorrencias.indexOf(ocorrencia);
-                            OcorrenciaFragment.listOcorrencias.get(index).setName(titulo);
-                            OcorrenciaFragment.listOcorrencias.get(index).setDescription(descricao);
-                            OcorrenciaFragment.listOcorrencias.get(index).setType(tipo);
+                            int index = FeedActivity.ocorrencias.indexOf(ocorrencia);
+                            FeedActivity.ocorrencias.get(index).setName(titulo);
+                            FeedActivity.ocorrencias.get(index).setDescription(descricao);
+                            FeedActivity.ocorrencias.get(index).setType(tipo);
 
-                            OcorrenciaFragment.myOcorrenciaRecyclerViewAdapter.notifyDataSetChanged();
+                            FeedActivity.adapter.notifyDataSetChanged();
                             Intent i = new Intent(CriarOcorrenciaActivity.this, FeedActivity.class);
                             startActivity(i);
                             finish();
