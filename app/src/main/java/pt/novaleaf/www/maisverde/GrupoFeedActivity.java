@@ -22,6 +22,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.StringRequest;
 
 import org.json.JSONArray;
@@ -35,6 +36,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 public class GrupoFeedActivity extends AppCompatActivity implements Serializable {
 
@@ -76,6 +78,16 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
 
 
         //volleyGetPosts();
+        new Thread(new Runnable() {
+            @Override
+
+            public void run() {
+                for (int i=0; i<4 && !isFinishedPosts; i++)
+                    volleyGetPosts();
+            }
+
+
+        }).start();
 
         mListener = new PostFragment.OnListFragmentInteractionListener() {
             @Override
@@ -425,10 +437,127 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
         Log.d("ché bate só", url);
 
         SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
-        JSONObject eventos = new JSONObject();
         final String token = sharedPreferences.getString("tokenID", "erro");
 
+        final RequestFuture<JSONObject> future = RequestFuture.newFuture();
+        final JsonObjectRequest jsonObjectRequest1 = new JsonObjectRequest(Request.Method.GET, url, new JSONObject(),
+                future, future) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+        };
+        future.setRequest(jsonObjectRequest1);
 
+
+        jsonObjectRequest1.setTag(tag_json_obj);
+        AppController.getInstance().addToRequestQueue(jsonObjectRequest1);
+
+        try {
+            final JSONObject response = future.get();
+            cursorPosts = response.getString("cursor");
+            Log.d("SUA PUTA TAS AI???", response.toString());
+            final JSONArray list = response.getJSONArray("list");
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    try {
+                        JSONArray list = response.getJSONArray("list");
+                        if (!response.isNull("list"))
+                            if (!isFinishedPosts) {
+                                isFinishedPosts = response.getBoolean("isFinished");
+                                Log.d("ACABOU???", String.valueOf(isFinishedPosts));
+
+                                for (int i = 0; i < list.length(); i++) {
+
+                                    String id = null;
+                                    String author = null;
+                                    String message = null;
+                                    String image = null;
+                                    List<String> likers = new ArrayList<>();
+                                    Map<String, Comentario> comments = new HashMap<>();
+                                    long likes = 0;
+                                    boolean liked = false;
+
+                                    JSONObject post = list.getJSONObject(i);
+                                    if (post.has("id"))
+                                        id = post.getString("id");
+                                    if (post.has("author"))
+                                        author = post.getString("author");
+                                    if (post.has("message"))
+                                        message = post.getString("message");
+                                    if (post.has("image"))
+                                        message = post.getString("image");
+                                    if (post.has("likes"))
+                                        likes = post.getLong("likes");
+                                    if (post.has("liked"))
+                                        liked = post.getBoolean("liked");
+
+                                    if (post.has("likers")) {
+                                        JSONArray lik = post.getJSONArray("likers");
+                                        for (int a = 0; a < lik.length(); a++)
+                                            likers.add(lik.getString(a));
+                                    }
+
+                                    if (post.has("comments")) {
+                                        JSONArray coms = post.getJSONArray("comments");
+
+
+                                        for (int a = 0; a < coms.length(); a++) {
+                                            int origem;
+                                            JSONObject com = coms.getJSONObject(a);
+                                            if (com.getString("author").equals(
+                                                    getSharedPreferences("Prefs", MODE_PRIVATE).getString("username", "")))
+                                                origem = 1;
+                                            else origem = 2;
+
+                                            String imag = null;
+                                            if (com.has("image"))
+                                                imag = com.getString("image");
+
+                                            String comentID = com.getString("id");
+
+
+                                            comments.put(comentID, new Comentario(comentID, com.getString("author"),
+                                                    com.getString("message"), imag,
+                                                    com.getLong("creation_date"), origem, null, id, group.getGroupId()));
+
+                                        }
+                                    }
+
+//                                    Log.d("POST???", id);
+
+
+                                    if (id != null) {
+                                        Post post1 = new Post(id, author, message, image, likers, comments, likes, liked, group.getGroupId());
+                                        if (!posts.contains(post1))
+                                            posts.add(post1);
+
+                                        adapter.notifyDataSetChanged();
+                                    }
+
+                                }
+                            }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        /**
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, eventos,
                 new Response.Listener<JSONObject>() {
 
@@ -541,6 +670,7 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
 
         AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
 
+         */
     }
 
 }
