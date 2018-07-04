@@ -156,8 +156,13 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
         if (mValues.get(position).getImage_uri() != null && mValues.get(position).getBitmap() != null) {
             holder.mImageReport.setAdjustViewBounds(true);
 
-            holder.mImageReport.setImageBitmap(BitmapFactory.decodeByteArray(mValues.get(position).getBitmap(),
-                    0, mValues.get(position).getBitmap().length));
+            Bitmap bitmap = BitmapFactory.decodeByteArray(mValues.get(position).getBitmap(),
+                    0, mValues.get(position).getBitmap().length);
+            holder.mImageReport.setMaxHeight(bitmap.getHeight());
+            holder.mImageReport.setMaxWidth(bitmap.getWidth());
+            holder.mImageReport.setMinimumHeight(bitmap.getHeight());
+            holder.mImageReport.setMinimumWidth(bitmap.getWidth());
+            holder.mImageReport.setImageBitmap(bitmap);
 
             //receberImagemVolley(holder, position);
         } else if (mValues.get(position).getImageID() != 0) {
