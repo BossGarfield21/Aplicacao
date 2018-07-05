@@ -83,10 +83,11 @@
             android:minHeight="130dp"
             android:text="Hoje vai haver limpeza no matagal da Joana"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="@color/textcolor"
             android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/headerfragment_post" />
+            app:layout_constraintTop_toBottomOf="@+id/headerfragment_post"/>
 
         <View
             android:id="@+id/view1"
@@ -111,7 +112,7 @@
             app:layout_constraintTop_toBottomOf="@+id/view1">
 
             <TextView
-                android:id="@+id/likes"
+                android:id="@+id/textPostLikes"
                 android:layout_width="139dp"
                 android:layout_height="match_parent"
                 android:layout_marginStart="@dimen/activity_horizontal_margin"
@@ -120,15 +121,15 @@
                 android:gravity="start|center_vertical"
                 android:text="0"
                 android:textAlignment="center"
-                android:textAppearance="?attr/textAppearanceListItem" />
+                android:textAppearance="?attr/textAppearanceListItem"/>
 
             <ImageView
-                android:id="@+id/imageView2"
+                android:id="@+id/imagePostLike"
                 android:layout_width="46dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="10"
-                app:srcCompat="@drawable/ic_favorite_green_24dp" />
+                app:srcCompat="@drawable/ic_favorite_green_24dp"/>
 
             <TextView
                 android:id="@+id/comentarios"

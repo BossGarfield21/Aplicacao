@@ -158,6 +158,7 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
                             String distrito = null;
                             boolean isMember = false;
                             boolean isAdmin = false;
+                            boolean hasRequested = false;
                             List<String> admins = new ArrayList<>();
                             List<String> base_users = new ArrayList<>();
 
@@ -206,6 +207,10 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
                                     base_users.add(base.getString(i));
                             }
 
+                            if (grupo.has("hasRequested")) {
+                                hasRequested = grupo.getBoolean("hasRequested");
+                            }
+
 
                             Log.d("name", name);
                             Log.d("groupId", groupId);
@@ -215,7 +220,7 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
 
                             novoGrupo = new Grupo(name, base_users, admins, points,
                                     creationDate, image_uri, groupId, privacy, distrito, isAdmin, isMember,
-                                    numbMembers);
+                                    numbMembers, hasRequested);
 
 
                         } catch (JSONException e) {

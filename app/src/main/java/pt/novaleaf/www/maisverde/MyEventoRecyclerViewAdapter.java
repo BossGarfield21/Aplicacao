@@ -44,7 +44,7 @@ public class MyEventoRecyclerViewAdapter extends RecyclerView.Adapter<MyEventoRe
         //holder.mImageReport.setImageResource(mValues.get(position).getImgId());
         //holder.titulo.setText(mValues.get(position).getName());
 
-        /**
+
         holder.mLinearGosto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -100,7 +100,7 @@ public class MyEventoRecyclerViewAdapter extends RecyclerView.Adapter<MyEventoRe
                 }
             }
         });
-*/
+
 
     }
 
@@ -111,9 +111,8 @@ public class MyEventoRecyclerViewAdapter extends RecyclerView.Adapter<MyEventoRe
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView mImageReport;
-        //public TextView titulo;
-        //public RelativeLayout mRelative;
-        public LinearLayout mLinearGosto;
+        public TextView titulo;
+        public LinearLayout mLinearInteresse;
         public LinearLayout mLinearFavorito;
         public LinearLayout mLinearInfo;
         public TextView mTextGosto;
@@ -124,8 +123,7 @@ public class MyEventoRecyclerViewAdapter extends RecyclerView.Adapter<MyEventoRe
         public ViewHolder(View v){
             super(v);
             mImageReport = (ImageView) v.findViewById(R.id.imageReport);
-            //titulo = (TextView) v.findViewById(R.id.tituloReport);
-            //mRelative = (RelativeLayout) v.findViewById(R.id.relative);
+            titulo = (TextView) v.findViewById(R.id.tituloEventTextView);
             //mLinearGosto = (LinearLayout) v.findViewById(R.id.linearVou);
             //mLinearFavorito = (LinearLayout) v.findViewById(R.id.linearInteresse);
             //mLinearInfo = (LinearLayout) v.findViewById(R.id.linInfo);

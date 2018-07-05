@@ -18,13 +18,14 @@ public class Grupo implements Serializable{
     private String distrito;
     private boolean isAdmin;
     private boolean isMember;
+    private boolean enviouPedido;
     private long numbMembers;
     private int imageID;
     private byte[] bitmap;
 
     public Grupo(String name, List<String> base_users, List<String> admins, long points,
                  long creationDate, String image_uri,String groupId, String privacy, String distrito,
-                 boolean isAdmin, boolean isMember, long numbMembers)
+                 boolean isAdmin, boolean isMember, long numbMembers, boolean enviouPedido)
     {
 
         this.name = name;
@@ -39,9 +40,18 @@ public class Grupo implements Serializable{
         this.isAdmin = isAdmin;
         this.isMember = isMember;
         this.numbMembers = numbMembers;
+        this.enviouPedido = enviouPedido;
         imageID = 0;
         bitmap = null;
 
+    }
+
+    public boolean isEnviouPedido() {
+        return enviouPedido;
+    }
+
+    public void setEnviouPedido(boolean enviouPedido) {
+        this.enviouPedido = enviouPedido;
     }
 
     public int getImageID() {

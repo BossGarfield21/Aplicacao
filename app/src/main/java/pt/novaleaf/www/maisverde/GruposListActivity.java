@@ -414,6 +414,7 @@ public class GruposListActivity extends AppCompatActivity
                                     String distrito = null;
                                     boolean isMember = false;
                                     boolean isAdmin = false;
+                                    boolean hasRequested = false;
 
                                     JSONObject grupo = list.getJSONObject(i);
                                     if (grupo.has("groupId"))
@@ -447,6 +448,9 @@ public class GruposListActivity extends AppCompatActivity
                                     if (grupo.has("numbMembers")) {
                                         numbMembers = grupo.getLong("numbMembers");
                                     }
+                                    if (grupo.has("hasRequested")) {
+                                        hasRequested = grupo.getBoolean("hasRequested");
+                                    }
 
                                     Log.d("name", name);
                                     Log.d("groupId", groupId);
@@ -454,7 +458,7 @@ public class GruposListActivity extends AppCompatActivity
 
                                     Grupo grupo1 = new Grupo(name, null, null, points,
                                             creationDate, image_uri, groupId, privacy, distrito, isAdmin, isMember,
-                                            numbMembers);
+                                            numbMembers, hasRequested);
 
 
                                     if (!grupos.contains(grupo1))

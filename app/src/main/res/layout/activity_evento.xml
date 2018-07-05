@@ -291,8 +291,8 @@
             android:fontFamily="@font/roboto_medium"
             android:text="Descrição"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
-            android:textColor="te"
-            android:textSize="18sp" />
+            android:textColor="@color/textcolor"
+            android:textSize="18sp"/>
 
         <TextView
             android:id="@+id/textView22"

@@ -6,177 +6,181 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     android:background="@color/snow"
+    android:fitsSystemWindows="true"
     tools:openDrawer="start">
+
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
-        <android.support.design.widget.AppBarLayout
-            android:id="@+id/appbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:theme="@style/CustomTheme.AppBarOverlay">
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:layout_weight="1"
-                android:background="?attr/colorPrimary"
-                app:layout_scrollFlags="scroll|enterAlways"
-                app:popupTheme="@style/CustomTheme.PopupOverlay">
 
-            </android.support.v7.widget.Toolbar>
-
-        </android.support.design.widget.AppBarLayout>
-
-        <android.support.constraint.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <LinearLayout
-                android:id="@+id/events_header"
+            <android.support.design.widget.AppBarLayout
+                android:id="@+id/appbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/activity_horizontal_margin"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:orientation="vertical"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:fitsSystemWindows="false">
 
-                <TextView
-                    android:id="@+id/descobrir_eventos"
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/roboto_black"
-                    android:text="Descobrir Eventos:"
-                    android:textAlignment="center"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
-                    android:textSize="14sp" />
+                    android:layout_height="?attr/actionBarSize"
+                    android:background="?attr/colorPrimary"
+                    app:layout_scrollFlags="scroll|snap"
+                    app:popupTheme="@style/CustomTheme.PopupOverlay">
 
-                <LinearLayout
-                    android:id="@+id/events_selector_header"
+                </android.support.v7.widget.Toolbar>
+
+
+                <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:layout_weight="1"
-                    android:orientation="horizontal">
+                    android:layout_height="match_parent"
+                    android:background="@color/snow">
 
 
                     <LinearLayout
-                        android:id="@+id/cronoproximos"
+                        android:id="@+id/events_header"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="3dp"
-                        android:layout_marginEnd="32dp"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="3dp"
-                        android:layout_weight="2"
-                        android:background="@drawable/roundbox2"
-                        android:orientation="horizontal"
-                        android:padding="3dp">
-
-                        <ImageView
-
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_weight="2"
-                            android:src="@drawable/ic_icons8_calendar" />
+                        android:layout_margin="@dimen/activity_horizontal_margin"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:orientation="vertical"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
 
                         <TextView
-
+                            android:id="@+id/descobrir_eventos"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="2"
-                            android:gravity="center_vertical|center_horizontal"
-                            android:text="Proximos"
-                            android:textSize="10sp" />
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/roboto_black"
+                            android:text="Descobrir Eventos:"
+                            android:textAlignment="center"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
+                            android:textSize="14sp"/>
+
+                        <LinearLayout
+                            android:id="@+id/events_selector_header"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:layout_weight="1"
+                            android:orientation="horizontal">
+
+
+                            <LinearLayout
+                                android:id="@+id/cronoproximos"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="3dp"
+                                android:layout_marginEnd="32dp"
+                                android:layout_marginStart="16dp"
+                                android:layout_marginTop="3dp"
+                                android:layout_weight="2"
+                                android:background="@drawable/roundbox2"
+                                android:orientation="horizontal"
+                                android:padding="3dp">
+
+                                <ImageView
+
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2"
+                                    android:src="@drawable/ic_icons8_calendar"/>
+
+                                <TextView
+
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="2"
+                                    android:gravity="center_vertical|center_horizontal"
+                                    android:text="Proximos"
+                                    android:textSize="10sp"/>
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="16dp"
+                                android:layout_marginLeft="3dp"
+                                android:layout_marginRight="5dp"
+                                android:layout_marginStart="32dp"
+                                android:layout_marginTop="3dp"
+                                android:layout_weight="2"
+                                android:background="@drawable/roundbox2"
+                                android:orientation="horizontal"
+                                android:padding="3dp">
+
+                                <ImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="3"
+                                    android:src="@drawable/ic_icons8_google_maps"/>
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="2"
+                                    android:gravity="center_vertical|center_horizontal"
+                                    android:text="Perto de sí"
+                                    android:textSize="10sp"/>
+                            </LinearLayout>
+
+
+                        </LinearLayout>
+
 
                     </LinearLayout>
+
+                    <View
+                        android:id="@+id/vieweventsfeed1"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginTop="10dp"
+                        android:background="#cecece"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/events_header"/>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
-                        android:layout_marginLeft="3dp"
-                        android:layout_marginRight="5dp"
-                        android:layout_marginStart="32dp"
-                        android:layout_marginTop="3dp"
-                        android:layout_weight="2"
-                        android:background="@drawable/roundbox2"
-                        android:orientation="horizontal"
-                        android:padding="3dp">
-
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_weight="3"
-                            android:src="@drawable/ic_icons8_google_maps" />
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:orientation="vertical"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/vieweventsfeed1">
 
                         <TextView
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="2"
-                            android:gravity="center_vertical|center_horizontal"
-                            android:text="Perto de sí"
-                            android:textSize="10sp" />
+                            android:layout_height="wrap_content"
+                            android:text="Outros Eventos"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Widget.PopupMenu.Header"/>
+
+
                     </LinearLayout>
 
 
-                </LinearLayout>
+                </android.support.constraint.ConstraintLayout>
 
 
-            </LinearLayout>
+            </android.support.design.widget.AppBarLayout>
 
-            <View
-                android:id="@+id/vieweventsfeed1"
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/container"
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="10dp"
-                android:background="#cecece"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/events_header" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
+                android:layout_height="match_parent"
                 android:orientation="vertical"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/vieweventsfeed1">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Outros Eventos"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Widget.PopupMenu.Header" />
+                app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 
-            </LinearLayout>
-
-
-        </android.support.constraint.ConstraintLayout>
-
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-</LinearLayout>
     </android.support.design.widget.CoordinatorLayout>
 
     <android.support.design.widget.NavigationView
@@ -186,7 +190,7 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_main_menu"
-        app:menu="@menu/activity_main_menu_drawer" />
+        app:menu="@menu/activity_main_menu_drawer"/>
 
 
 </android.support.v4.widget.DrawerLayout>

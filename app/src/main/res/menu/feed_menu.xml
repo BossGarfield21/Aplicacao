@@ -2,13 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/search"
-        android:icon="?android:attr/actionModeWebSearchDrawable"
-        android:orderInCategory="100"
-        android:title="Alterar dados"
-        app:showAsAction="ifRoom"
-        app:actionViewClass="android.widget.SearchView"/>
-    <item
         android:id="@+id/action_help"
         android:orderInCategory="100"
         android:title="Ajuda"

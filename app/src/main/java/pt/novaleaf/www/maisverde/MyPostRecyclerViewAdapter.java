@@ -63,7 +63,7 @@ public class MyPostRecyclerViewAdapter extends RecyclerView.Adapter<MyPostRecycl
             }
         });
 
-        holder.mImageComments.setOnClickListener(new View.OnClickListener() {
+        holder.mLinearComentarios.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (null != mListener) {
@@ -75,7 +75,18 @@ public class MyPostRecyclerViewAdapter extends RecyclerView.Adapter<MyPostRecycl
         });
 
 
-        holder.mTextNumLikes.setText(String.valueOf(mValues.get(position).getLikes()) + " likes");
+        if (mValues.get(position).getLikes() != 1)
+            holder.mTextNumLikes.setText(String.valueOf(mValues.get(position).getLikes()) + " likes");
+        else
+            holder.mTextNumLikes.setText(String.valueOf(mValues.get(position).getLikes()) + " like");
+
+
+        if (mValues.get(position).getComments().size() != 1)
+            holder.mTextNumComments.setText(String.valueOf(mValues.get(position).getComments().size()) + " comentários");
+        else
+            holder.mTextNumComments.setText(String.valueOf(mValues.get(position).getComments().size()) + " comentário");
+
+
         //holder.mLinearComentarios.setClickable(true);
         holder.mLinearComentarios.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,20 +123,18 @@ public class MyPostRecyclerViewAdapter extends RecyclerView.Adapter<MyPostRecycl
         public TextView mMessage;
         public TextView mAutor;
         public TextView mHour;
-        public ImageView mImageComments;
         public ImageView mImageGosto;
 
         public ViewHolder(View v) {
             super(v);
-            mImageGosto = (ImageView) v.findViewById(R.id.imagePostLike);
-            mImageComments = (ImageView) v.findViewById(R.id.imagePostComment);
+            mImageGosto = (ImageView) v.findViewById(R.id.imageGosto);
             mImagePost = (ImageView) v.findViewById(R.id.imagePostAuthor);
             mMessage = (TextView) v.findViewById(R.id.textPostMessage);
             mTextNumLikes = (TextView) v.findViewById(R.id.textPostLikes);
-            mTextNumComments = (TextView) v.findViewById(R.id.textPostComments);
+            mTextNumComments = (TextView) v.findViewById(R.id.comentarios);
             mHour = (TextView) v.findViewById(R.id.textPostHour);
             mAutor = (TextView) v.findViewById(R.id.textPostAutor);
-            mLinearComentarios = (LinearLayout) v.findViewById(R.id.linLikes);
+            mLinearComentarios = (LinearLayout) v.findViewById(R.id.linearInfo);
 
 
         }

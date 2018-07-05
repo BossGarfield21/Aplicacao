@@ -24,6 +24,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,7 +38,6 @@ import utils.ByteRequest;
 public class GruposActivity extends AppCompatActivity implements Serializable {
 
     private Button mButtonPedido;
-    private Button mButtonCancelar;
     private TextView mTextNumPessoas;
     private TextView mDistrito;
     private TextView mPontos;
@@ -71,11 +71,11 @@ public class GruposActivity extends AppCompatActivity implements Serializable {
             setTitle("Sem ligação");
 
         mButtonPedido = (Button) findViewById(R.id.buttonPedido);
-        mButtonCancelar = (Button) findViewById(R.id.buttonCancelar);
+        //mButtonCancelar = (Button) findViewById(R.id.buttonCancelar);
         mTextNumPessoas = (TextView) findViewById(R.id.textGrupoPessoas);
-        mDistrito = (TextView) findViewById(R.id.textDistrito);
-        mPontos = (TextView) findViewById(R.id.textPontos);
-        mImage = (ImageView) findViewById(R.id.imageView7);
+        mDistrito = (TextView) findViewById(R.id.textGrupoDistrito);
+        mPontos = (TextView) findViewById(R.id.textGrupoPontos);
+        mImage = (ImageView) findViewById(R.id.fragmentevent_img);
 
 
         long pontos = 0;
@@ -108,23 +108,17 @@ public class GruposActivity extends AppCompatActivity implements Serializable {
             else
                 mTextNumPessoas.setText(String.format("%d pessoa", grupo.getNumPessoas()));
 
-
-        mButtonCancelar.setVisibility(View.GONE);
-        mButtonCancelar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //cancelJoinGroupVolley();
-                mButtonCancelar.setVisibility(View.GONE);
-                mButtonPedido.setVisibility(View.VISIBLE);
-            }
-        });
+        if (grupo != null)
+            if (grupo.isEnviouPedido())
+                mButtonPedido.setText("Cancelar pedido");
 
         mButtonPedido.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //joinGroupVolley();
-                mButtonPedido.setVisibility(View.GONE);
-                mButtonCancelar.setVisibility(View.VISIBLE);
+                if (mButtonPedido.getText().equals("Enviar pedido"))
+                    joinGroupVolley();
+                else
+                    cancelJoinGroupVolley();
             }
         });
 /**
@@ -141,24 +135,24 @@ public class GruposActivity extends AppCompatActivity implements Serializable {
         String tag_json_obj = "json_obj_req";
         String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/cancel_request?group_id=" + groupID;
 
-        JSONObject grupo = new JSONObject();
         SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
         final String token = sharedPreferences.getString("tokenID", "erro");
 
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, grupo,
-                new Response.Listener<JSONObject>() {
+        StringRequest jsonObjectRequest = new StringRequest(Request.Method.PUT, url,
+                new Response.Listener<String>() {
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(String response) {
+                        GruposListActivity.grupos.get(GruposListActivity.grupos.indexOf(grupo)).setEnviouPedido(false);
 
-                        mButtonCancelar.setVisibility(View.GONE);
-                        mButtonPedido.setVisibility(View.VISIBLE);
+                        mButtonPedido.setText("Enviar pedido");
 
                     }
                 }, new Response.ErrorListener() {
 
             @Override
             public void onErrorResponse(VolleyError error) {
+                mButtonPedido.setText("Cancelar pedido");
                 VolleyLog.d("erroJoingrupo", "Error: " + error.getMessage());
                 Toast.makeText(GruposActivity.this, "Verifique a ligação", Toast.LENGTH_SHORT).show();
             }
@@ -180,24 +174,25 @@ public class GruposActivity extends AppCompatActivity implements Serializable {
         String tag_json_obj = "json_obj_req";
         String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/request?group_id=" + grupo.getGroupId();
 
-        JSONObject grupo = new JSONObject();
+
         SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
         final String token = sharedPreferences.getString("tokenID", "erro");
 
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, grupo,
-                new Response.Listener<JSONObject>() {
+        StringRequest jsonObjectRequest = new StringRequest(Request.Method.PUT, url,
+                new Response.Listener<String>() {
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(String response) {
 
-                        mButtonPedido.setVisibility(View.GONE);
-                        mButtonCancelar.setVisibility(View.VISIBLE);
+                        GruposListActivity.grupos.get(GruposListActivity.grupos.indexOf(grupo)).setEnviouPedido(true);
+                        mButtonPedido.setText("Cancelar pedido");
 
                     }
                 }, new Response.ErrorListener() {
 
             @Override
             public void onErrorResponse(VolleyError error) {
+                mButtonPedido.setText("Enviar pedido");
                 VolleyLog.d("erroJoingrupo", "Error: " + error.getMessage());
                 Toast.makeText(GruposActivity.this, "Verifique a ligação", Toast.LENGTH_SHORT).show();
             }
