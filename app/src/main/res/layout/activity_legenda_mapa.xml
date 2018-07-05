@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/snow"
     tools:context=".LegendaMapaActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -45,8 +46,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
+            android:fontFamily="@font/roboto_light"
             android:text="Por tratar"
-            android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
     </LinearLayout>
 
     <View
@@ -76,8 +78,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
+            android:fontFamily="@font/roboto_light"
             android:text="Em tratamento"
-            android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
     </LinearLayout>
 
     <View
@@ -106,8 +109,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
+            android:fontFamily="@font/roboto_light"
             android:text="Tratada"
-            android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
     </LinearLayout>
 
 </LinearLayout>

@@ -6,7 +6,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="pt.novaleaf.www.maisverde.ComentariosActivity">
+    tools:context="pt.novaleaf.www.maisverde.ComentariosActivity"
+    android:background="@color/snow">
 
     <LinearLayout
         android:id="@+id/topBar"
@@ -87,8 +88,11 @@
             android:layout_marginRight="16dp"
             android:layout_weight="1"
             android:background="@android:color/transparent"
+            android:fontFamily="@font/roboto_light"
             android:hint="Escreva um comentário"
-            android:maxLines="6"/>
+            android:maxLines="6"
+            android:textColor="@color/textcolor"
+            android:textSize="14sp" />
 
         <Button
             android:id="@+id/button_chatbox_send"

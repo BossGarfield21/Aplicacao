@@ -6,6 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/snow"
     tools:context="pt.novaleaf.www.maisverde.CriarOcorrenciaActivity">
 
     <include layout="@layout/app_bar_settings"
@@ -31,13 +32,15 @@
                 android:id="@+id/titulo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_light"
                 android:hint="@string/titulo"
                 android:imeActionId="6"
                 android:imeActionLabel="@string/action_sign_in_short"
                 android:imeOptions="actionUnspecified"
                 android:inputType="text"
                 android:maxLines="1"
-                android:singleLine="true"/>
+                android:singleLine="true"
+                android:textColor="@color/textcolor" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -48,13 +51,15 @@
                 android:id="@+id/descricao"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_light"
                 android:hint="@string/descricao"
                 android:imeActionId="6"
                 android:imeActionLabel="@string/action_sign_in_short"
                 android:imeOptions="actionUnspecified"
                 android:inputType="text"
                 android:maxLines="1"
-                android:singleLine="true"/>
+                android:singleLine="true"
+                android:textColor="@color/textcolor" />
 
         </android.support.design.widget.TextInputLayout>
 

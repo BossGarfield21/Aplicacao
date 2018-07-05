@@ -9,6 +9,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/snow"
     tools:context=".AddPostActivity">
 
     <include
@@ -45,7 +46,9 @@
                     android:id="@+id/editPost"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Escrever publicação..."/>
+                    android:fontFamily="@font/roboto_light"
+                    android:hint="Escrever publicação..."
+                    android:textColor="@color/textcolor" />
             </android.support.design.widget.TextInputLayout>
 
             <RelativeLayout

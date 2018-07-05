@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/snow"
     android:orientation="vertical"
     tools:context=".AdminGrupoAtualizarActivity">
 
@@ -35,7 +36,9 @@
             android:id="@+id/alterarNome"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Alterar o nome do grupo"/>
+            android:fontFamily="@font/roboto_light"
+            android:hint="Alterar o nome do grupo"
+            android:textColor="@color/textcolor" />
     </android.support.design.widget.TextInputLayout>
 
     <Switch

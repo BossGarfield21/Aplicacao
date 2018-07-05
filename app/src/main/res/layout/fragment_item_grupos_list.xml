@@ -9,4 +9,5 @@
     android:layout_height="match_parent"
     app:layoutManager="android.support.v7.widget.LinearLayoutManager"
     tools:context="pt.novaleaf.www.maisverde.GruposListActivity"
+    android:background="@color/snow"
     tools:listitem="@layout/fragment_item_grupos"/>

@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/snow"
    >
 
     <ImageView
@@ -82,7 +83,8 @@
             android:layout_marginEnd="@dimen/activity_horizontal_margin"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
             android:fontFamily="@font/roboto_light"
-            android:text="De CMAlmada" />
+            android:text="De CMAlmada"
+            android:textColor="@color/textcolor" />
 
         <View
             android:id="@+id/view2"
@@ -121,7 +123,7 @@
                     android:layout_weight="1"
                     android:alpha="0.6"
                     android:contentDescription="TODO"
-                    app:srcCompat="@drawable/ic_confirmation_foreground" />
+                    app:srcCompat="@drawable/ic_if_sign_check_299110" />
 
                 <TextView
                     android:id="@+id/textView17"
@@ -131,7 +133,8 @@
                     android:layout_weight="1"
                     android:fontFamily="@font/roboto_light"
                     android:gravity="top|center_horizontal"
-                    android:text="Vou" />
+                    android:text="Vou"
+                    android:textColor="@color/textcolor" />
 
             </LinearLayout>
 
@@ -150,7 +153,7 @@
                     android:alpha="0.6"
                     android:background="@android:color/transparent"
                     android:contentDescription="TODO"
-                    app:srcCompat="@drawable/ic_star_border_black_24dp" />
+                    app:srcCompat="@drawable/ic_if_star_285661" />
 
                 <TextView
                     android:id="@+id/textView18"
@@ -160,7 +163,8 @@
                     android:layout_weight="1"
                     android:fontFamily="@font/roboto_light"
                     android:gravity="top|center_horizontal"
-                    android:text="Com Interesse" />
+                    android:text="Com Interesse"
+                    android:textColor="@color/textcolor" />
             </LinearLayout>
 
         </LinearLayout>
@@ -189,7 +193,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/activity_horizontal_margin"
                 android:layout_weight="5"
-                app:srcCompat="@drawable/ic_people_outline_black_24dp" />
+                app:srcCompat="@drawable/ic_if_user_group_285648" />
 
             <TextView
                 android:id="@+id/textView24"
@@ -202,6 +206,7 @@
                 android:fontFamily="@font/roboto_light"
                 android:text="costa da caparica"
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                android:textColor="@color/textcolor"
                 android:textSize="12sp" />
         </LinearLayout>
 
@@ -217,7 +222,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/activity_horizontal_margin"
                 android:layout_weight="5"
-                app:srcCompat="@drawable/ic_place_black_24dp" />
+                app:srcCompat="@drawable/ic_if_map_marker_299087" />
 
             <TextView
                 android:id="@+id/textView20"
@@ -230,6 +235,7 @@
                 android:fontFamily="@font/roboto_light"
                 android:text="costa da caparica"
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                android:textColor="@color/textcolor"
                 android:textSize="12sp" />
         </LinearLayout>
 
@@ -245,7 +251,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/activity_horizontal_margin"
                 android:layout_weight="5"
-                app:srcCompat="@drawable/ic_query_builder_black_24dp" />
+                app:srcCompat="@drawable/ic_if_calendar_clock_299096" />
 
             <TextView
                 android:id="@+id/hoursTextView"
@@ -258,6 +264,7 @@
                 android:fontFamily="@font/roboto_light"
                 android:text="costa da caparica"
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                android:textColor="@color/textcolor"
                 android:textSize="12sp" />
 
 
@@ -284,16 +291,18 @@
             android:fontFamily="@font/roboto_medium"
             android:text="Descrição"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textColor="te"
             android:textSize="18sp" />
 
         <TextView
             android:id="@+id/textView22"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/roboto_light"
             android:layout_marginEnd="@dimen/activity_horizontal_margin"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
-            android:text="Organizaçao para limpara a mata de leiria. como sabem esta toda suja" />
+            android:fontFamily="@font/roboto_light"
+            android:text="Organizaçao para limpara a mata de leiria. como sabem esta toda suja"
+            android:textColor="@color/textcolor" />
         <View
             android:id="@+id/view5"
             android:layout_width="match_parent"
