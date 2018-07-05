@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/snow"
     tools:context="pt.novaleaf.www.maisverde.AlterarPassActivity">
 
     <include layout="@layout/app_bar_settings"
@@ -14,28 +15,34 @@
 
     <AutoCompleteTextView
         android:id="@+id/passVelha"
-        android:layout_margin="15dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="15dp"
         android:layout_marginBottom="@dimen/activity_vertical_margin"
         android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:hint="Password atual"/>
+        android:fontFamily="@font/roboto_light"
+        android:hint="Password atual"
+        android:textColor="@color/textcolor" />
 
     <AutoCompleteTextView
         android:id="@+id/passNova"
-        android:layout_margin="15dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="15dp"
         android:layout_marginBottom="@dimen/activity_horizontal_margin"
-        android:hint="Nova password"/>
+        android:fontFamily="@font/roboto_light"
+        android:hint="Nova password"
+        android:textColor="@color/textcolor" />
 
     <AutoCompleteTextView
         android:id="@+id/passNovaConfirm"
-        android:layout_margin="15dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="15dp"
         android:layout_marginBottom="@dimen/activity_horizontal_margin"
-        android:hint="Confirme a nova password"/>
+        android:fontFamily="@font/roboto_light"
+        android:hint="Confirme a nova password"
+        android:textColor="@color/textcolor" />
 
     <Button
         android:id="@+id/bChange"

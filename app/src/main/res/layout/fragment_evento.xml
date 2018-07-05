@@ -113,6 +113,7 @@
                     android:fontFamily="@font/roboto_light"
                     android:gravity="center_vertical"
                     android:text="Com intressse"
+                    android:textColor="@color/textcolor"
                     android:textSize="14sp" />
 
             </LinearLayout>
@@ -137,6 +138,7 @@
                     android:fontFamily="@font/roboto_light"
                     android:gravity="center_vertical"
                     android:text="Localização"
+                    android:textColor="@color/textcolor"
                     android:textSize="14sp" />
 
             </LinearLayout>

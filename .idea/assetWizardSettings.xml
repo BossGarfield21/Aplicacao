@@ -36,7 +36,8 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="scalingPercent" value="161" />
+                                                <entry key="scalingPercent" value="95" />
+                                                <entry key="trimmed" value="true" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -47,9 +48,9 @@
                                   <option name="values">
                                     <map>
                                       <entry key="backgroundLayerName" value="ic_launcher_background" />
-                                      <entry key="foregroundImage" value="C:\Users\Hugo Mochão\Desktop\woods-tree-summer-road.jpg" />
+                                      <entry key="foregroundImage" value="D:\Transferências\if_users_1902261.png" />
                                       <entry key="foregroundLayerName" value="ic_confirmation_foreground2" />
-                                      <entry key="outputName" value="ic_woods" />
+                                      <entry key="outputName" value="groupsimg" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -122,8 +123,8 @@
                           <map>
                             <entry key="assetSourceType" value="FILE" />
                             <entry key="color" value="ffeea9" />
-                            <entry key="outputName" value="ic_if_star_285661" />
-                            <entry key="sourceFile" value="D:\Transferências\if_star_285661.svg" />
+                            <entry key="outputName" value="ic_if_calendar_clock_299096" />
+                            <entry key="sourceFile" value="D:\Transferências\if_calendar-clock_299096.svg" />
                           </map>
                         </option>
                       </PersistentState>

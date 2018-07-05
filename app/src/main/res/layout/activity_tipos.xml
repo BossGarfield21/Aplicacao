@@ -47,8 +47,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="10"
-                android:gravity="center_horizontal"
-                android:text="QUEIMADA"/>
+                android:fontFamily="@font/roboto_regular"
+                android:gravity="fill_vertical|center_horizontal"
+                android:text="QUEIMADA"
+                android:textColor="@color/textcolor" />
         </LinearLayout>
 
 
@@ -73,8 +75,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="10"
-                android:gravity="center_horizontal"
-                android:text="INCÊNDIO"/>
+                android:fontFamily="@font/roboto_regular"
+                android:gravity="center_vertical|center_horizontal"
+                android:text="INCÊNDIO"
+                android:textColor="@color/textcolor" />
         </LinearLayout>
 
 
@@ -99,8 +103,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="10"
-                android:gravity="center_horizontal"
-                android:text="LIXO"/>
+                android:fontFamily="@font/roboto_regular"
+                android:gravity="center_vertical|center_horizontal"
+                android:text="LIXO"
+                android:textColor="@color/textcolor" />
         </LinearLayout>
 
         <LinearLayout
@@ -124,8 +130,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="10"
-                android:gravity="center_horizontal"
-                android:text="MATA SUJA"/>
+                android:fontFamily="@font/roboto_regular"
+                android:gravity="center_vertical|center_horizontal"
+                android:text="MATA SUJA"
+                android:textColor="@array/pref_sync_frequency_titles" />
         </LinearLayout>
     </GridLayout>
 </android.support.constraint.ConstraintLayout>

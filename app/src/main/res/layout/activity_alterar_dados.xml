@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/snow"
     tools:context=".AlterarDadosActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -35,7 +36,9 @@
             android:id="@+id/alterarEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Alterar email"/>
+            android:fontFamily="@font/roboto_light"
+            android:hint="Alterar email"
+            android:textColor="@color/textcolor" />
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -49,63 +52,9 @@
             android:id="@+id/alterarNome"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Alterar nome"/>
-    </android.support.design.widget.TextInputLayout>
-
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="8dp">
-
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/alterarMorada"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Alterar morada"/>
-    </android.support.design.widget.TextInputLayout>
-
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="8dp">
-
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/alterarMoradaComplementar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Alterar morada complementar"/>
-    </android.support.design.widget.TextInputLayout>
-
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="8dp">
-
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/alterarLocalidade"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Alterar localidade"/>
-    </android.support.design.widget.TextInputLayout>
-
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="8dp">
-
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/alterarCodigoPostal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Alterar código postal"/>
+            android:fontFamily="@font/roboto_light"
+            android:hint="Alterar nome"
+            android:textColor="@color/textcolor" />
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -119,11 +68,74 @@
             android:id="@+id/alterarTelemovel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Alterar número de telemóvel"/>
+            android:fontFamily="@font/roboto_light"
+            android:hint="Alterar número de telemóvel"
+            android:textColor="@color/textcolor" />
     </android.support.design.widget.TextInputLayout>
 
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="8dp">
 
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/alterarMorada"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_light"
+            android:hint="Alterar morada"
+            android:textColor="@color/textcolor" />
+    </android.support.design.widget.TextInputLayout>
 
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="8dp">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/alterarMoradaComplementar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_light"
+            android:hint="Alterar morada complementar"
+            android:textColor="@color/textcolor" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="8dp">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/alterarLocalidade"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_light"
+            android:hint="Alterar localidade"
+            android:textColor="@color/textcolor" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="8dp">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/alterarCodigoPostal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_light"
+            android:hint="Alterar código postal"
+            android:textColor="@color/textcolor" />
+    </android.support.design.widget.TextInputLayout>
 
 
 </LinearLayout>

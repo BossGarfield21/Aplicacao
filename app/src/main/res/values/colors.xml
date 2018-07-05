@@ -17,4 +17,5 @@
     <color name="charcoal">#36454f</color>
     <color name="accent_material_light">#397c4f</color>
     <color name="lime">#0e7e0e</color>
+    <color name="textcolor">#232323</color>
 </resources>
