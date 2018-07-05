@@ -7,6 +7,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -129,6 +130,16 @@ public class ComentariosActivity extends AppCompatActivity implements Serializab
                 mTextLikes.setText(String.format("%d likes", likes));
             else
                 mTextLikes.setText(String.format("%d like", likes));
+
+            mTextLikes.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    PopupMenu popupMenu = new PopupMenu(ComentariosActivity.this, view);
+                    for (String pessoa : ocorrencia.getLikers())
+                        popupMenu.getMenu().add(pessoa);
+                    popupMenu.show();
+                }
+            });
         } else if (post != null) {
             comentarios = new ArrayList<>(post.getComments().values());
 
@@ -149,6 +160,16 @@ public class ComentariosActivity extends AppCompatActivity implements Serializab
                 mTextLikes.setText(String.format("%d likes", likes));
             else
                 mTextLikes.setText(String.format("%d like", likes));
+
+            mTextLikes.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    PopupMenu popupMenu = new PopupMenu(ComentariosActivity.this, view);
+                    for (String pessoa : post.getLikers())
+                        popupMenu.getMenu().add(pessoa);
+                    popupMenu.show();
+                }
+            });
         }
 
         //comentarios = new ArrayList<>();

@@ -70,7 +70,7 @@ import static pt.novaleaf.www.maisverde.OcorrenciaFragment.myOcorrenciaRecyclerV
  */
 
 public class FeedActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, EventoFragment.OnListFragmentInteractionListener,
+        implements NavigationView.OnNavigationItemSelectedListener,
         Serializable {
 
     NavigationView navigationView;
@@ -128,7 +128,7 @@ public class FeedActivity extends AppCompatActivity
 
                 Log.d("TAS LIKE???", item.isLiked() + " PUTA");
 
-                likeReportVolley(item, !item.isLiked());
+                likeReportVolley(item);
                 //item.like();
 
 
@@ -340,28 +340,6 @@ public class FeedActivity extends AppCompatActivity
     }
 
 
-    @Override
-    public void onLikeInteraction(Evento item) {
-
-    }
-
-    @Override
-    public void onCommentInteraction(Evento item) {
-
-    }
-
-    @Override
-    public void onFavoritoInteraction(Evento item) {
-
-    }
-
-    @Override
-    public void onImagemInteraction(Evento item) {
-
-        Intent i = new Intent(FeedActivity.this, EventoActivity.class);
-        startActivity(i);
-
-    }
 
     public void updateOcorrencias() {
 
@@ -586,7 +564,7 @@ public class FeedActivity extends AppCompatActivity
      */
 
 
-    private void likeReportVolley(final Ocorrencia item, boolean like) {
+    private void likeReportVolley(final Ocorrencia item) {
 
 
         String tag_json_obj = "json_obj_req";
@@ -614,7 +592,7 @@ public class FeedActivity extends AppCompatActivity
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
+                VolleyLog.d("ERROLIKE", "Error: " + error.getMessage());
                 item.like();
             }
         }) {

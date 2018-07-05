@@ -13,26 +13,26 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginBottom="16dp">
 
         <ImageView
             android:id="@+id/fragmentevent_img"
             android:layout_width="match_parent"
             android:layout_height="160dp"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:src="@mipmap/ic_grass"
+            android:scaleType="fitCenter"
+            android:src="@mipmap/ic_grass_foreground"
+            android:adjustViewBounds="false"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <LinearLayout
             android:id="@+id/titlelayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="2dp"
-            android:layout_marginStart="2dp"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -52,9 +52,9 @@
                     android:layout_height="match_parent"
                     android:layout_weight="3"
                     android:fontFamily="@font/roboto_light"
-                    android:gravity="center_vertical|center_horizontal"
+                    android:gravity="bottom|center_horizontal"
                     android:text="JUL"
-                    android:textColor="@android:color/holo_red_dark" />
+                    android:textColor="@android:color/holo_red_dark"/>
 
                 <TextView
                     android:id="@+id/textViewDia"
@@ -62,8 +62,8 @@
                     android:layout_height="match_parent"
                     android:layout_weight="3"
                     android:fontFamily="@font/roboto_light"
-                    android:gravity="center_vertical|center_horizontal"
-                    android:text="19" />
+                    android:gravity="top|center_horizontal"
+                    android:text="19"/>
             </LinearLayout>
 
             <TextView
@@ -72,8 +72,10 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="top"
                 android:layout_weight="1"
+                android:autoSizeTextType="uniform"
                 android:fontFamily="@font/roboto_medium"
                 android:gravity="top"
+                android:maxLines="2"
                 android:text="TITULO"
                 android:textAppearance="@style/TextAppearance.AppCompat.Display1"
                 android:textColor="@color/textcolor"/>
@@ -84,14 +86,14 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/titlelayout"
-            tools:layout_editor_absoluteX="305dp"
-            tools:layout_editor_absoluteY="160dp">
+            app:layout_constraintTop_toBottomOf="@+id/titlelayout">
 
 
             <LinearLayout
@@ -106,7 +108,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="3"
-                    android:src="@drawable/ic_if_star_285661"/>
+                    android:src="@drawable/ic_star_border_black_24dp"/>
 
 
                 <TextView
@@ -122,6 +124,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/linearLocation"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="2"
@@ -143,7 +146,7 @@
                     android:gravity="center_vertical"
                     android:text="Localização"
                     android:textColor="@color/textcolor"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"/>
 
             </LinearLayout>
 

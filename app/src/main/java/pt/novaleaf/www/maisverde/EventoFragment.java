@@ -124,7 +124,7 @@ public class EventoFragment extends Fragment {
         // TODO: Update argument type and name
         void onLikeInteraction(Evento item);
 
-        void onCommentInteraction(Evento item);
+        void onLocationInteraction(Evento item);
 
         void onFavoritoInteraction(Evento item);
 

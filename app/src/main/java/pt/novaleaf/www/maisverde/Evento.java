@@ -1,8 +1,13 @@
 package pt.novaleaf.www.maisverde;
 
+import android.preference.PreferenceManager;
+
+import com.google.android.gms.maps.model.LatLng;
+
+import java.io.Serializable;
 import java.util.List;
 
-public class Evento {
+public class Evento implements Serializable{
 
     public String name;
     public String creator;
@@ -13,9 +18,8 @@ public class Evento {
     public List<String> interests;
     public List<String> confirmations;
     public List<String> admin;
-    //public List<GeoPt> area;
+    public List<LatLng> area;
     public double radious;
-    //public GeoPt center;
     public double meetupPointLatitude;
     public double meetupPointLongitude;
     public double centerPointLongitude;
@@ -34,7 +38,8 @@ public class Evento {
     public Evento(String name, String creator, long creationDate, long meetupDate, long endDate, List<String> interests,
                   List<String> confirmations, List<String> admin, String id, String location, String alert, String description,
                   String weather, String image_uri, double meetupPointLatitude, double meetupPointLongitude,
-                  double centerPointLatitude, double centerPointLongitude, double radious){
+                  double centerPointLatitude, double centerPointLongitude, double radious, boolean ir, boolean interesse,
+                  List<LatLng> area) {
 
         this.name = name;
         this.creator = creator;
@@ -54,9 +59,16 @@ public class Evento {
         this.centerPointLongitude = centerPointLongitude;
         this.meetupPointLatitude = meetupPointLatitude;
         this.meetupPointLongitude = meetupPointLongitude;
+        this.area = area;
         this.radious = radious;
+        this.ir = ir;
+        this.interesse = interesse;
         this.bitmap = null;
         this.imageID = 0;
+    }
+
+    public List<LatLng> getArea() {
+        return area;
     }
 
     public double getRadious() {
@@ -127,15 +139,15 @@ public class Evento {
         return description;
     }
 
-    public void setIr(){
+    public void setIr() {
         ir = !ir;
     }
 
-    public void setInteresse(){
+    public void setInteresse() {
         interesse = !interesse;
     }
 
-    public boolean isInteresse(){
+    public boolean isInteresse() {
         return interesse;
     }
 
@@ -151,6 +163,19 @@ public class Evento {
         return ir;
     }
 
+    public int getImageID() {
+        return imageID;
+    }
+
+    public byte[] getBitmap() {
+        return bitmap;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        Evento evento = (Evento) obj;
+        return this.getId().equals(evento.getId());
+    }
 
     public void setBitmap(byte[] bitmap) {
         this.bitmap = bitmap;

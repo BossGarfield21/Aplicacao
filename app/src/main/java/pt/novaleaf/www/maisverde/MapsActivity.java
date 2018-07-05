@@ -49,6 +49,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.IndoorBuilding;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -84,6 +86,7 @@ public class MapsActivity extends AppCompatActivity
     Marker newMarker;
     FloatingActionButton fab;
     Ocorrencia ocorrencia;
+    Evento evento;
     private double topRightLatitude;
     private double topRightLongitude;
     private double bottomLeftLatitude;
@@ -192,6 +195,7 @@ public class MapsActivity extends AppCompatActivity
         }
 
         ocorrencia = (Ocorrencia) getIntent().getSerializableExtra("ocorrencia");
+        evento = (Evento) getIntent().getSerializableExtra("evento");
 
 
         //getMarkers();
@@ -579,6 +583,20 @@ public class MapsActivity extends AppCompatActivity
             });
 
 
+        } else if (evento != null) {
+
+            //fab.setVisibility(View.GONE);
+            currrPos = new LatLng(evento.getCenterPointLatitude(), evento.getCenterPointLongitude());
+
+            if (evento.getRadious()>0) {
+                CircleOptions circleOptions = new CircleOptions()
+                        .center(currrPos)
+                        .radius(evento.getRadious());
+                Circle circle = mMap.addCircle(circleOptions);
+            }
+
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currrPos, 15));
+
         } else {
             currrPos = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
 
@@ -602,8 +620,8 @@ public class MapsActivity extends AppCompatActivity
 
 
                     //Toast.makeText(MapsActivity.this, "Lat bot " + bottomEsquerda.latitude +
-                      //      "\nLon bot" + bottomEsquerda.longitude + "\nLat top " + topDireita.latitude +
-                        //    "\nLon top " + topDireita.longitude, Toast.LENGTH_LONG).show();
+                    //      "\nLon bot" + bottomEsquerda.longitude + "\nLat top " + topDireita.latitude +
+                    //    "\nLon top " + topDireita.longitude, Toast.LENGTH_LONG).show();
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -622,8 +640,8 @@ public class MapsActivity extends AppCompatActivity
 
 
         }
-
     }
+
 
 
     private boolean pedirMarkers(LatLng botL, LatLng topR) {

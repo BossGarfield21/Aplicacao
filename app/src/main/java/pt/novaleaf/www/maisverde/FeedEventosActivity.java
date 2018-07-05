@@ -19,6 +19,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -27,11 +28,14 @@ import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.RequestFuture;
+import com.android.volley.toolbox.StringRequest;
+import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,7 +46,7 @@ import utils.ByteRequest;
 
 
 public class FeedEventosActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, Serializable {
 
     NavigationView navigationView;
     private String cursorEventos = "";
@@ -76,10 +80,16 @@ public class FeedEventosActivity extends AppCompatActivity
             @Override
             public void onLikeInteraction(Evento item) {
 
+                Log.d("TAS LIKE???", item.isInteresse() + " PUTA");
+
+                addInterestVolley(item);
             }
 
             @Override
-            public void onCommentInteraction(Evento item) {
+            public void onLocationInteraction(Evento item) {
+                Intent intent = new Intent(FeedEventosActivity.this, MapsActivity.class);
+                intent.putExtra("evento", item);
+                startActivity(intent);
 
             }
 
@@ -90,6 +100,10 @@ public class FeedEventosActivity extends AppCompatActivity
 
             @Override
             public void onImagemInteraction(Evento item) {
+
+                Intent intent = new Intent(FeedEventosActivity.this, EventoActivity.class);
+                intent.putExtra("evento", item);
+                startActivity(intent);
 
             }
         };
@@ -292,6 +306,7 @@ public class FeedEventosActivity extends AppCompatActivity
                                     List<String> interests = new ArrayList<>();
                                     List<String> confirmations = new ArrayList<>();
                                     List<String> admin = new ArrayList<>();
+                                    List<LatLng> area = new ArrayList<>();
                                     String image_uri = null;
                                     String id = null;
                                     String location = null;
@@ -302,7 +317,9 @@ public class FeedEventosActivity extends AppCompatActivity
                                     double latitudeMeetUp = 0;
                                     double latitudeCenter = 0;
                                     double longitudeCenter = 0;
-                                    double radious = 0;
+                                    double radius = 0;
+                                    boolean hasInterest = false;
+                                    boolean hasConfirmation = false;
 
                                     JSONObject evento = list.getJSONObject(i);
                                     if (evento.has("id"))
@@ -323,14 +340,20 @@ public class FeedEventosActivity extends AppCompatActivity
                                         creationDate = evento.getLong("creationDate");
                                     if (evento.has("meetupDate"))
                                         meetupDate = evento.getLong("meetupDate");
-                                    if (evento.has("radious"))
-                                        radious = evento.getLong("radious");
+                                    if (evento.has("radius"))
+                                        radius = evento.getLong("radius");
                                     if (evento.has("endDate"))
                                         endDate = evento.getLong("endDate");
                                     if (evento.has("image_uri"))
                                         image_uri = evento.getString("image_uri");
                                     if (evento.has("weather"))
                                         weather = evento.getString("weather");
+                                    if (evento.has("hasInterest"))
+                                        hasInterest = evento.getBoolean("hasInterest");
+
+                                    if (evento.has("hasConfirmation"))
+                                        hasConfirmation = evento.getBoolean("hasConfirmation");
+
 
                                     if (evento.has("interests")) {
                                         JSONArray interest = evento.getJSONArray("interests");
@@ -362,13 +385,26 @@ public class FeedEventosActivity extends AppCompatActivity
                                         longitudeCenter = coordinates.getDouble("longitude");
                                     }
 
+                                    if (evento.has("area")) {
+                                        JSONArray are = evento.getJSONArray("area");
+                                        for (int c = 0; c < are.length(); c++) {
+                                            JSONObject coords = are.getJSONObject(c);
+                                            double lat = coords.getDouble("latitude");
+                                            double lon = coords.getDouble("longitude");
+                                            area.add(new LatLng(lat, lon));
+                                        }
+                                    }
+
 
                                     Evento evento1 = new Evento(name, creator, creationDate, meetupDate, endDate,
                                             interests, confirmations, admin, id, location, alert, description, weather, image_uri,
-                                            latitudeMeetUp, longitudeMeetUp, latitudeCenter, longitudeCenter, radious);
+                                            latitudeMeetUp, longitudeMeetUp, latitudeCenter, longitudeCenter, radius, hasConfirmation,
+                                            hasInterest, area);
 
                                     if (image_uri != null)
                                         receberImagemVolley(evento1);
+                                    else
+                                        evento1.setImageID(R.drawable.ic_baseline_calendar_eventos_24px);
 
                                     eventosList.add(evento1);
                                     adapter.notifyDataSetChanged();
@@ -556,7 +592,7 @@ public class FeedEventosActivity extends AppCompatActivity
             public void onErrorResponse(VolleyError error) {
                 VolleyLog.d("erroIMAGEMocorrencia", "Error: " + error.getMessage());
 
-                item.setImageID(R.mipmap.ic_grass_foreground);
+                item.setImageID(R.drawable.ic_if_calendar_clock_299096);
 
                 adapter.notifyDataSetChanged();
             }
@@ -571,6 +607,53 @@ public class FeedEventosActivity extends AppCompatActivity
         };
         AppController.getInstance().addToRequestQueue(stringRequest, tag_json_obj);
 
+    }
+
+    private void addInterestVolley(final Evento item) {
+
+
+        String tag_json_obj = "json_obj_req";
+        String url;
+        int method;
+        if (!item.isInteresse()) {
+            url = "https://novaleaf-197719.appspot.com/rest/withtoken/events/newinterest?event=" + item.getId();
+            method = Request.Method.PUT;
+        } else {
+            url = "https://novaleaf-197719.appspot.com/rest/withtoken/events/removeinterest?event=" + item.getId();
+            method = Request.Method.DELETE;
+        }
+
+        final SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+        final String token = sharedPreferences.getString("tokenID", "erro");
+
+        // StringRequest stringRequest = new StringRequest()
+
+        StringRequest stringRequest = new StringRequest(method, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+                //eventosList.get(FeedEventosActivity.eventosList.indexOf(item)).getInterests().
+                  //      add(sharedPreferences.getString("username", "erro"));
+                //adapter.notifyDataSetChanged();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(FeedEventosActivity.this, "Erro", Toast.LENGTH_SHORT).show();
+
+                item.setInteresse();
+
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+        };
+
+        AppController.getInstance().addToRequestQueue(stringRequest, tag_json_obj);
     }
 
 

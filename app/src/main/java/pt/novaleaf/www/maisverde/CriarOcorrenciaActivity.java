@@ -113,7 +113,7 @@ public class CriarOcorrenciaActivity extends AppCompatActivity implements Serial
 
         constraintLayout = (ConstraintLayout) findViewById(R.id.constrOco);
         imageView = (ImageView) findViewById(R.id.imageView3);
-        imageView4 = (ImageView) findViewById(R.id.imageView4);
+        imageView4 = (ImageView) findViewById(R.id.imageEvento);
         imageButton = (ImageButton) findViewById(R.id.imageButton);
         mTituloView = (AutoCompleteTextView) findViewById(R.id.titulo);
         mDescricaoView = (AutoCompleteTextView) findViewById(R.id.descricao);
