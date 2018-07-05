@@ -31,12 +31,24 @@
                                 <PersistentState>
                                   <option name="children">
                                     <map>
+                                      <entry key="foregroundClipArt">
+                                        <value>
+                                          <PersistentState>
+                                            <option name="values">
+                                              <map>
+                                                <entry key="trimmed" value="true" />
+                                              </map>
+                                            </option>
+                                          </PersistentState>
+                                        </value>
+                                      </entry>
                                       <entry key="foregroundImage">
                                         <value>
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="scalingPercent" value="210" />
+                                                <entry key="scalingPercent" value="70" />
+                                                <entry key="trimmed" value="true" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -47,9 +59,9 @@
                                   <option name="values">
                                     <map>
                                       <entry key="backgroundLayerName" value="ic_launcher_background" />
-                                      <entry key="foregroundImage" value="C:\Users\Hugo Mochão\Desktop\woods-tree-summer-road.jpg" />
-                                      <entry key="foregroundLayerName" value="ic_confirmation_foreground2" />
-                                      <entry key="outputName" value="perfil_back" />
+                                      <entry key="foregroundImage" value="C:\Users\Hugo Mochão\Desktop\imagensMapa\porTratarFire.png" />
+                                      <entry key="foregroundLayerName" value="ic_por_tratar_fire" />
+                                      <entry key="outputName" value="por_tratar_fire" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -110,7 +122,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/navigation/ic_check_black_24dp.xml" />
+                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/notification/ic_airline_seat_flat_black_24dp.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -120,7 +132,7 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="outputName" value="ic_check_black_24dp" />
+                            <entry key="outputName" value="ic_airline_seat_flat_black_24dp" />
                             <entry key="sourceFile" value="D:\Transferências\if_calendar-clock_299096.svg" />
                           </map>
                         </option>

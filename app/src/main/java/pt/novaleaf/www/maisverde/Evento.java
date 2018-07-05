@@ -184,4 +184,8 @@ public class Evento implements Serializable{
     public void setImageID(int imageID) {
         this.imageID = imageID;
     }
+
+    public void setArea(List<LatLng> area) {
+        this.area = area;
+    }
 }

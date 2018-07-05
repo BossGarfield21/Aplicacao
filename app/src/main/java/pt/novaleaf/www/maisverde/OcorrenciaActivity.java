@@ -121,7 +121,7 @@ public class OcorrenciaActivity extends AppCompatActivity implements Serializabl
         mTexto.setText(ocorrencia.getDescription());
 
 
-        if (ocorrencia.getImage_uri() == null && ocorrencia.getBitmap() == null)
+        if (ocorrencia.getBitmap() == null)
             mImage.setImageResource(ocorrencia.getImageID());
         else
             mImage.setImageBitmap(BitmapFactory.decodeByteArray(ocorrencia.getBitmap(), 0, ocorrencia.getBitmap().length));

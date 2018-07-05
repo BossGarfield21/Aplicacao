@@ -51,8 +51,6 @@ import java.util.UUID;
 
 import utils.ByteRequest;
 
-import static pt.novaleaf.www.maisverde.LoginActivity.sharedPreferences;
-import static pt.novaleaf.www.maisverde.OcorrenciaFragment.myOcorrenciaRecyclerViewAdapter;
 
 
 /**
@@ -67,7 +65,6 @@ public class PerfilActivity extends AppCompatActivity
     public static ArrayList<PerfilItem> arrayList;
     public static RecyclerView mRecyclerViewPerfil;
     public static MyPerfilRecyclerViewAdapter adapter;
-    public static SharedPreferences sharedPreferences;
     public static boolean changed = false;
 
     TextView textUsername;
@@ -105,6 +102,8 @@ public class PerfilActivity extends AppCompatActivity
         String image = getSharedPreferences("Prefs", MODE_PRIVATE).getString("image_user", null);
         if (image!=null)
             receberImagemVolley(image);
+        else
+            Toast.makeText(this, "NULL", Toast.LENGTH_SHORT).show();
 
         mImage.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -116,9 +115,8 @@ public class PerfilActivity extends AppCompatActivity
 
 
         textUsername = (TextView) findViewById(R.id.textUsername);
-        sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
 
-        textUsername.setText(sharedPreferences.getString("username", "User"));
+        textUsername.setText(getSharedPreferences("Prefs", MODE_PRIVATE).getString("username", "User"));
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -126,7 +124,7 @@ public class PerfilActivity extends AppCompatActivity
 
 
         mRecyclerViewPerfil = (RecyclerView) findViewById(R.id.myList);
-        email = sharedPreferences.getString("email", "erro");
+        email = getSharedPreferences("Prefs", MODE_PRIVATE).getString("email", "erro");
 
         //Ir buscar a informacao do utilizador
         arrayList = new ArrayList<>();
@@ -215,7 +213,7 @@ public class PerfilActivity extends AppCompatActivity
         localidade = intent.getStringExtra("localidade");
         codigo_postal = intent.getStringExtra("codigo_postal");
         telemovel = intent.getStringExtra("telemovel");
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+        SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
 
 
         if (!TextUtils.isEmpty(email)) {
@@ -361,10 +359,6 @@ public class PerfilActivity extends AppCompatActivity
             startActivity(i);
             finish();
 
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -468,6 +462,7 @@ public class PerfilActivity extends AppCompatActivity
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("erroIMAGEM", "Error: " + error.getMessage());
             }
         }) {
             @Override

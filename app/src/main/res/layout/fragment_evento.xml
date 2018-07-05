@@ -75,7 +75,7 @@
                 android:autoSizeTextType="uniform"
                 android:fontFamily="@font/roboto_medium"
                 android:gravity="top"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:text="TITULO"
                 android:textAppearance="@style/TextAppearance.AppCompat.Display1"
                 android:textColor="@color/textcolor"/>
@@ -118,6 +118,7 @@
                     android:fontFamily="@font/roboto_light"
                     android:gravity="center_vertical"
                     android:text="Com intressse"
+                    android:minLines="1"
                     android:textColor="@color/textcolor"
                     android:textSize="14sp"/>
 

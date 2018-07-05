@@ -26,20 +26,20 @@
             android:title="Área Pessoal"/>
     </group>
 
-    <item android:title="Divulga a app!">
+    <item android:title="Sabe mais..">
         <menu>
             <item
-                android:id="@+id/nav_feedback"
+                android:id="@+id/nav_acerca"
                 android:icon="@drawable/ic_feedback_black_24dp"
-                android:title="Envia-nos a tua opinião!"/>
+                android:title="Acerca de"/>
             <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Partilha"/>
+                android:id="@+id/nav_help"
+                android:icon="@drawable/ic_help_outline_black_24dp"
+                android:title="Ajuda"/>
             <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Envia a um amigo"/>
+                android:id="@+id/nav_end"
+                android:icon="@drawable/ic_airline_seat_flat_black_24dp"
+                android:title="Terminar sessão"/>
         </menu>
     </item>
 

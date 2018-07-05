@@ -47,7 +47,6 @@ import java.util.concurrent.ExecutionException;
 
 import utils.ByteRequest;
 
-import static pt.novaleaf.www.maisverde.LoginActivity.sharedPreferences;
 
 
 /**
@@ -343,12 +342,6 @@ public class GruposListActivity extends AppCompatActivity
             Intent i = new Intent(GruposListActivity.this, PerfilActivity.class);
             startActivity(i);
             finish();
-
-        } else if (id == R.id.nav_grupos) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
 
         }
 

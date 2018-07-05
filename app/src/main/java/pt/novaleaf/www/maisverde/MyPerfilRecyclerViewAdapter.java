@@ -20,7 +20,6 @@ import static pt.novaleaf.www.maisverde.PerfilActivity.adapter;
 import static pt.novaleaf.www.maisverde.PerfilActivity.arrayList;
 import static pt.novaleaf.www.maisverde.PerfilActivity.changed;
 import static pt.novaleaf.www.maisverde.PerfilActivity.mRecyclerViewPerfil;
-import static pt.novaleaf.www.maisverde.PerfilActivity.sharedPreferences;
 
 
 /**

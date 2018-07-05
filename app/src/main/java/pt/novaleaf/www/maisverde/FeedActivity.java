@@ -59,7 +59,6 @@ import utils.ByteRequest;
 import static pt.novaleaf.www.maisverde.ComentariosActivity.comentarios;
 import static pt.novaleaf.www.maisverde.EventoFragment.listEventos;
 import static pt.novaleaf.www.maisverde.EventoFragment.myEventoRecyclerViewAdapter;
-import static pt.novaleaf.www.maisverde.LoginActivity.sharedPreferences;
 import static pt.novaleaf.www.maisverde.OcorrenciaFragment.listOcorrencias;
 import static pt.novaleaf.www.maisverde.OcorrenciaFragment.myOcorrenciaRecyclerViewAdapter;
 
@@ -180,7 +179,7 @@ public class FeedActivity extends AppCompatActivity
             }
         };
 
-        adapter = new MyOcorrenciaRecyclerViewAdapter(ocorrencias, mListener);
+        adapter = new MyOcorrenciaRecyclerViewAdapter(ocorrencias, mListener, FeedActivity.this);
         recyclerView = (RecyclerView) findViewById(R.id.container);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
@@ -314,12 +313,6 @@ public class FeedActivity extends AppCompatActivity
             //startActivity(i);
             //finish();
 
-        } else if (id == R.id.nav_feedback) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -341,12 +334,7 @@ public class FeedActivity extends AppCompatActivity
 
 
 
-    public void updateOcorrencias() {
 
-        volleyGetOcorrencias();
-
-
-    }
 
     public void volleyGetOcorrencias() {
 
@@ -392,7 +380,7 @@ public class FeedActivity extends AppCompatActivity
                             Log.d("nao é null", list.toString());
                             if (!isFinishedOcorrencias)
                                 for (int i = 0; i < list.length(); i++) {
-                                    Log.d("bina, empina?", list.toString());
+                                    //Log.d("bina, empina?", list.toString());
 
                                     String id = null;
                                     String titulo = null;

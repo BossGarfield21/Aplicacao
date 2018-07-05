@@ -80,10 +80,10 @@ public class OcorrenciaFragment extends Fragment {
                 myRecyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
                 myRecyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
+            }/**
             myOcorrenciaRecyclerViewAdapter =
                     new MyOcorrenciaRecyclerViewAdapter(listOcorrencias, mListener);
-            myRecyclerView.setAdapter(myOcorrenciaRecyclerViewAdapter);
+            myRecyclerView.setAdapter(myOcorrenciaRecyclerViewAdapter);*/
 
             OcorrenciaFragment.myRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override

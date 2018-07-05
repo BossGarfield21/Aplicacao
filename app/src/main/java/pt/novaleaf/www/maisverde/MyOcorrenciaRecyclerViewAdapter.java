@@ -38,8 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import static android.content.Context.MODE_PRIVATE;
-import static pt.novaleaf.www.maisverde.LoginActivity.sharedPreferences;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link Ocorrencia} and makes a call to the
@@ -50,10 +48,12 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
 
     private final List<Ocorrencia> mValues;
     private final OnListFragmentInteractionListener mListener;
+    private final Context mContext;
 
-    public MyOcorrenciaRecyclerViewAdapter(List<Ocorrencia> items, OnListFragmentInteractionListener listener) {
+    public MyOcorrenciaRecyclerViewAdapter(List<Ocorrencia> items, OnListFragmentInteractionListener listener, Context mContext) {
         mValues = items;
         mListener = listener;
+        this.mContext = mContext;
     }
 
     @Override
@@ -234,7 +234,7 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
         String url = mValues.get(position).getImage_uri();
 
 
-        final String token = sharedPreferences.getString("tokenID", "erro");
+        final String token = mContext.getSharedPreferences("Prefs", Context.MODE_PRIVATE).getString("tokenID", "erro");
         ByteRequest stringRequest = new ByteRequest(Request.Method.GET, url, new Response.Listener<byte[]>() {
 
             @Override
