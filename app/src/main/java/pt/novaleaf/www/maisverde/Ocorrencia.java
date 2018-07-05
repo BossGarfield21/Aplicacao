@@ -221,4 +221,5 @@ public class Ocorrencia implements Serializable, ClusterItem{
     public void setType(String type) {
         this.type = type;
     }
+
 }

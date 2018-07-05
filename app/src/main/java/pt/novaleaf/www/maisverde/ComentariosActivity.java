@@ -75,30 +75,22 @@ public class ComentariosActivity extends AppCompatActivity implements Serializab
                     Comentario com;
                     if (ocorrencia != null) {
                         id = ocorrencia.getId();
-                        com = new Comentario(UUID.randomUUID().toString().concat(String.valueOf(time)),
+                        com = new Comentario(null,
                                 preferences.getString("username", "desconhecido"), comentario,
                                 image, time, 1, id, null, null);
                     } else {
                         id = post.getId();
-                        com = new Comentario(UUID.randomUUID().toString().concat(String.valueOf(time)),
+                        com = new Comentario(null,
                                 preferences.getString("username", "desconhecido"), comentario,
                                 image, time, 1, null, id, post.getGroupId());
                     }
 
-                    comentarios.add(com);
+                    //comentarios.add(com);
                     if (ocorrencia != null) {
-                        int a = OcorrenciaFragment.listOcorrencias.indexOf(ocorrencia);
-                        OcorrenciaFragment.listOcorrencias.get(a).addComentario(com);
-                        OcorrenciaFragment.myOcorrenciaRecyclerViewAdapter.notifyDataSetChanged();
-                        mMessageAdapter.notifyDataSetChanged();
-                        ocorrencia.addComentario(com);
+
                         volleyAdicionarComentarioOcorrencia(com);
                     } else if (post != null) {
-                        int a = GrupoFeedActivity.posts.indexOf(post);
-                        GrupoFeedActivity.posts.get(a).addComentario(com);
-                        GrupoFeedActivity.adapter.notifyDataSetChanged();
-                        mMessageAdapter.notifyDataSetChanged();
-                        ocorrencia.addComentario(com);
+
                         volleyAdicionarComentarioPost(com);
                     }
                     View v = getCurrentFocus();
@@ -191,14 +183,20 @@ public class ComentariosActivity extends AppCompatActivity implements Serializab
             grupo.put("message", com.getMessage());
             grupo.put("image", com.getImage());
             grupo.put("creation_date", com.getCreation_date());
-            grupo.put("id", com.getId());
+            //grupo.put("id", com.getId());
 
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, url, grupo,
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
                             try {
-                                comentarios.get(comentarios.indexOf(com)).setId(response.getString("id"));
+                                comentarios.add(com);
+                                com.setId(response.getString("id"));
+                                int a = FeedActivity.ocorrencias.indexOf(ocorrencia);
+                                FeedActivity.ocorrencias.get(a).addComentario(com);
+                                FeedActivity.adapter.notifyDataSetChanged();
+                                mMessageAdapter.notifyDataSetChanged();
+                                //ocorrencia.addComentario(com);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -208,7 +206,7 @@ public class ComentariosActivity extends AppCompatActivity implements Serializab
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     if (error.networkResponse != null) {
-                        comentarios.remove(comentarios.size() - 1);
+                        //comentarios.remove(comentarios.size() - 1);
                         Toast.makeText(ComentariosActivity.this, "Falhou o envio", Toast.LENGTH_SHORT).show();
                         VolleyLog.d("erroNOVAOCORRENCIA", "Error: " + error.getMessage());
                     }
@@ -251,7 +249,12 @@ public class ComentariosActivity extends AppCompatActivity implements Serializab
                         @Override
                         public void onResponse(JSONObject response) {
                             try {
-                                comentarios.get(comentarios.indexOf(com)).setId(response.getString("id"));
+                                comentarios.add(com);
+                                com.setId(response.getString("id"));
+                                int a = GrupoFeedActivity.posts.indexOf(post);
+                                GrupoFeedActivity.posts.get(a).addComentario(com);
+                                GrupoFeedActivity.adapter.notifyDataSetChanged();
+                                mMessageAdapter.notifyDataSetChanged();
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }

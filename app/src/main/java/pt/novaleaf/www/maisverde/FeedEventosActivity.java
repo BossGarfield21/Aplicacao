@@ -132,7 +132,7 @@ public class FeedEventosActivity extends AppCompatActivity
         if (requestCode == 0) {
             if (resultCode == RESULT_CANCELED) {
                 // user pressed back from 2nd activity to go to 1st activity. code here
-                navigationView.getMenu().getItem(3).setChecked(true);
+                navigationView.getMenu().getItem(2).setChecked(true);
             }
         }
     }
@@ -306,7 +306,7 @@ public class FeedEventosActivity extends AppCompatActivity
 
                                     JSONObject evento = list.getJSONObject(i);
                                     if (evento.has("id"))
-                                        id = evento.getString("alert");
+                                        id = evento.getString("id");
                                     if (evento.has("name"))
                                         name = evento.getString("name");
                                     if (evento.has("creator"))
@@ -351,13 +351,13 @@ public class FeedEventosActivity extends AppCompatActivity
                                     }
 
                                     if (evento.has("meetupPoint")) {
-                                        JSONObject coordinates = evento.getJSONObject("coordinates");
+                                        JSONObject coordinates = evento.getJSONObject("meetupPoint");
                                         latitudeMeetUp = coordinates.getDouble("latitude");
                                         longitudeMeetUp = coordinates.getDouble("longitude");
                                     }
 
                                     if (evento.has("center")) {
-                                        JSONObject coordinates = evento.getJSONObject("coordinates");
+                                        JSONObject coordinates = evento.getJSONObject("center");
                                         latitudeCenter = coordinates.getDouble("latitude");
                                         longitudeCenter = coordinates.getDouble("longitude");
                                     }

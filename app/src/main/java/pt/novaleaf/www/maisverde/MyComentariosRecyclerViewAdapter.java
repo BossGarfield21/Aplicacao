@@ -206,7 +206,7 @@ public class MyComentariosRecyclerViewAdapter extends RecyclerView.Adapter {
         SharedPreferences sharedPreferences = mContext.getSharedPreferences("Prefs", Context.MODE_PRIVATE);
         final String token = sharedPreferences.getString("tokenID", "erro");
 
-        StringRequest jsonObjectRequest = new StringRequest(Request.Method.PUT, url,
+        StringRequest jsonObjectRequest = new StringRequest(Request.Method.DELETE, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -245,7 +245,7 @@ public class MyComentariosRecyclerViewAdapter extends RecyclerView.Adapter {
         SharedPreferences sharedPreferences = mContext.getSharedPreferences("Prefs", Context.MODE_PRIVATE);
         final String token = sharedPreferences.getString("tokenID", "erro");
 
-        StringRequest jsonObjectRequest = new StringRequest(Request.Method.PUT, url,
+        StringRequest jsonObjectRequest = new StringRequest(Request.Method.DELETE, url,
                 new Response.Listener<String >() {
                     @Override
                     public void onResponse(String  response) {

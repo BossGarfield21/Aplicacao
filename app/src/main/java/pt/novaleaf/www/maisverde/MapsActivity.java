@@ -7,6 +7,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -40,12 +42,16 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.RequestFuture;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.IndoorBuilding;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
@@ -62,6 +68,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+
+import utils.ByteRequest;
 
 public class MapsActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, Serializable {
@@ -71,10 +80,15 @@ public class MapsActivity extends AppCompatActivity
     LocationManager locationManager;
     LocationListener locationListener;
     Location lastKnownLocation;
-    getMarkersTask mMarkersTask = null;
-    public static Map<LatLng, String> markers = new HashMap<>();
-    String cursorMarkers = "";
-    boolean isFinishedMarkers = false;
+    String cursor = "";
+    Marker newMarker;
+    FloatingActionButton fab;
+    Ocorrencia ocorrencia;
+    private double topRightLatitude;
+    private double topRightLongitude;
+    private double bottomLeftLatitude;
+    private double bottomLeftLongitude;
+    boolean isFinished = false;
 
 
     @Override
@@ -118,7 +132,6 @@ public class MapsActivity extends AppCompatActivity
                                         intent.putExtra("lat", latLng.latitude);
                                         intent.putExtra("lon", latLng.longitude);
                                         startActivity(intent);
-                                        finish();
                                     }
                                 })
                                 .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -145,14 +158,6 @@ public class MapsActivity extends AppCompatActivity
                     }
                 });
 
-                mMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
-                    @Override
-                    public void onCameraMove() {
-                        LatLng botLeft = mMap.getProjection().getVisibleRegion().nearLeft;
-                        LatLng topRight = mMap.getProjection().getVisibleRegion().farRight;
-                        updateMarkers(botLeft, topRight);
-                    }
-                });
             }
         }
     }
@@ -186,9 +191,11 @@ public class MapsActivity extends AppCompatActivity
             mapFragment.getMapAsync(this);
         }
 
+        ocorrencia = (Ocorrencia) getIntent().getSerializableExtra("ocorrencia");
+
 
         //getMarkers();
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -298,23 +305,19 @@ public class MapsActivity extends AppCompatActivity
         if (id == R.id.nav_eventos) {
             Intent i = new Intent(MapsActivity.this, FeedEventosActivity.class);
             startActivityForResult(i, 0);
-            finish();
         } else if (id == R.id.nav_feed) {
 
             Intent i = new Intent(MapsActivity.this, FeedActivity.class);
             startActivity(i);
-            finish();
 
         } else if (id == R.id.nav_area_pessoal) {
             Intent i = new Intent(MapsActivity.this, PerfilActivity.class);
             startActivity(i);
-            finish();
 
         } else if (id == R.id.nav_grupos) {
 
             Intent i = new Intent(MapsActivity.this, GruposListActivity.class);
             startActivity(i);
-            finish();
 
         } else if (id == R.id.nav_share) {
 
@@ -336,12 +339,20 @@ public class MapsActivity extends AppCompatActivity
         protected void onBeforeClusterItemRendered(T item,
                                                    MarkerOptions markerOptions) {
             Ocorrencia markerItem = (Ocorrencia) item;
+
+
+            if (ocorrencia != null)
+                if (ocorrencia.equals(markerItem))
+                    markerOptions.draggable(true);
+            //markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_garbage_foreground));
+
             if (markerItem.getStatus() == 1)
                 markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
             else if (markerItem.getStatus() == 2)
                 markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
             else if (markerItem.getStatus() == 3)
                 markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+
 
         }
     }
@@ -355,7 +366,6 @@ public class MapsActivity extends AppCompatActivity
 
         // Point the map's listeners at the listeners implemented by the cluster
         // manager.
-        mMap.setOnCameraIdleListener(mClusterManager);
         mMap.setOnMarkerClickListener(mClusterManager);
 
 
@@ -365,8 +375,11 @@ public class MapsActivity extends AppCompatActivity
                 Intent intent = new Intent(MapsActivity.this, OcorrenciaActivity.class);
                 intent.putExtra("Ocorrencia", (Serializable) ocorrencia);
                 startActivity(intent);
+
             }
         });
+
+        //mMap.setOnCameraIdleListener(mClusterManager);
 
         mMap.setOnInfoWindowClickListener(mClusterManager);
         // Add cluster items (markers) to the cluster manager.
@@ -384,24 +397,59 @@ public class MapsActivity extends AppCompatActivity
     }
 
     public void novaOcorrencia() {
+
+
         AlertDialog.Builder alert = new AlertDialog.Builder(MapsActivity.this);
-        alert.setTitle("Criar report");
+        alert.setTitle("Criar ocorrência");
         alert
-                .setMessage("O local do report é a sua localização atual?")
+                .setMessage("Escolha a localização da ocorrência")
                 .setCancelable(true)
                 .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        Intent intent = new Intent(MapsActivity.this, CriarOcorrenciaActivity.class);
-                        intent.putExtra("estaLocal", true);
-                        startActivity(intent);
+
+                        if (newMarker != null)
+                            newMarker.remove();
+                        LatLng latLng = mMap.getCameraPosition().target;
+                        newMarker = mMap.addMarker(new MarkerOptions().position(latLng));
+                        newMarker.setDraggable(true);
+                        newMarker.setSnippet("Clique aqui quando estiver escolhida");
+                        newMarker.setTitle("Pressione e arraste para definir a localização");
+                        newMarker.showInfoWindow();
+
+                        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                            @Override
+                            public boolean onMarkerClick(Marker marker) {
+                                if (!marker.equals(newMarker)) {
+                                    newMarker.remove();
+                                    mMap.setOnInfoWindowClickListener(mClusterManager);
+                                }
+                                return false;
+                            }
+                        });
+
+                        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                            @Override
+                            public void onInfoWindowClick(Marker marker) {
+                                if (marker.equals(newMarker)) {
+                                    Intent intent = new Intent(MapsActivity.this, CriarOcorrenciaActivity.class);
+                                    intent.putExtra("lat", marker.getPosition().latitude);
+                                    intent.putExtra("lon", marker.getPosition().longitude);
+                                    startActivity(intent);
+                                    newMarker.remove();
+                                } else {
+                                    newMarker.remove();
+                                    mMap.setOnInfoWindowClickListener(mClusterManager);
+                                }
+                                //finish();
+                            }
+                        });
                     }
                 })
-                .setNegativeButton("Escolher no mapa", new DialogInterface.OnClickListener() {
+                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.dismiss();
-                        Toast.makeText(MapsActivity.this, "Pressionar no local pretendido", Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -480,289 +528,30 @@ public class MapsActivity extends AppCompatActivity
 
             }
 
-            startMap();
+            mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+                @Override
+                public void onMarkerDragStart(Marker marker) {
+
+                }
+
+                @Override
+                public void onMarkerDrag(Marker marker) {
+
+                }
+
+                @Override
+                public void onMarkerDragEnd(Marker marker) {
+                    if (ocorrencia != null) {
+                        ocorrencia.setLatitude(marker.getPosition().latitude);
+                        ocorrencia.setLongitude(marker.getPosition().longitude);
+                    }
+                }
+            });
 
             setUpClusterer();
 
-        }
-    }
+            startMap();
 
-    //TODO: ver que marcadores estao nesta area
-    public void getMarkers() {
-
-
-        mMarkersTask = new getMarkersTask();
-        mMarkersTask.execute((Void) null);
-
-    }
-
-    public void updateMarkers(LatLng botLeft, LatLng topRight) {
-
-        List<LatLng> list = new ArrayList<>();
-        for (LatLng latLng : markers.keySet()) {
-            if (latLng.latitude >= botLeft.latitude && latLng.longitude >= botLeft.longitude
-                    && latLng.latitude <= topRight.latitude && latLng.longitude <= topRight.longitude) {
-                mMap.addMarker(new MarkerOptions().position(latLng).title(markers.get(latLng)));
-                list.add(latLng);
-            }
-        }
-        markers.keySet().removeAll(list);
-
-    }
-
-    private void volleyGetMarkers() {
-
-        String tag_json_obj = "json_request";
-        String url;
-        if (cursorMarkers.equals(""))
-            url = "https://novaleaf-197719.appspot.com/rest/withtoken/social/feed/?cursor=startquery";
-        else
-            url = "https://novaleaf-197719.appspot.com/rest/withtoken/social/feed/?cursor=" + cursorMarkers;
-
-        Log.d("ché bate só", url);
-
-        SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
-        JSONObject reports = new JSONObject();
-        final String token = sharedPreferences.getString("tokenID", "erro");
-
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, reports,
-                new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            Log.d("nabo", cursorMarkers + "pixa");
-                            cursorMarkers = response.getString("cursor");
-                            Log.d("nabo", cursorMarkers);
-
-
-                            JSONArray list = response.getJSONArray("list");
-                            if (!isFinishedMarkers) {
-                                isFinishedMarkers = response.getBoolean("isFinished");
-                                Log.d("ACABOU???", String.valueOf(isFinishedMarkers));
-                                for (int i = 0; i < list.length(); i++) {
-
-                                    String id = null;
-                                    String titulo = null;
-                                    String descricao = null;
-                                    String owner = null;
-                                    String type = null;
-                                    boolean hasLiked = false;
-                                    String image_uri = null;
-                                    List<String> likers = new ArrayList<>();
-                                    long creationDate = 0;
-                                    String district = null;
-                                    double risk = 0;
-                                    long likes = 0;
-                                    long status = 0;
-                                    long latitude = 0;
-                                    long longitude = 0;
-                                    Map<String, Comentario> comentarios = new HashMap<>();
-
-                                    JSONObject ocorrencia = list.getJSONObject(i);
-                                    if (ocorrencia.has("id"))
-                                        id = ocorrencia.getString("id");
-                                    if (ocorrencia.has("name"))
-                                        titulo = ocorrencia.getString("name");
-                                    if (ocorrencia.has("description"))
-                                        descricao = ocorrencia.getString("description");
-                                    if (ocorrencia.has("owner"))
-                                        owner = ocorrencia.getString("owner");
-                                    if (ocorrencia.has("risk"))
-                                        risk = ocorrencia.getInt("risk");
-                                    if (ocorrencia.has("likes"))
-                                        likes = ocorrencia.getInt("likes");
-                                    if (ocorrencia.has("status"))
-                                        status = ocorrencia.getLong("status");
-                                    if (ocorrencia.has("type"))
-                                        type = ocorrencia.getString("type");
-                                    JSONObject image = null;
-                                    if (ocorrencia.has("image_uri")) {
-                                        image = ocorrencia.getJSONObject("image_uri");
-                                        if (image.has("value"))
-                                            image_uri = image.getString("value");
-                                    }
-
-                                    if (ocorrencia.has("hasLike"))
-                                        hasLiked = ocorrencia.getBoolean("hasLike");
-                                    if (ocorrencia.has("creationDate"))
-                                        creationDate = ocorrencia.getLong("creationDate");
-
-                                    Log.d("HASLIKE???", hasLiked + "FDPDPDPD");
-                                    if (ocorrencia.has("comments")) {
-                                        JSONObject coms = ocorrencia.getJSONObject("comments");
-
-                                        Iterator<String> comentario = coms.keys();
-                                        while (comentario.hasNext()) {
-                                            String comentID = comentario.next();
-                                            int origem = 1;
-                                            JSONObject com = coms.getJSONObject(comentID);
-                                            if (com.getString("author").equals(
-                                                    getSharedPreferences("Prefs", MODE_PRIVATE).getString("username", "")))
-                                                origem = 2;
-                                            else origem = 1;
-                                            comentarios.put(comentID, new Comentario(comentID, com.getString("author"),
-                                                    com.getString("message"), com.getString("image"),
-                                                    com.getLong("creationDate"), origem, id, null, null));
-
-                                        }
-                                    }
-                                    if (ocorrencia.has("coordinates")) {
-                                        JSONObject coordinates = ocorrencia.getJSONObject("coordinates");
-                                        latitude = coordinates.getLong("latitude");
-                                        longitude = coordinates.getLong("longitude");
-                                    }
-
-                                    if (ocorrencia.has("likers")) {
-                                        JSONArray lik = ocorrencia.getJSONArray("likers");
-                                        for (int a = 0; a < lik.length(); a++)
-                                            likers.add(lik.getString(a));
-                                    }
-
-
-                                }
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-
-                }, new Response.ErrorListener()
-
-        {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                VolleyLog.d("erroLOGIN", "Error: " + error.getMessage());
-            }
-        })
-
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
-                headers.put("Authorization", token);
-                return headers;
-            }
-        };
-
-        AppController.getInstance().
-
-                addToRequestQueue(jsonObjectRequest);
-
-
-    }
-
-
-    public class getMarkersTask extends AsyncTask<Void, Void, String> {
-
-
-        /**
-         * private final Double mLatBotLeft;
-         * private final Double mLonBotLeft;
-         * private final Double mLatTopRight;
-         * private final Double mLonTopRight;
-         */
-
-        getMarkersTask() {
-            /**
-             mLonBotLeft = botLeft.longitude;
-             mLatBotLeft = botLeft.latitude;
-             mLonTopRight = topRight.longitude;
-             mLatTopRight = topRight.latitude;*/
-        }
-
-        /**
-         * Cancel background network operation if we do not have network connectivity.
-         */
-        @Override
-        protected void onPreExecute() {
-            ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Activity.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-            if (networkInfo == null || !networkInfo.isConnected() ||
-                    (networkInfo.getType() != ConnectivityManager.TYPE_WIFI
-                            && networkInfo.getType() != ConnectivityManager.TYPE_MOBILE)) {
-                // If no connectivity, cancel task and update Callback with null data.
-                cancel(true);
-            }
-        }
-
-        @Override
-        protected String doInBackground(Void... params) {
-            try {
-                //TODO: create JSON object with credentials and call doPost
-
-                //JSONObject botLeft = new JSONObject();
-                //JSONObject topRight = new JSONObject();
-                //JSONObject jsonObject = new JSONObject();
-                SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
-
-                String token = sharedPreferences.getString("tokenID", "erro");
-                /*
-                botLeft.put("latitude", mLatBotLeft);
-                botLeft.put("longitude", mLonBotLeft);
-                topRight.put("latitude", mLatTopRight);
-                topRight.put("longitude", mLonTopRight);
-                jsonObject.put("bottomLeft", botLeft);
-                jsonObject.put("topRight", topRight);
-                */
-                URL url = new URL("https://novaleaf-197719.appspot.com/rest/withtoken/mapsupport/mymarkers");
-                return RequestsREST.doGET(url, token);
-            } catch (Exception e) {
-                return e.toString();
-            }
-        }
-
-
-        @Override
-        protected void onPostExecute(final String result) {
-            mMarkersTask = null;
-
-            if (result != null) {
-                JSONArray token = null;
-                try {
-                    // We parse the result
-                    Log.i("TOKENMARKERS", result);
-
-                    token = new JSONArray(result);
-                    Log.i("TOKENMARKERS", token.toString());
-                    // TODO: store the token in the SharedPreferences
-
-                    SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
-
-                    for (int i = 0; i < token.length(); i++) {
-                        JSONObject marker = token.getJSONObject(i);
-                        Double lat = marker.getJSONObject("coordinates").getDouble("latitude");
-                        Double lon = marker.getJSONObject("coordinates").getDouble("longitude");
-
-                        String titulo = marker.getString("name");
-                        String descricao = marker.getString("description");
-
-                        //MyItem offsetItem = new MyItem(lat, lon, titulo, descricao);
-                        //mClusterManager.addItem(offsetItem);
-
-                        //LatLng position = new LatLng(lat, lon);
-                        //if (!markers.keySet().contains(position)) {
-                        //  markers.put(position, titulo);
-                        // }
-
-                    }
-
-
-                } catch (JSONException e) {
-                    // WRONG DATA SENT BY THE SERVER
-
-                    Log.e("Authentication", e.toString());
-                }
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mMarkersTask = null;
 
         }
     }
@@ -771,129 +560,91 @@ public class MapsActivity extends AppCompatActivity
     public void startMap() {
         //lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-        double longitude = (double) getIntent().getDoubleExtra("longitude", 0);
-        double latitude = (double) getIntent().getDoubleExtra("latitude", 0);
-
-        final Ocorrencia ocorrencia = (Ocorrencia) getIntent().getSerializableExtra("ocorrencia");
 
         final LatLng currrPos;
 
         if (ocorrencia != null) {
+
+            fab.setImageResource(R.drawable.ic_check_white_24dp);
+            //fab.setVisibility(View.GONE);
             currrPos = new LatLng(ocorrencia.getLatitude(), ocorrencia.getLongitude());
+            Toast.makeText(this, "Arraste o marcador até à posição pretendida", Toast.LENGTH_SHORT).show();
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currrPos, 15));
 
-            mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            fab.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onMapLongClick(final LatLng latLng) {
-
-                    AlertDialog.Builder alert = new AlertDialog.Builder(MapsActivity.this);
-                    alert.setTitle("Atualizar coordenadas");
-                    alert
-                            .setMessage("É esta a nova localização?")
-                            .setCancelable(false)
-                            .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    atualizarOcorrenciaVolley(currrPos, ocorrencia);
-                                }
-                            })
-                            .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    dialogInterface.cancel();
-                                }
-                            });
-
-                    AlertDialog alertDialog = alert.create();
-                    alertDialog.show();
-
+                public void onClick(View view) {
+                    atualizarOcorrenciaVolley(ocorrencia);
                 }
             });
 
-        } else if (longitude != 0) {
-            currrPos = new LatLng(latitude, longitude);
-            mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
-                @Override
-                public void onMapLongClick(final LatLng latLng) {
 
-                    AlertDialog.Builder alert = new AlertDialog.Builder(MapsActivity.this);
-                    alert.setTitle("Criar report");
-                    alert
-                            .setMessage("Quer fazer um report nesta localização?")
-                            .setCancelable(false)
-                            .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    Intent intent = new Intent(MapsActivity.this, CriarOcorrenciaActivity.class);
-                                    intent.putExtra("lat", latLng.latitude);
-                                    intent.putExtra("lon", latLng.longitude);
-                                    startActivity(intent);
-                                    finish();
-                                }
-                            })
-                            .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    dialogInterface.cancel();
-                                }
-                            });
-
-                    AlertDialog alertDialog = alert.create();
-                    alertDialog.show();
-
-                }
-            });
         } else {
             currrPos = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
 
-            mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currrPos, 10));
+
+            mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
                 @Override
-                public void onMapLongClick(final LatLng latLng) {
+                public void onCameraIdle() {
 
-                    AlertDialog.Builder alert = new AlertDialog.Builder(MapsActivity.this);
-                    alert.setTitle("Criar report");
-                    alert
-                            .setMessage("Quer fazer um report nesta localização?")
-                            .setCancelable(false)
-                            .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    Intent intent = new Intent(MapsActivity.this, CriarOcorrenciaActivity.class);
-                                    intent.putExtra("lat", latLng.latitude);
-                                    intent.putExtra("lon", latLng.longitude);
-                                    startActivity(intent);
-                                    finish();
-                                }
-                            })
-                            .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    dialogInterface.cancel();
-                                }
-                            });
+                    final LatLng bottomEsquerda;
+                    final LatLng topDireita;
 
-                    AlertDialog alertDialog = alert.create();
-                    alertDialog.show();
+                    bottomEsquerda = mMap.getProjection().getVisibleRegion().nearLeft;
+                    topDireita = mMap.getProjection().getVisibleRegion().farRight;
+
+                    bottomLeftLatitude = mMap.getProjection().getVisibleRegion().nearLeft.latitude;
+                    bottomLeftLongitude = mMap.getProjection().getVisibleRegion().nearLeft.longitude;
+                    topRightLatitude = mMap.getProjection().getVisibleRegion().farRight.latitude;
+                    topRightLongitude = mMap.getProjection().getVisibleRegion().farRight.longitude;
+
+
+                    //Toast.makeText(MapsActivity.this, "Lat bot " + bottomEsquerda.latitude +
+                      //      "\nLon bot" + bottomEsquerda.longitude + "\nLat top " + topDireita.latitude +
+                        //    "\nLon top " + topDireita.longitude, Toast.LENGTH_LONG).show();
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (pedirMarkers(bottomEsquerda, topDireita))
+                                for (int i = 0; i < 4 && !isFinished; i++)
+                                    volleyGetMarkersBounds(bottomEsquerda, topDireita);
+
+                        }
+                    }).start();
+
+                    mClusterManager.cluster();
+
 
                 }
             });
+
+
         }
-        //mMap.addMarker(new MarkerOptions().position(currrPos).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currrPos, 10));
 
-
-        mMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
-            @Override
-            public void onCameraMove() {
-                LatLng botLeft = mMap.getProjection().getVisibleRegion().nearLeft;
-                LatLng topRight = mMap.getProjection().getVisibleRegion().farRight;
-                updateMarkers(botLeft, topRight);
-                //setUpClusterer();
-            }
-        });
     }
 
 
-    private void atualizarOcorrenciaVolley(final LatLng currPos, final Ocorrencia ocorrencia) {
+    private boolean pedirMarkers(LatLng botL, LatLng topR) {
+
+        if (botL.longitude >= bottomLeftLongitude && botL.latitude >= bottomLeftLatitude
+                && topR.longitude <= topRightLongitude && topR.latitude <= topRightLatitude)
+            return false;
+        else {
+            if (botL.longitude < bottomLeftLongitude)
+                bottomLeftLongitude = botL.longitude;
+            if (botL.latitude < bottomLeftLatitude)
+                bottomLeftLatitude = botL.latitude;
+            if (topR.latitude > topRightLatitude)
+                topRightLatitude = topR.latitude;
+            if (topR.longitude > topRightLongitude)
+                topRightLongitude = topR.longitude;
+            return true;
+        }
+    }
+
+    private void atualizarOcorrenciaVolley(final Ocorrencia ocorrencia) {
         String tag_json_obj = "json_obj_req";
         String url = "https://novaleaf-197719.appspot.com/rest/withtoken/mapsupport/update";
 
@@ -903,9 +654,12 @@ public class MapsActivity extends AppCompatActivity
         try {
 
             JSONObject coordinates = new JSONObject();
-            coordinates.put("latitude", currPos.latitude);
-            coordinates.put("longitude", currPos.longitude);
+            marker.put("id", ocorrencia.id);
+            marker.put("owner", sharedPreferences.getString("username", "erro"));
+            coordinates.put("latitude", ocorrencia.getLatitude());
+            coordinates.put("longitude", ocorrencia.getLongitude());
             marker.put("coordinates", coordinates);
+
 
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, url, marker,
                     new Response.Listener<JSONObject>() {
@@ -913,10 +667,11 @@ public class MapsActivity extends AppCompatActivity
                         public void onResponse(JSONObject response) {
                             mClusterManager.removeItem(ocorrencia);
                             int index = FeedActivity.ocorrencias.indexOf(ocorrencia);
-                            FeedActivity.ocorrencias.get(index).setLatitude(currPos.latitude);
-                            FeedActivity.ocorrencias.get(index).setLongitude(currPos.longitude);
+                            FeedActivity.ocorrencias.get(index).setLatitude(ocorrencia.getLatitude());
+                            FeedActivity.ocorrencias.get(index).setLongitude(ocorrencia.getLongitude());
                             FeedActivity.adapter.notifyDataSetChanged();
                             mClusterManager.addItem(FeedActivity.ocorrencias.get(index));
+                            onBackPressed();
 
 
                         }
@@ -924,6 +679,7 @@ public class MapsActivity extends AppCompatActivity
 
                 @Override
                 public void onErrorResponse(VolleyError error) {
+                    Toast.makeText(MapsActivity.this, "Não foi possível concluir a operação", Toast.LENGTH_SHORT).show();
                     VolleyLog.d("erroNOVAOCORRENCIA", "Error: " + error.getMessage());
                 }
             }) {
@@ -941,5 +697,244 @@ public class MapsActivity extends AppCompatActivity
         }
     }
 
+
+    private void volleyGetMarkersBounds(LatLng bottomLeft, LatLng topRight) {
+
+        final String tag_json_obj = "json_request";
+        String url;
+
+
+        SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+        final String token = sharedPreferences.getString("tokenID", "erro");
+        try {
+
+            JSONObject bounds = new JSONObject();
+            JSONObject topR = new JSONObject();
+            JSONObject botL = new JSONObject();
+            topR.put("latitude", topRight.latitude);
+            topR.put("longitude", topRight.longitude);
+            botL.put("latitude", bottomLeft.latitude);
+            botL.put("longitude", bottomLeft.longitude);
+            bounds.put("topRight", topR);
+            bounds.put("bottomLeft", botL);
+
+            if (cursor.equals(""))
+                url = "https://novaleaf-197719.appspot.com/rest/withtoken/mapsupport/boundedmarkers?cursor=startquery";
+            else
+                url = "https://novaleaf-197719.appspot.com/rest/withtoken/mapsupport/boundedmarkers?cursor=" + cursor;
+
+            Log.d("ché bate só", url);
+
+            final RequestFuture<JSONObject> future = RequestFuture.newFuture();
+            final JsonObjectRequest jsonObjectRequest1 = new JsonObjectRequest(Request.Method.POST, url, bounds,
+                    future, future) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    HashMap<String, String> headers = new HashMap<String, String>();
+                    headers.put("Authorization", token);
+                    return headers;
+                }
+            };
+            future.setRequest(jsonObjectRequest1);
+
+
+            jsonObjectRequest1.setTag(tag_json_obj);
+            AppController.getInstance().addToRequestQueue(jsonObjectRequest1);
+            try {
+                final JSONObject response = future.get();
+                cursor = response.getString("cursor");
+                Log.d("SUA PUTA TAS AI???", response.toString());
+                final JSONArray list = response.getJSONArray("list");
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            if (!response.isNull("list")) {
+                                Log.d("nao é null", list.toString());
+                                if (!isFinished)
+                                    for (int i = 0; i < list.length(); i++) {
+                                        Log.d("bina, empina?", list.toString());
+
+                                        String id = null;
+                                        String titulo = null;
+                                        String descricao = null;
+                                        String owner = null;
+                                        String type = null;
+                                        boolean hasLiked = false;
+                                        String image_uri = null;
+                                        List<String> likers = new ArrayList<>();
+                                        long creationDate = 0;
+                                        String district = null;
+                                        double risk = 0;
+                                        long likes = 0;
+                                        long status = 0;
+                                        double latitude = 0;
+                                        double longitude = 0;
+                                        Map<String, Comentario> comentarios = new HashMap<>();
+
+                                        JSONObject ocorrencia = list.getJSONObject(i);
+                                        if (ocorrencia.has("id"))
+                                            id = ocorrencia.getString("id");
+                                        if (ocorrencia.has("name"))
+                                            titulo = ocorrencia.getString("name");
+                                        if (ocorrencia.has("description"))
+                                            descricao = ocorrencia.getString("description");
+                                        if (ocorrencia.has("owner"))
+                                            owner = ocorrencia.getString("owner");
+                                        if (ocorrencia.has("risk"))
+                                            risk = ocorrencia.getInt("risk");
+                                        if (ocorrencia.has("likes"))
+                                            likes = ocorrencia.getInt("likes");
+                                        if (ocorrencia.has("status"))
+                                            status = ocorrencia.getLong("status");
+                                        if (ocorrencia.has("type"))
+                                            type = ocorrencia.getString("type");
+                                        JSONObject image = null;
+                                        if (ocorrencia.has("image_uri")) {
+                                            image = ocorrencia.getJSONObject("image_uri");
+                                            if (image.has("value"))
+                                                image_uri = image.getString("value");
+                                        }
+
+                                        if (ocorrencia.has("hasLike"))
+                                            hasLiked = ocorrencia.getBoolean("hasLike");
+                                        if (ocorrencia.has("creationDate"))
+                                            creationDate = ocorrencia.getLong("creationDate");
+
+
+                                        Log.d("HASLIKE???", hasLiked + "FDPDPDPD");
+                                        if (ocorrencia.has("comments")) {
+                                            JSONArray coms = ocorrencia.getJSONArray("comments");
+
+
+                                            for (int a = 0; a < coms.length(); a++) {
+                                                int origem;
+                                                JSONObject com = coms.getJSONObject(a);
+                                                if (com.getString("author").equals(
+                                                        getSharedPreferences("Prefs", MODE_PRIVATE).getString("username", "")))
+                                                    origem = 1;
+                                                else origem = 2;
+
+                                                String imag = null;
+                                                if (com.has("image"))
+                                                    imag = com.getString("image");
+
+                                                String comentID = com.getString("id");
+
+
+                                                comentarios.put(comentID, new Comentario(comentID, com.getString("author"),
+                                                        com.getString("message"), imag,
+                                                        com.getLong("creation_date"), origem, id, null, null));
+
+                                            }
+                                        }
+                                        if (ocorrencia.has("coordinates")) {
+                                            JSONObject coordinates = ocorrencia.getJSONObject("coordinates");
+                                            latitude = coordinates.getDouble("latitude");
+                                            longitude = coordinates.getDouble("longitude");
+                                        }
+
+                                        if (ocorrencia.has("likers")) {
+                                            JSONArray lik = ocorrencia.getJSONArray("likers");
+                                            for (int a = 0; a < lik.length(); a++)
+                                                likers.add(lik.getString(a));
+                                        }
+
+
+                                        Ocorrencia ocorrencia1 = new Ocorrencia(titulo, risk, "23:12", id,
+                                                descricao, owner, likers, status, latitude, longitude, likes, type, image_uri,
+                                                comentarios, creationDate, district, hasLiked);
+                                        if (ocorrencia1.getImage_uri() != null)
+                                            receberImagemVolley(ocorrencia1);
+                                        else {
+                                            String tipo = ocorrencia1.getType();
+                                            if (tipo.equals("bonfire")) {
+                                                ocorrencia1.setImageID(R.mipmap.ic_bonfire_foreground);
+                                            } else if (tipo.equals("fire")) {
+                                                ocorrencia1.setImageID(R.mipmap.ic_fire_foreground);
+                                            } else if (tipo.equals("trash")) {
+                                                ocorrencia1.setImageID(R.mipmap.ic_garbage_foreground);
+                                            } else {
+                                                ocorrencia1.setImageID(R.mipmap.ic_grass_foreground);
+                                            }
+                                        }
+
+
+                                        if (!FeedActivity.ocorrencias.contains(ocorrencia1)) {
+                                            FeedActivity.ocorrencias.add(ocorrencia1);
+                                            mClusterManager.addItem(ocorrencia1);
+                                        }
+                                        Log.d("ID", id);
+                                        Log.d("titulo", titulo);
+                                        Log.d("desc", descricao);
+                                        FeedActivity.adapter.notifyDataSetChanged();
+
+                                    }
+                                isFinished = response.getBoolean("isFinished");
+                                Log.d("ACABOU???", String.valueOf(isFinished));
+                            } else {
+                                isFinished = true;
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void receberImagemVolley(final Ocorrencia item) {
+        String tag_json_obj = "octect_request";
+        String url = item.getImage_uri();
+
+
+        final String token = getSharedPreferences("Prefs", MODE_PRIVATE).getString("tokenID", "erro");
+        ByteRequest stringRequest = new ByteRequest(Request.Method.GET, url, new Response.Listener<byte[]>() {
+
+            @Override
+            public void onResponse(byte[] response) {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(response, 0, response.length);
+                item.setBitmap(response);
+                FeedActivity.adapter.notifyDataSetChanged();
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("erroIMAGEMocorrencia", "Error: " + error.getMessage());
+                String tipo = item.getType();
+                if (tipo.equals("bonfire")) {
+                    item.setImageID(R.mipmap.ic_bonfire_foreground);
+                } else if (tipo.equals("fire")) {
+                    item.setImageID(R.mipmap.ic_fire_foreground);
+                } else if (tipo.equals("trash")) {
+                    item.setImageID(R.mipmap.ic_garbage_foreground);
+                } else {
+                    item.setImageID(R.mipmap.ic_grass_foreground);
+                }
+                FeedActivity.adapter.notifyDataSetChanged();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+
+        };
+        AppController.getInstance().addToRequestQueue(stringRequest, tag_json_obj);
+
+    }
 
 }

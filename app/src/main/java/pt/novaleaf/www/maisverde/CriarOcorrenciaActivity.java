@@ -65,7 +65,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static pt.novaleaf.www.maisverde.MapsActivity.markers;
 
 
 /**
@@ -186,19 +185,12 @@ public class CriarOcorrenciaActivity extends AppCompatActivity implements Serial
             //Consoante a atividade proceder corretamente:
             //Se veio do feed, quer dizer que nao e preciso ir ao mapa
             Intent intent = getIntent();
+            latitude = intent.getDoubleExtra("lat", -1);
+            longitude = intent.getDoubleExtra("lon", -1);
 
-            final boolean estaLocal = intent.getBooleanExtra("estaLocal", false);
-            if (estaLocal) {
+            Log.i("Main Latitude", String.valueOf(latitude));
+            Log.i("Main Longitude", String.valueOf(longitude));
 
-                setLocal();
-
-            } else {
-                latitude = intent.getDoubleExtra("lat", -1);
-                longitude = intent.getDoubleExtra("lon", -1);
-
-                Log.i("Main Latitude", String.valueOf(latitude));
-                Log.i("Main Longitude", String.valueOf(longitude));
-            }
 
         }
 
@@ -310,7 +302,7 @@ public class CriarOcorrenciaActivity extends AppCompatActivity implements Serial
                 imageView.setImageBitmap(rotatedBitmap);
                 isImage = true;
                 ByteArrayOutputStream bao = new ByteArrayOutputStream();
-                rotatedBitmap = Bitmap.createScaledBitmap(rotatedBitmap, rotatedBitmap.getWidth()/2, rotatedBitmap.getHeight()/2, true);
+                rotatedBitmap = Bitmap.createScaledBitmap(rotatedBitmap, rotatedBitmap.getWidth() / 2, rotatedBitmap.getHeight() / 2, true);
                 rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 20, bao);
 
                 imageBytes = bao.toByteArray();
@@ -381,7 +373,7 @@ public class CriarOcorrenciaActivity extends AppCompatActivity implements Serial
 
                     isImage = true;
                     ByteArrayOutputStream bao = new ByteArrayOutputStream();
-                    bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth()/2, bitmap.getHeight()/2, true);
+                    bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / 2, bitmap.getHeight() / 2, true);
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 20, bao);
 
                     imageBytes = bao.toByteArray();
@@ -888,7 +880,7 @@ public class CriarOcorrenciaActivity extends AppCompatActivity implements Serial
 
 
                                 if (!FeedActivity.ocorrencias.contains(ocorrencia1))
-                                    FeedActivity.ocorrencias.add(0,ocorrencia1);
+                                    FeedActivity.ocorrencias.add(0, ocorrencia1);
                                 Log.d("ID", id);
                                 Log.d("titulo", titulo);
                                 Log.d("desc", descricao);
@@ -934,6 +926,8 @@ public class CriarOcorrenciaActivity extends AppCompatActivity implements Serial
         final String token = sharedPreferences.getString("tokenID", "erro");
         try {
 
+            marker.put("id", ocorrencia.id);
+            marker.put("owner", sharedPreferences.getString("username", "erro"));
             marker.put("name", titulo);
             marker.put("description", descricao);
             marker.put("type", tipo);
@@ -1054,7 +1048,6 @@ public class CriarOcorrenciaActivity extends AppCompatActivity implements Serial
                 editor.putInt("numReports", newNumReports);
                 editor.commit();
                 LatLng position = new LatLng(latitude, longitude);
-                markers.put(position, mTitulo);
 
                 Intent i = new Intent(CriarOcorrenciaActivity.this, FeedActivity.class);
                 startActivity(i);
