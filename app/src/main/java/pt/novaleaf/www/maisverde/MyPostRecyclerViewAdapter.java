@@ -1,5 +1,6 @@
 package pt.novaleaf.www.maisverde;
 
+import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -107,6 +108,19 @@ public class MyPostRecyclerViewAdapter extends RecyclerView.Adapter<MyPostRecycl
             holder.mHour.setText(data);
         }
 
+        if (mValues.get(position).getBitmapUser()!=null){
+            holder.mImageUser.setImageBitmap(BitmapFactory.decodeByteArray(mValues.get(position).getBitmapUser(),
+                    0, mValues.get(position).getBitmapUser().length));
+        } else {
+            holder.mImageUser.setImageResource(R.drawable.ic_person_black_24dp);
+        }
+
+        if (mValues.get(position).getBitmap()!=null){
+            holder.mImagePost.setImageBitmap(BitmapFactory.decodeByteArray(mValues.get(position).getBitmap(),
+                    0, mValues.get(position).getBitmap().length));
+        }
+
+
     }
 
     @Override
@@ -118,6 +132,7 @@ public class MyPostRecyclerViewAdapter extends RecyclerView.Adapter<MyPostRecycl
 
         public LinearLayout mLinearComentarios;
         public ImageView mImagePost;
+        public ImageView mImageUser;
         public TextView mTextNumLikes;
         public TextView mTextNumComments;
         public TextView mMessage;
@@ -128,7 +143,8 @@ public class MyPostRecyclerViewAdapter extends RecyclerView.Adapter<MyPostRecycl
         public ViewHolder(View v) {
             super(v);
             mImageGosto = (ImageView) v.findViewById(R.id.imageGosto);
-            mImagePost = (ImageView) v.findViewById(R.id.imagePostAuthor);
+            mImageUser = (ImageView) v.findViewById(R.id.imagePostAuthor);
+            mImagePost = (ImageView) v.findViewById(R.id.imagePost);
             mMessage = (TextView) v.findViewById(R.id.textPostMessage);
             mTextNumLikes = (TextView) v.findViewById(R.id.textPostLikes);
             mTextNumComments = (TextView) v.findViewById(R.id.comentarios);

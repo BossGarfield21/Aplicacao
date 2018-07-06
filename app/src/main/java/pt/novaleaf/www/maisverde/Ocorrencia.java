@@ -29,6 +29,7 @@ public class Ocorrencia implements Serializable, ClusterItem{
     public String owner; //username
     public String description;
     public double risk;
+    public double radius;
     public String image_uri;
     public List<String> likers;
     public Map<String, Comentario> comments;
@@ -39,8 +40,11 @@ public class Ocorrencia implements Serializable, ClusterItem{
     public String county;
     public String parish;
     public String type;
+    private String user_image;
     private byte bitmap[];
+    private byte bitmapUser[];
     private int imageID;
+    private int imageIDUser;
 
 
     public static final List<Ocorrencia> items = new ArrayList<>();
@@ -50,7 +54,8 @@ public class Ocorrencia implements Serializable, ClusterItem{
     public Ocorrencia(String name, double risk, String hora, String id, String description,
                       String owner, List<String> likers, Long status,
                       double latitude, double longitude, long likes, String type, String image_uri,
-                      Map<String, Comentario> comments, long creationDate, String district, boolean liked){
+                      Map<String, Comentario> comments, long creationDate, String district, boolean liked,
+                      String user_image, double radius){
         this.name = name;
         this.district = district;
         favorito = false;
@@ -69,9 +74,41 @@ public class Ocorrencia implements Serializable, ClusterItem{
         this.image_uri = image_uri;
         this.comments = comments;
         this.creationDate = creationDate;
+        this.user_image = user_image;
         bitmap = null;
+        bitmapUser = null;
         imageID = 0;
+        imageIDUser = 0;
+        this.radius = radius;
 
+    }
+
+    public double getRadius() {
+        return radius;
+    }
+
+    public int getImageIDUser() {
+        return imageIDUser;
+    }
+
+    public void setImageIDUser(int imageIDUser) {
+        this.imageIDUser = imageIDUser;
+    }
+
+    public void setUser_image(String user_image) {
+        this.user_image = user_image;
+    }
+
+    public String getUser_image() {
+        return user_image;
+    }
+
+    public void setBitmapUser(byte[] bitmapUser) {
+        this.bitmapUser = bitmapUser;
+    }
+
+    public byte[] getBitmapUser() {
+        return bitmapUser;
     }
 
     public int getImageID() {

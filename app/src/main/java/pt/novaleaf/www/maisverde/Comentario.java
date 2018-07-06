@@ -14,6 +14,7 @@ public class Comentario implements Serializable {
     private int origem;
     private String postId;
     private String groupId;
+    private byte[] bitmap;
 
 
     public Comentario(String id, String author, String message, String image, long creation_date,
@@ -28,7 +29,16 @@ public class Comentario implements Serializable {
         this.markerid = markerid;
         this.postId = postId;
         this.groupId = groupId;
+        this.bitmap = null;
 
+    }
+
+    public byte[] getBitmap() {
+        return bitmap;
+    }
+
+    public void setBitmap(byte[] bitmap) {
+        this.bitmap = bitmap;
     }
 
     public String getMarkerid() {

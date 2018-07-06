@@ -1,27 +1,32 @@
 package pt.novaleaf.www.maisverde;
 
+import android.graphics.Bitmap;
+
 import org.w3c.dom.Comment;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public class Post implements Serializable{
+public class Post implements Serializable {
 
     public String id;
     public String groupId;
     public String author;
     public String message;
     public String image;
+    public String user_image;
     public List<String> likers;
     public Map<String, Comentario> comments;
     public long likes;
     public boolean liked;
     public long creationDate;
+    private byte[] bitmap;
+    private byte[] bitmapUser;
 
 
     public Post(String id, String author, String message, String image, List<String> likers,
-                Map<String, Comentario> comments_map, long likes, boolean liked, String groupId) {
+                Map<String, Comentario> comments_map, long likes, boolean liked, String groupId, String user_image) {
 
         this.id = id;
         this.author = author;
@@ -32,6 +37,34 @@ public class Post implements Serializable{
         this.likes = likes;
         this.liked = liked;
         this.groupId = groupId;
+        this.user_image = user_image;
+        bitmap = null;
+        bitmapUser = null;
+
+    }
+
+    public byte[] getBitmap() {
+        return bitmap;
+    }
+
+    public void setBitmap(byte[] bitmap) {
+        this.bitmap = bitmap;
+    }
+
+    public void setBitmapUser(byte[] bitmapUser) {
+        this.bitmapUser = bitmapUser;
+    }
+
+    public byte[] getBitmapUser() {
+        return bitmapUser;
+    }
+
+    public void setUser_image(String user_image) {
+        this.user_image = user_image;
+    }
+
+    public String getUser_image() {
+        return user_image;
     }
 
     public String getId() {
@@ -66,7 +99,7 @@ public class Post implements Serializable{
         return liked;
     }
 
-    public void like(){
+    public void like() {
         liked = !liked;
     }
 

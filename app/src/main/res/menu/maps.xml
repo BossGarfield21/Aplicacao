@@ -6,14 +6,4 @@
         android:orderInCategory="100"
         android:title="Legenda"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/action_help"
-        android:orderInCategory="100"
-        android:title="Ajuda"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_logout"
-        android:orderInCategory="100"
-        android:title="Sair"
-        app:showAsAction="never" />
 </menu>

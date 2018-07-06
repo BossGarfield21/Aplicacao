@@ -206,6 +206,14 @@
             android:name=".AlterarDadosActivity"
             android:label="Alterar dados">
         </activity>
+        <activity
+            android:name=".ProximosEventosActivity"
+            android:label="Próximos eventos">
+        </activity>
+        <activity
+            android:name=".ProximosLocalActivity"
+            android:label="Perto de si">
+        </activity>
     </application>
 
 </manifest>

@@ -31,6 +31,18 @@
                                 <PersistentState>
                                   <option name="children">
                                     <map>
+                                      <entry key="backgroundImage">
+                                        <value>
+                                          <PersistentState>
+                                            <option name="values">
+                                              <map>
+                                                <entry key="scalingPercent" value="43" />
+                                                <entry key="trimmed" value="true" />
+                                              </map>
+                                            </option>
+                                          </PersistentState>
+                                        </value>
+                                      </entry>
                                       <entry key="foregroundClipArt">
                                         <value>
                                           <PersistentState>
@@ -54,14 +66,25 @@
                                           </PersistentState>
                                         </value>
                                       </entry>
+                                      <entry key="foregroundText">
+                                        <value>
+                                          <PersistentState>
+                                            <option name="values">
+                                              <map>
+                                                <entry key="trimmed" value="true" />
+                                              </map>
+                                            </option>
+                                          </PersistentState>
+                                        </value>
+                                      </entry>
                                     </map>
                                   </option>
                                   <option name="values">
                                     <map>
                                       <entry key="backgroundLayerName" value="ic_launcher_background" />
-                                      <entry key="foregroundImage" value="C:\Users\Hugo Mochão\Desktop\imagensMapa\porTratarFire.png" />
-                                      <entry key="foregroundLayerName" value="ic_por_tratar_fire" />
-                                      <entry key="outputName" value="por_tratar_fire" />
+                                      <entry key="foregroundImage" value="C:\Users\Hugo Mochão\Desktop\imagensMapa\tratadaGarbage.png" />
+                                      <entry key="foregroundLayerName" value="ic_tratada_garbage" />
+                                      <entry key="outputName" value="tratada_garbage" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -118,8 +141,8 @@
                         <option name="values">
                           <map>
                             <entry key="assetSourceType" value="FILE" />
-                            <entry key="outputName" value="ic_if_cup" />
-                            <entry key="sourceFile" value="D:\Transferências\if_1_2958187.svg" />
+                            <entry key="outputName" value="ic_if_basics_30_679117" />
+                            <entry key="sourceFile" value="C:\Users\Hugo Mochão\Desktop\if_basics-30_679117.svg" />
                           </map>
                         </option>
                       </PersistentState>

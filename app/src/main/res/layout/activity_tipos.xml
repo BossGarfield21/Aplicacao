@@ -133,7 +133,7 @@
                 android:fontFamily="@font/roboto_regular"
                 android:gravity="center_vertical|center_horizontal"
                 android:text="MATA SUJA"
-                android:textColor="@array/pref_sync_frequency_titles" />
+                android:textColor="@color/textcolor" />
         </LinearLayout>
     </GridLayout>
 </android.support.constraint.ConstraintLayout>

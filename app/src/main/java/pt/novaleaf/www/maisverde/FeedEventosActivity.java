@@ -20,6 +20,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -57,6 +59,8 @@ public class FeedEventosActivity extends AppCompatActivity
     public static MyEventoRecyclerViewAdapter adapter;
     RecyclerView recyclerView;
     private boolean canScroll = false;
+    private LinearLayout mLinearCrono;
+    private LinearLayout mLinearLocal;
 
 
     @Override
@@ -88,9 +92,8 @@ public class FeedEventosActivity extends AppCompatActivity
             @Override
             public void onLocationInteraction(Evento item) {
                 Intent intent = new Intent(FeedEventosActivity.this, MapsActivity.class);
-                intent.putParcelableArrayListExtra("list", (ArrayList<? extends Parcelable>) item.getArea());
-                item.setArea(null);
-                intent.putExtra("evento", item);
+                intent.putExtra("longitude", item.getCenterPointLongitude());
+                intent.putExtra("latitude", item.getCenterPointLatitude());
                 startActivity(intent);
 
             }
@@ -102,23 +105,12 @@ public class FeedEventosActivity extends AppCompatActivity
 
             @Override
             public void onImagemInteraction(Evento item) {
-/*
-                Intent intent = new Intent(FeedEventosActivity.this, EventoActivity.class);
-                intent.putExtra("evento_latitude", item.getCenterPointLatitude());
-                intent.putExtra("evento_longitude", item.getCenterPointLongitude());
 
-                if (item.getRadious() > 0)
-                    intent.putExtra("evento_radius", item.getRadious());
-                //else
-                  //  intent.putExtra("evento_area", (Serializable) item.getArea());*/
                 Intent intent = new Intent(FeedEventosActivity.this, EventoActivity.class);
                 intent.putParcelableArrayListExtra("list", (ArrayList<? extends Parcelable>) item.getArea());
                 item.setArea(null);
                 intent.putExtra("evento", item);
                 startActivity(intent);
-
-
-
 
             }
         };
@@ -129,12 +121,32 @@ public class FeedEventosActivity extends AppCompatActivity
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
+        mLinearCrono = (LinearLayout) findViewById(R.id.cronoproximos);
+        mLinearLocal = (LinearLayout) findViewById(R.id.proximosLocal);
+
+        mLinearCrono.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(FeedEventosActivity.this, ProximosEventosActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        mLinearLocal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(FeedEventosActivity.this, ProximosLocalActivity.class);
+                startActivity(intent);
+            }
+        });
+
 
         new Thread(new Runnable() {
             @Override
 
             public void run() {
-                volleyGetEventos();
+                for (int i = 0; i < 4 && !isFinishedEventos; i++)
+                    volleyGetEventos();
             }
 
 
@@ -180,9 +192,7 @@ public class FeedEventosActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_help) {
-            return true;
-        } else if (id == R.id.action_logout) {
+        if (id == R.id.action_logout) {
 
             final AlertDialog.Builder alert = new AlertDialog.Builder(FeedEventosActivity.this);
             alert.setTitle("Terminar sessão");
@@ -211,9 +221,6 @@ public class FeedEventosActivity extends AppCompatActivity
             alertDialog.show();
 
 
-        } else if (id == R.id.action_acerca) {
-            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://anovaleaf.ddns.net"));
-            startActivity(i);
         }
 
         return super.onOptionsItemSelected(item);
@@ -249,6 +256,38 @@ public class FeedEventosActivity extends AppCompatActivity
             //startActivity(i);
             //finish();
 
+        } else if (id == R.id.nav_acerca){
+            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://anovaleaf.ddns.net"));
+            startActivity(i);
+        } else if (id == R.id.nav_help){
+            return true;
+        } else if (id == R.id.nav_end){
+
+            final AlertDialog.Builder alert = new AlertDialog.Builder(FeedEventosActivity.this);
+            alert.setTitle("Terminar sessão");
+            alert
+                    .setMessage("Deseja terminar sessão?")
+                    .setCancelable(true)
+                    .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
+                            editor.clear();
+                            editor.commit();
+                            Intent intent = new Intent(FeedEventosActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    })
+                    .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    });
+
+            AlertDialog alertDialog = alert.create();
+            alertDialog.show();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

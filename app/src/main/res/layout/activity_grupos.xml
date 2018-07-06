@@ -160,7 +160,7 @@
 
                 <TextView
 
-                    android:id="@+id/textGrupoDistrict"
+                    android:id="@+id/textGrupoDistrito"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -169,7 +169,7 @@
                     android:textAlignment="viewStart"
                     android:textAppearance="@style/TextAppearance.AppCompat.Display1"
                     android:textColor="@color/textcolor"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"/>
 
             </LinearLayout>
 

@@ -245,9 +245,7 @@ public class FeedActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_help) {
-            return true;
-        } else if (id == R.id.action_logout) {
+         if (id == R.id.action_logout) {
 
             final AlertDialog.Builder alert = new AlertDialog.Builder(FeedActivity.this);
             alert.setTitle("Terminar sessão");
@@ -276,9 +274,6 @@ public class FeedActivity extends AppCompatActivity
             alertDialog.show();
 
 
-        } else if (id == R.id.action_acerca) {
-            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://anovaleaf.ddns.net"));
-            startActivity(i);
         }
 
         return super.onOptionsItemSelected(item);
@@ -313,6 +308,38 @@ public class FeedActivity extends AppCompatActivity
             //startActivity(i);
             //finish();
 
+        } else if (id == R.id.nav_acerca){
+            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://anovaleaf.ddns.net"));
+            startActivity(i);
+        } else if (id == R.id.nav_help){
+            return true;
+        } else if (id == R.id.nav_end){
+
+            final AlertDialog.Builder alert = new AlertDialog.Builder(FeedActivity.this);
+            alert.setTitle("Terminar sessão");
+            alert
+                    .setMessage("Deseja terminar sessão?")
+                    .setCancelable(true)
+                    .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
+                            editor.clear();
+                            editor.commit();
+                            Intent intent = new Intent(FeedActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    })
+                    .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    });
+
+            AlertDialog alertDialog = alert.create();
+            alertDialog.show();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -331,9 +358,6 @@ public class FeedActivity extends AppCompatActivity
             }
         }
     }
-
-
-
 
 
     public void volleyGetOcorrencias() {
@@ -389,10 +413,12 @@ public class FeedActivity extends AppCompatActivity
                                     String type = null;
                                     boolean hasLiked = false;
                                     String image_uri = null;
+                                    String user_image = null;
                                     List<String> likers = new ArrayList<>();
                                     long creationDate = 0;
                                     String district = null;
                                     double risk = 0;
+                                    double radius = 0;
                                     long likes = 0;
                                     long status = 0;
                                     double latitude = 0;
@@ -421,6 +447,12 @@ public class FeedActivity extends AppCompatActivity
                                         image = ocorrencia.getJSONObject("image_uri");
                                         if (image.has("value"))
                                             image_uri = image.getString("value");
+                                    }
+                                    JSONObject imageuser = null;
+                                    if (ocorrencia.has("user_image")) {
+                                        imageuser = ocorrencia.getJSONObject("user_image");
+                                        if (imageuser.has("value"))
+                                            user_image = image.getString("value");
                                     }
 
                                     if (ocorrencia.has("hasLike"))
@@ -467,10 +499,13 @@ public class FeedActivity extends AppCompatActivity
                                             likers.add(lik.getString(a));
                                     }
 
+                                    if (ocorrencia.has("radius"))
+                                        radius = ocorrencia.getDouble("radius");
+
 
                                     Ocorrencia ocorrencia1 = new Ocorrencia(titulo, risk, "23:12", id,
                                             descricao, owner, likers, status, latitude, longitude, likes, type, image_uri,
-                                            comentarios, creationDate, district, hasLiked);
+                                            comentarios, creationDate, district, hasLiked, user_image, radius);
                                     if (ocorrencia1.getImage_uri() != null)
                                         receberImagemVolley(ocorrencia1);
                                     else {
@@ -484,6 +519,12 @@ public class FeedActivity extends AppCompatActivity
                                         } else {
                                             ocorrencia1.setImageID(R.mipmap.ic_grass_foreground);
                                         }
+                                    }
+
+                                    if (ocorrencia1.getUser_image() != null && !ocorrencias.contains(ocorrencia1))
+                                        receberImagemUserVolley(ocorrencia1);
+                                    else {
+                                        ocorrencia1.setImageIDUser(R.drawable.ic_person_black_24dp);
                                     }
 
 
@@ -605,7 +646,6 @@ public class FeedActivity extends AppCompatActivity
 
             @Override
             public void onResponse(byte[] response) {
-                Bitmap bitmap = BitmapFactory.decodeByteArray(response, 0, response.length);
                 item.setBitmap(response);
                 adapter.notifyDataSetChanged();
 
@@ -624,6 +664,42 @@ public class FeedActivity extends AppCompatActivity
                 } else {
                     item.setImageID(R.mipmap.ic_grass_foreground);
                 }
+                adapter.notifyDataSetChanged();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+
+        };
+        AppController.getInstance().addToRequestQueue(stringRequest, tag_json_obj);
+
+    }
+
+    private void receberImagemUserVolley(final Ocorrencia item) {
+        String tag_json_obj = "octect_request";
+        String url = item.getUser_image();
+
+
+        final String token = getSharedPreferences("Prefs", MODE_PRIVATE).getString("tokenID", "erro");
+        ByteRequest stringRequest = new ByteRequest(Request.Method.GET, url, new Response.Listener<byte[]>() {
+
+            @Override
+            public void onResponse(byte[] response) {
+                item.setBitmapUser(response);
+                adapter.notifyDataSetChanged();
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("erroIMAGEMocorrencia", "Error: " + error.getMessage());
+
+                item.setImageID(R.drawable.ic_person_black_24dp);
+
                 adapter.notifyDataSetChanged();
             }
         }) {

@@ -104,6 +104,7 @@
                             </LinearLayout>
 
                             <LinearLayout
+                                android:id="@+id/proximosLocal"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="16dp"
@@ -127,9 +128,9 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
                                     android:layout_weight="2"
-                                    android:textColor="@color/textcolor"
                                     android:gravity="center_vertical|center_horizontal"
                                     android:text="Perto de sí"
+                                    android:textColor="@color/textcolor"
                                     android:textSize="10sp"/>
                             </LinearLayout>
 

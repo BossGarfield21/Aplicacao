@@ -31,7 +31,7 @@
             app:layout_constraintHorizontal_bias="0.051"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@mipmap/ic_logo_round" />
+            app:srcCompat="@mipmap/ic_logo_round"/>
 
         <TextView
             android:id="@+id/userName"
@@ -46,7 +46,7 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"
             android:textSize="22sp"
             app:layout_constraintStart_toEndOf="@+id/userImage"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"/>
 
 
         <TextView
@@ -60,20 +60,17 @@
             android:text="26/06 17:44"
             android:textSize="12sp"
             app:layout_constraintStart_toEndOf="@+id/userImage"
-            app:layout_constraintTop_toBottomOf="@+id/userName" />
+            app:layout_constraintTop_toBottomOf="@+id/userName"/>
 
         <ImageView
             android:id="@+id/imageView5"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="44dp"
-            android:layout_marginTop="16dp"
-            app:layout_constraintBottom_toTopOf="@+id/tituloReport"
-            app:layout_constraintStart_toEndOf="@+id/userName"
+            android:layout_marginEnd="64dp"
+            android:layout_marginTop="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.105"
-            app:srcCompat="@drawable/if_caution_1055096" />
+            app:srcCompat="@drawable/if_caution_1055096"/>
 
         <View
             android:id="@+id/view1"
@@ -83,7 +80,7 @@
             android:background="#849d9d9d"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/userImage" />
+            app:layout_constraintTop_toBottomOf="@+id/userImage"/>
 
         <TextView
             android:id="@+id/tituloReport"
@@ -102,7 +99,7 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/view1" />
+            app:layout_constraintTop_toBottomOf="@+id/view1"/>
 
         <android.support.v7.widget.CardView
             android:id="@+id/card"
@@ -121,7 +118,7 @@
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/image_report"
                 android:minHeight="220dp"
-                android:scaleType="fitCenter" />
+                android:scaleType="fitCenter"/>
 
 
         </android.support.v7.widget.CardView>
@@ -141,7 +138,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="#849d9d9d" />
+                android:background="#849d9d9d"/>
 
             <LinearLayout
                 android:id="@+id/linearInfo"
@@ -161,7 +158,7 @@
                     android:gravity="start|center_vertical"
                     android:text="0"
                     android:textAlignment="center"
-                    android:textAppearance="?attr/textAppearanceListItem" />
+                    android:textAppearance="?attr/textAppearanceListItem"/>
 
                 <ImageView
                     android:id="@+id/imageView2"
@@ -169,7 +166,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_weight="10"
-                    app:srcCompat="@drawable/ic_favorite_green_24dp" />
+                    app:srcCompat="@drawable/ic_favorite_green_24dp"/>
 
                 <TextView
                     android:id="@+id/comentarios"
@@ -180,14 +177,14 @@
                     android:alpha="0.5"
                     android:gravity="end|center_vertical"
                     android:text="0 comentários"
-                    android:textAppearance="?attr/textAppearanceListItem" />
+                    android:textAppearance="?attr/textAppearanceListItem"/>
             </LinearLayout>
 
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="#849d9d9d" />
+                android:background="#849d9d9d"/>
 
         </LinearLayout>
 
@@ -218,7 +215,7 @@
                     android:contentDescription="TODO"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/lin"
-                    app:srcCompat="@drawable/ic_favorite_border_black_24dp" />
+                    app:srcCompat="@drawable/ic_favorite_border_black_24dp"/>
             </LinearLayout>
 
             <LinearLayout
@@ -238,7 +235,7 @@
                     android:contentDescription="TODO"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/lin"
-                    app:srcCompat="@drawable/ic_outline_comment_24px" />
+                    app:srcCompat="@drawable/ic_outline_comment_24px"/>
             </LinearLayout>
         </LinearLayout>
 
@@ -251,20 +248,29 @@
             android:text="Setubal"
             android:textSize="12sp"
             app:layout_constraintStart_toEndOf="@+id/time"
-            app:layout_constraintTop_toBottomOf="@+id/userName" />
+            app:layout_constraintTop_toBottomOf="@+id/userName"/>
 
         <TextView
             android:id="@+id/riscofeed"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="32dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="66dp"
             android:layout_marginTop="8dp"
-            android:text="TextView"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="0"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="@+id/view1"
-            app:layout_constraintStart_toEndOf="@+id/textView6"
-            app:layout_constraintTop_toBottomOf="@+id/imageView5"
-            tools:text="17" />
+            app:layout_constraintTop_toBottomOf="@+id/imageView5"/>
+
+        <ImageView
+            android:id="@+id/imageEdit"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_if_basics_30_679117"/>
 
     </android.support.constraint.ConstraintLayout>
 

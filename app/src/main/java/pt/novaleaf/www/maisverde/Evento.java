@@ -3,11 +3,12 @@ package pt.novaleaf.www.maisverde;
 import android.preference.PreferenceManager;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.clustering.ClusterItem;
 
 import java.io.Serializable;
 import java.util.List;
 
-public class Evento implements Serializable{
+public class Evento implements Serializable, ClusterItem {
 
     public String name;
     public String creator;
@@ -187,5 +188,20 @@ public class Evento implements Serializable{
 
     public void setArea(List<LatLng> area) {
         this.area = area;
+    }
+
+    @Override
+    public LatLng getPosition() {
+        return new LatLng(meetupPointLatitude, meetupPointLongitude);
+    }
+
+    @Override
+    public String getTitle() {
+        return "Ponto de encontro de " + name;
+    }
+
+    @Override
+    public String getSnippet() {
+        return description;
     }
 }

@@ -10,7 +10,7 @@
     <color name="colorCustomBack">#dddddd</color>
     <color name="colorMenu">#7ab57c</color>
     <color name="colorToolbar">#429844</color>
-    <color name="loginColor">#5ae55a</color>
+    <color name="loginColor">#29a529</color>
     <color name="snow">#fffafa</color>
     <color name="honey_dew">#F0FFF0</color>
     <color name="Hunter_Green">#3f704d</color>
@@ -18,4 +18,6 @@
     <color name="accent_material_light">#397c4f</color>
     <color name="lime">#0e7e0e</color>
     <color name="textcolor">#232323</color>
+    <color name="coloryellow">#ece643</color>
+    <color name="colorred">#c4070d</color>
 </resources>

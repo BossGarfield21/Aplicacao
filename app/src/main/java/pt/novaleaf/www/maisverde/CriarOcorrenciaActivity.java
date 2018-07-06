@@ -751,7 +751,7 @@ public class CriarOcorrenciaActivity extends AppCompatActivity implements Serial
         String url = "https://novaleaf-197719.appspot.com/rest/withtoken/mapsupport/addmarker";
 
         JSONObject marker = new JSONObject();
-        SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+        final SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
         final String token = sharedPreferences.getString("tokenID", "erro");
         try {
 
@@ -785,6 +785,7 @@ public class CriarOcorrenciaActivity extends AppCompatActivity implements Serial
                                 long creationDate = 0;
                                 String district = null;
                                 double risk = 0;
+                                double radius = 0;
                                 long likes = 0;
                                 long status = 0;
                                 double latitude = 0;
@@ -859,10 +860,12 @@ public class CriarOcorrenciaActivity extends AppCompatActivity implements Serial
                                         likers.add(lik.getString(a));
                                 }
 
+                                if (ocorrencia.has("radius"))
+                                    radius = ocorrencia.getDouble("radius");
 
                                 Ocorrencia ocorrencia1 = new Ocorrencia(titulo, risk, "23:12", id,
                                         descricao, owner, likers, status, latitude, longitude, likes, type, image_uri,
-                                        comentarios, creationDate, district, hasLiked);
+                                        comentarios, creationDate, district, hasLiked, sharedPreferences.getString("image_user", null), radius);
                                 if (ocorrencia1.getImage_uri() != null)
                                     ocorrencia1.setBitmap(imageBytes);
                                 else {

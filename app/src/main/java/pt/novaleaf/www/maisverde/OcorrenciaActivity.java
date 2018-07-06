@@ -100,8 +100,8 @@ public class OcorrenciaActivity extends AppCompatActivity implements Serializabl
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(OcorrenciaActivity.this, MapsActivity.class);
-                intent.putExtra("longitude", ocorrencia.longitude);
-                intent.putExtra("latitude", ocorrencia.latitude);
+                intent.putExtra("longitude", ocorrencia.getLongitude());
+                intent.putExtra("latitude", ocorrencia.getLatitude());
                 startActivity(intent);
             }
         });

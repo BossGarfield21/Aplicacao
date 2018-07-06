@@ -105,9 +105,8 @@ public class AdministrarGrupoActivity extends AppCompatActivity implements Seria
         if (id == R.id.acabar_grupo) {
             return true;
         }
-        else if (id == R.id.action_help) {
-            return true;
-        } else if (id == R.id.action_logout) {
+
+        else if (id == R.id.action_logout) {
             //TODO: sair da app
             final AlertDialog.Builder alert = new AlertDialog.Builder(AdministrarGrupoActivity.this);
             alert.setTitle("Terminar sessão");

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -183,6 +184,12 @@ public class MyComentariosRecyclerViewAdapter extends RecyclerView.Adapter {
         void bind(Comentario comentario, int position) {
             messageText.setText(comentario.getMessage());
 
+            if (comentario.getBitmap() == null)
+                profileImage.setImageResource(R.drawable.ic_person_black_24dp);
+            else
+                profileImage.setImageBitmap(BitmapFactory.decodeByteArray(comentario.getBitmap(), 0, comentario.getBitmap().length));
+
+
             // Format the stored timestamp into a readable String using method.
             long time = comentarios.get(position).getCreation_date();
 
@@ -246,9 +253,9 @@ public class MyComentariosRecyclerViewAdapter extends RecyclerView.Adapter {
         final String token = sharedPreferences.getString("tokenID", "erro");
 
         StringRequest jsonObjectRequest = new StringRequest(Request.Method.DELETE, url,
-                new Response.Listener<String >() {
+                new Response.Listener<String>() {
                     @Override
-                    public void onResponse(String  response) {
+                    public void onResponse(String response) {
                         comentarios.remove(com);
                         notifyDataSetChanged();
                         OcorrenciaFragment.myOcorrenciaRecyclerViewAdapter.notifyDataSetChanged();

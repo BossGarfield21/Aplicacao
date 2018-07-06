@@ -60,6 +60,7 @@ import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
+import com.google.maps.android.ui.IconGenerator;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -79,7 +80,8 @@ import utils.ByteRequest;
 public class MapsActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, Serializable {
 
-    private ClusterManager<Ocorrencia> mClusterManager;
+    private ClusterManager<Ocorrencia> mClusterManagerOcorrencia;
+    private ClusterManager<Evento> mClusterManagerEvento;
     private GoogleMap mMap;
     LocationManager locationManager;
     LocationListener locationListener;
@@ -88,12 +90,15 @@ public class MapsActivity extends AppCompatActivity
     Marker newMarker;
     FloatingActionButton fab;
     Ocorrencia ocorrencia;
-    Evento evento;
     private double topRightLatitude;
     private double topRightLongitude;
     private double bottomLeftLatitude;
     private double bottomLeftLongitude;
     boolean isFinished = false;
+    List<Circle> circles = new ArrayList<>();
+    List<Polygon> polygons = new ArrayList<>();
+    double latitude;
+    double longitude;
 
 
     @Override
@@ -103,66 +108,10 @@ public class MapsActivity extends AppCompatActivity
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10, 30, locationListener);
-
-                lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-                //centrar o mapa na ultima localizacao
-                centerMapOnLocation(lastKnownLocation);
-
-                //lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-
-                // Add a marker in Sydney and move the camera
-                LatLng currrPos = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-                //mMap.addMarker(new MarkerOptions().position(currrPos).title("Marker in Sydney"));
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currrPos, 15));
-                mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
-                    @Override
-                    public void onMapLongClick(final LatLng latLng) {
-
-                        //Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
-
-
-                        AlertDialog.Builder alert = new AlertDialog.Builder(MapsActivity.this);
-                        alert.setTitle("Criar report");
-                        alert
-                                .setMessage("Quer fazer um report nesta localização?")
-                                .setCancelable(false)
-                                .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        Intent intent = new Intent(MapsActivity.this, CriarOcorrenciaActivity.class);
-                                        intent.putExtra("lat", latLng.latitude);
-                                        intent.putExtra("lon", latLng.longitude);
-                                        startActivity(intent);
-                                    }
-                                })
-                                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        dialogInterface.cancel();
-                                    }
-                                });
-
-                        AlertDialog alertDialog = alert.create();
-                        alertDialog.show();
-
-                /*
-                TODO:
-                perguntar se quer criar a ocorrencia nesse sitio, se sim:
-                ir para o criar ocorrencia ativity, levando com ele as coordenadas
-                quando se cria a ocorrencia vai-se para o maps ativity
-                levando o titulo e a descricao, com que se vai criar o marker
-                (possivelmente atualizando logo na criar ocorrencia)
-                mMap.addMarker(new MarkerOptions().position(latLng).title(morada));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                */
-
-                    }
-                });
-
+                SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                        .findFragmentById(R.id.map);
+                mapFragment.setRetainInstance(true);
+                mapFragment.getMapAsync(this);
             }
         }
     }
@@ -196,8 +145,10 @@ public class MapsActivity extends AppCompatActivity
             mapFragment.getMapAsync(this);
         }
 
+        latitude = getIntent().getDoubleExtra("latitude", 0);
+        longitude = getIntent().getDoubleExtra("longitude", 0);
+
         ocorrencia = (Ocorrencia) getIntent().getSerializableExtra("ocorrencia");
-        evento = (Evento) getIntent().getSerializableExtra("evento");
 
 
         //getMarkers();
@@ -265,8 +216,6 @@ public class MapsActivity extends AppCompatActivity
         if (id == R.id.legenda) {
             Intent intent = new Intent(MapsActivity.this, LegendaMapaActivity.class);
             startActivity(intent);
-        } else if (id == R.id.action_help) {
-            return true;
         } else if (id == R.id.action_logout) {
             //TODO: revogar token
             final AlertDialog.Builder alert = new AlertDialog.Builder(MapsActivity.this);
@@ -294,9 +243,6 @@ public class MapsActivity extends AppCompatActivity
 
             AlertDialog alertDialog = alert.create();
             alertDialog.show();
-        } else if (id == R.id.action_acerca) {
-            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://anovaleaf.ddns.net"));
-            startActivity(i);
         }
 
         return super.onOptionsItemSelected(item);
@@ -325,6 +271,38 @@ public class MapsActivity extends AppCompatActivity
             Intent i = new Intent(MapsActivity.this, GruposListActivity.class);
             startActivity(i);
 
+        } else if (id == R.id.nav_acerca) {
+            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://anovaleaf.ddns.net"));
+            startActivity(i);
+        } else if (id == R.id.nav_help) {
+            return true;
+        } else if (id == R.id.nav_end) {
+
+            final AlertDialog.Builder alert = new AlertDialog.Builder(MapsActivity.this);
+            alert.setTitle("Terminar sessão");
+            alert
+                    .setMessage("Deseja terminar sessão?")
+                    .setCancelable(true)
+                    .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
+                            editor.clear();
+                            editor.commit();
+                            Intent intent = new Intent(MapsActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    })
+                    .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    });
+
+            AlertDialog alertDialog = alert.create();
+            alertDialog.show();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -340,72 +318,133 @@ public class MapsActivity extends AppCompatActivity
         @Override
         protected void onBeforeClusterItemRendered(T item,
                                                    MarkerOptions markerOptions) {
-            Ocorrencia markerItem = (Ocorrencia) item;
+
+            LatLng position = null;
+            if (latitude != 0)
+                position = new LatLng(latitude, longitude);
+
+            if (item instanceof Ocorrencia) {
+                Ocorrencia markerItem = (Ocorrencia) item;
 
 
-            if (ocorrencia != null)
-                if (ocorrencia.equals(markerItem))
-                    markerOptions.draggable(true);
-            markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_por_tratar_fire));
+                if (ocorrencia != null)
+                    if (ocorrencia.equals(markerItem))
+                        markerOptions.draggable(true);
+                if (position != null)
+                    if (markerItem.getPosition().equals(position)) {
+                        if (markerItem.getRadius()>0){
+                            CircleOptions circleOptions = new CircleOptions()
+                                    .center(ocorrencia.getPosition())
+                                    .radius(ocorrencia.radius);
+                            Circle circle = mMap.addCircle(circleOptions);
+                            circle.setFillColor(R.color.colorred);
+                            circle.setStrokeColor(R.color.colorGreen);
+                            circle.setTag(ocorrencia);
+                            circles.add(circle);
+                        }
 
-            markerOptions.infoWindowAnchor(0.5f, 0.2f);
-/**
-            if (markerItem.getStatus() == 1) {
-                if (markerItem.getType().equals("trash"))
-                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_tratada_garbage)):
-                else if (markerItem.getType().equals("fire"))
-                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_tratada_fire)):
-                else if (markerItem.getType().equals("bonfire"))
-                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_tratada_bonfire)):
-                else if (markerItem.getType().equals("dirty_woods"))
-                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_tratada_woods)):
+                    }
+
+
+                markerOptions.infoWindowAnchor(0.47f, 0.3f);
+                markerOptions.anchor(0.47f, 0.67f);
+                markerOptions.position(markerItem.getPosition());
+
+                if (markerItem.getStatus() == 1) {
+                    if (markerItem.getType().equals("trash"))
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_tratada_garbage));
+                    else if (markerItem.getType().equals("fire"))
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_tratada_fire));
+                    else if (markerItem.getType().equals("bonfire"))
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_tratada_bonfire));
+                    else if (markerItem.getType().equals("dirty_woods"))
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_tratada_woods));
+                } else if (markerItem.getStatus() == 2) {
+                    if (markerItem.getType().equals("trash"))
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_em_tratamento_garbage));
+                    else if (markerItem.getType().equals("fire"))
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_em_tratamento_fire));
+                    else if (markerItem.getType().equals("bonfire"))
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_em_tratamento_bonfire));
+                    else if (markerItem.getType().equals("dirty_woods"))
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_em_tratamento_woods));
+                } else if (markerItem.getStatus() == 3) {
+                    if (markerItem.getType().equals("trash"))
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_por_tratar_garbage));
+                    else if (markerItem.getType().equals("fire"))
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_por_tratar_fire));
+                    else if (markerItem.getType().equals("bonfire"))
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_por_tratar_bonfire));
+                    else if (markerItem.getType().equals("dirty_woods"))
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_por_tratar_woods));
+                }
+            } else {
+
+                Evento markerItem = (Evento) item;
+
+                if (position != null)
+                    if (markerItem.getPosition().equals(position)) {
+                        if (markerItem.getRadious()>0){
+                            CircleOptions circleOptions = new CircleOptions()
+                                    .center(ocorrencia.getPosition())
+                                    .radius(ocorrencia.radius);
+                            Circle circle = mMap.addCircle(circleOptions);
+                            circle.setFillColor(R.color.colorred);
+                            circle.setStrokeColor(R.color.colorGreen);
+                            circle.setTag(ocorrencia);
+                            circles.add(circle);
+                        }
+
+                    } else {
+                        List<LatLng> area = markerItem.getArea();
+                        PolygonOptions polygonOptions = new PolygonOptions();
+                        for (LatLng latLng : area)
+                            polygonOptions.add(latLng);
+                        Polygon polygon = mMap.addPolygon(polygonOptions);
+                        polygon.setFillColor(R.color.colorPrimary);
+                        polygon.setStrokeColor(R.color.colorGreen);
+                        polygons.add(polygon);
+
+                    }
+
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
+                markerOptions.position(markerItem.getPosition());
+
             }
-            else if (markerItem.getStatus() == 2){
-                if (markerItem.getType().equals("trash"))
-                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_em_tratamento_garbage)):
-                else if (markerItem.getType().equals("fire"))
-                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_em_tratamento_fire)):
-                else if (markerItem.getType().equals("bonfire"))
-                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_em_tratamento_bonfire)):
-                else if (markerItem.getType().equals("dirty_woods"))
-                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_em_tratamento_woods)):
-            }
-            else if (markerItem.getStatus() == 3){
-                if (markerItem.getType().equals("trash"))
-                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_por_tratar_garbage)):
-                else if (markerItem.getType().equals("fire"))
-                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_por_tratar_fire)):
-                else if (markerItem.getType().equals("bonfire"))
-                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_por_tratar_bonfire)):
-                else if (markerItem.getType().equals("dirty_woods"))
-                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_por_tratar_woods)):
-            }
-
-/**
-            if (markerItem.getStatus() == 1)
-                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-            else if (markerItem.getStatus() == 2)
-                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
-            else if (markerItem.getStatus() == 3)
-                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-*/
 
         }
     }
 
-    private void setUpClusterer() {
+    private void setUpClustererOcorrencia() {
         // Position the map.
         // Initialize the manager with the context and the map.
         // (Activity extends context, so we can pass 'this' in the constructor.)
-        mClusterManager = new ClusterManager<Ocorrencia>(this, mMap);
-        mClusterManager.setRenderer(new CustomMapClusterRenderer<Ocorrencia>(this, mMap, mClusterManager));
+        mClusterManagerOcorrencia = new ClusterManager<Ocorrencia>(this, mMap);
+        mClusterManagerOcorrencia.setRenderer(new CustomMapClusterRenderer<Ocorrencia>(this, mMap, mClusterManagerOcorrencia));
 
         // Point the map's listeners at the listeners implemented by the cluster
         // manager.
-        mMap.setOnMarkerClickListener(mClusterManager);
+        //mMap.setOnMarkerClickListener(mClusterManagerOcorrencia);
+
+        mClusterManagerOcorrencia.setOnClusterItemClickListener(new ClusterManager.OnClusterItemClickListener<Ocorrencia>() {
+            @Override
+            public boolean onClusterItemClick(Ocorrencia ocorrencia) {
+                if (ocorrencia.getRadius() > 0) {
+                    CircleOptions circleOptions = new CircleOptions()
+                            .center(ocorrencia.getPosition())
+                            .radius(ocorrencia.radius);
+                    Circle circle = mMap.addCircle(circleOptions);
+                    circle.setFillColor(R.color.colorred);
+                    circle.setStrokeColor(R.color.colorGreen);
+                    circle.setTag(ocorrencia);
+                    circles.add(circle);
+                }
+                return false;
+            }
+        });
 
 
-        mClusterManager.setOnClusterItemInfoWindowClickListener(new ClusterManager.OnClusterItemInfoWindowClickListener<Ocorrencia>() {
+        mClusterManagerOcorrencia.setOnClusterItemInfoWindowClickListener(new ClusterManager.OnClusterItemInfoWindowClickListener<Ocorrencia>() {
             @Override
             public void onClusterItemInfoWindowClick(Ocorrencia ocorrencia) {
                 Intent intent = new Intent(MapsActivity.this, OcorrenciaActivity.class);
@@ -415,19 +454,84 @@ public class MapsActivity extends AppCompatActivity
             }
         });
 
-        mMap.setOnCameraIdleListener(mClusterManager);
+        //mMap.setOnCameraIdleListener(mClusterManagerOcorrencia);
 
-        mMap.setOnInfoWindowClickListener(mClusterManager);
+        //mMap.setOnInfoWindowClickListener(mClusterManagerOcorrencia);
         // Add cluster items (markers) to the cluster manager.
-        addItems();
+        addItemsOcorrencia();
     }
 
-    private void addItems() {
+    private void setUpClustererEvento() {
+        // Position the map.
+        // Initialize the manager with the context and the map.
+        // (Activity extends context, so we can pass 'this' in the constructor.)
+        mClusterManagerEvento = new ClusterManager<Evento>(this, mMap);
+        mClusterManagerEvento.setRenderer(new CustomMapClusterRenderer<Evento>(this, mMap, mClusterManagerEvento));
+
+        // Point the map's listeners at the listeners implemented by the cluster
+        // manager.
+        //mMap.setOnMarkerClickListener(mClusterManagerOcorrencia);
+
+        mClusterManagerEvento.setOnClusterItemClickListener(new ClusterManager.OnClusterItemClickListener<Evento>() {
+            @Override
+            public boolean onClusterItemClick(Evento evento) {
+                if (evento.getRadious() > 0) {
+                    CircleOptions circleOptions = new CircleOptions()
+                            .center(evento.getPosition())
+                            .radius(evento.radious);
+                    Circle circle = mMap.addCircle(circleOptions);
+                    circle.setFillColor(R.color.colorred);
+                    circle.setStrokeColor(R.color.colorGreen);
+                    circle.setTag(evento);
+                    circles.add(circle);
+                } else {
+
+                    List<LatLng> area = evento.getArea();
+                    PolygonOptions polygonOptions = new PolygonOptions();
+                    for (LatLng latLng : area)
+                        polygonOptions.add(latLng);
+                    Polygon polygon = mMap.addPolygon(polygonOptions);
+                    polygon.setFillColor(R.color.colorPrimary);
+                    polygon.setStrokeColor(R.color.colorGreen);
+                    polygons.add(polygon);
+
+                }
+                return false;
+            }
+        });
 
 
-        // Add ten cluster items in close proximity, for purposes of this example.
+        mClusterManagerEvento.setOnClusterItemInfoWindowClickListener(new ClusterManager.OnClusterItemInfoWindowClickListener<Evento>() {
+            @Override
+            public void onClusterItemInfoWindowClick(Evento evento) {
+                Intent intent = new Intent(MapsActivity.this, EventoActivity.class);
+                intent.putExtra("evento", (Serializable) evento);
+                startActivity(intent);
+
+            }
+        });
+
+        //mMap.setOnCameraIdleListener(mClusterManagerOcorrencia);
+
+        //mMap.setOnInfoWindowClickListener(mClusterManagerOcorrencia);
+        // Add cluster items (markers) to the cluster manager.
+        addItemsEvento();
+    }
+
+    private void addItemsEvento() {
+
+        for (Evento evento : FeedEventosActivity.eventosList) {
+            mClusterManagerEvento.addItem(evento);
+
+        }
+    }
+
+
+    private void addItemsOcorrencia() {
+
+
         for (Ocorrencia ocorrencia : FeedActivity.ocorrencias) {
-            mClusterManager.addItem(ocorrencia);
+            mClusterManagerOcorrencia.addItem(ocorrencia);
 
         }
     }
@@ -458,7 +562,7 @@ public class MapsActivity extends AppCompatActivity
                             public boolean onMarkerClick(Marker marker) {
                                 if (!marker.equals(newMarker)) {
                                     newMarker.remove();
-                                    mMap.setOnInfoWindowClickListener(mClusterManager);
+                                    mMap.setOnInfoWindowClickListener(mClusterManagerOcorrencia);
                                 }
                                 return false;
                             }
@@ -475,7 +579,7 @@ public class MapsActivity extends AppCompatActivity
                                     newMarker.remove();
                                 } else {
                                     newMarker.remove();
-                                    mMap.setOnInfoWindowClickListener(mClusterManager);
+                                    mMap.setOnInfoWindowClickListener(mClusterManagerOcorrencia);
                                 }
                                 //finish();
                             }
@@ -506,34 +610,6 @@ public class MapsActivity extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap) {
 
         if (mMap == null) {
-            mMap = googleMap;
-
-            mMap.getUiSettings().setMapToolbarEnabled(false);
-
-            locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-            locationListener = new LocationListener() {
-                @Override
-                public void onLocationChanged(Location location) {
-
-
-                }
-
-                @Override
-                public void onStatusChanged(String s, int i, Bundle bundle) {
-
-                }
-
-                @Override
-                public void onProviderEnabled(String s) {
-
-                }
-
-                @Override
-                public void onProviderDisabled(String s) {
-
-                }
-            };
-
 
             if (Build.VERSION.SDK_INT < 23) {
                 if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
@@ -549,11 +625,41 @@ public class MapsActivity extends AppCompatActivity
 
                 if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
+                    if (mMap == null)
+                        mMap = googleMap;
+
+                    mMap.getUiSettings().setMapToolbarEnabled(false);
+                    locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+                    locationListener = new LocationListener() {
+                        @Override
+                        public void onLocationChanged(Location location) {
+
+
+                        }
+
+                        @Override
+                        public void onStatusChanged(String s, int i, Bundle bundle) {
+
+                        }
+
+                        @Override
+                        public void onProviderEnabled(String s) {
+
+                        }
+
+                        @Override
+                        public void onProviderDisabled(String s) {
+
+                        }
+                    };
+
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10, 30, locationListener);
 
                     lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
                     centerMapOnLocation(lastKnownLocation);
+
+                    startMap();
 
                 } else {
 
@@ -563,6 +669,64 @@ public class MapsActivity extends AppCompatActivity
 
 
             }
+
+
+            //startMap();
+
+
+        }
+    }
+
+
+    public void startMap() {
+        //lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+        setUpClustererOcorrencia();
+        setUpClustererEvento();
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                mClusterManagerEvento.onMarkerClick(marker);
+                mClusterManagerOcorrencia.onMarkerClick(marker);
+                return false;
+            }
+        });
+
+        mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
+            @Override
+            public void onCameraIdle() {
+                mClusterManagerEvento.onCameraIdle();
+                mClusterManagerOcorrencia.onCameraIdle();
+            }
+        });
+
+        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                mClusterManagerEvento.onInfoWindowClick(marker);
+                mClusterManagerOcorrencia.onInfoWindowClick(marker);
+            }
+        });
+
+        final LatLng currrPos;
+
+
+        if (ocorrencia != null) {
+            Toast.makeText(this, "OCORRENCIA", Toast.LENGTH_SHORT).show();
+
+            fab.setImageResource(R.drawable.ic_check_white_24dp);
+            //fab.setVisibility(View.GONE);
+            currrPos = new LatLng(ocorrencia.getLatitude(), ocorrencia.getLongitude());
+            Toast.makeText(this, "Arraste o marcador até à posição pretendida", Toast.LENGTH_SHORT).show();
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currrPos, 15));
+
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    atualizarOcorrenciaVolley(ocorrencia);
+                }
+            });
 
             mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
                 @Override
@@ -584,79 +748,57 @@ public class MapsActivity extends AppCompatActivity
                 }
             });
 
+        } /**else if (evento != null) {
 
-            startMap();
-
-
-        }
-    }
-
-
-    public void startMap() {
-        //lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-        setUpClusterer();
+         //mClusterManager.cluster();
+         //fab.setVisibility(View.GONE);
+         double lat = evento.getCenterPointLatitude();
+         double lon = evento.getCenterPointLongitude();
+         double radius = evento.getRadious();
+         //List<LatLng> list = (List<LatLng>) getIntent().getSerializableExtra("evento_area");
 
 
-        final LatLng currrPos;
+         if (radius > 0) {
+         currrPos = new LatLng(lat, lon);
 
-        if (ocorrencia != null) {
-            Toast.makeText(this, "OCORRENCIA", Toast.LENGTH_SHORT).show();
+         CircleOptions circleOptions = new CircleOptions()
+         .center(currrPos)
+         .radius(radius);
+         Circle circle = mMap.addCircle(circleOptions);
+         circle.setFillColor(R.color.colorPrimary);
+         circle.setStrokeColor(R.color.colorGreen);
+         circle.setTag(evento);
 
-            fab.setImageResource(R.drawable.ic_check_white_24dp);
-            //fab.setVisibility(View.GONE);
-            currrPos = new LatLng(ocorrencia.getLatitude(), ocorrencia.getLongitude());
-            Toast.makeText(this, "Arraste o marcador até à posição pretendida", Toast.LENGTH_SHORT).show();
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currrPos, 15));
+         } else {
+         List<LatLng> area = new ArrayList<>(getIntent().<LatLng>getParcelableArrayListExtra("list"));
+         PolygonOptions polygonOptions = new PolygonOptions();
+         for (LatLng latLng : area)
+         polygonOptions.add(latLng);
+         currrPos = area.get(0);
+         Polygon polygon = mMap.addPolygon(polygonOptions);
+         polygon.setFillColor(R.color.colorPrimary);
+         polygon.setStrokeColor(R.color.colorGreen);
+         polygon.setTag(evento);
+         }
 
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    atualizarOcorrenciaVolley(ocorrencia);
-                }
-            });
+         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currrPos, 15));
 
-
-        } else if (evento != null) {
-
-            //mClusterManager.cluster();
-            //fab.setVisibility(View.GONE);
-            double lat = evento.getCenterPointLatitude();
-            double lon = evento.getCenterPointLongitude();
-            double radius = evento.getRadious();
-            //List<LatLng> list = (List<LatLng>) getIntent().getSerializableExtra("evento_area");
+         }*/
+        else {
 
 
-            if (radius>0) {
-                currrPos = new LatLng(lat, lon);
+            if (latitude != 0) {
 
-                CircleOptions circleOptions = new CircleOptions()
-                        .center(currrPos)
-                        .radius(radius);
-                Circle circle = mMap.addCircle(circleOptions);
-                circle.setFillColor(R.color.colorPrimary);
-                circle.setStrokeColor(R.color.colorGreen);
-                circle.setTag(evento);
+                longitude = getIntent().getDoubleExtra("longitude", 0);
+                currrPos = new LatLng(latitude, longitude);
+
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currrPos, 15));
 
             } else {
-                List<LatLng> area = new ArrayList<>(getIntent().<LatLng>getParcelableArrayListExtra("list"));
-                PolygonOptions polygonOptions = new PolygonOptions();
-                for (LatLng latLng: area)
-                    polygonOptions.add(latLng);
-                currrPos = area.get(0);
-                Polygon polygon = mMap.addPolygon(polygonOptions);
-                polygon.setFillColor(R.color.colorPrimary);
-                polygon.setStrokeColor(R.color.colorGreen);
-                polygon.setTag(evento);
+                currrPos = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currrPos, 10));
             }
-
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currrPos, 15));
-
-        } else {
-            currrPos = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currrPos, 10));
-
             bottomLeftLatitude = mMap.getProjection().getVisibleRegion().nearLeft.latitude;
             bottomLeftLongitude = mMap.getProjection().getVisibleRegion().nearLeft.longitude;
             topRightLatitude = mMap.getProjection().getVisibleRegion().farRight.latitude;
@@ -674,11 +816,9 @@ public class MapsActivity extends AppCompatActivity
                     topDireita = mMap.getProjection().getVisibleRegion().farRight;
 
 
-
-
                     //Toast.makeText(MapsActivity.this, "Lat bot " + bottomEsquerda.latitude +
-                      //    "\nLon bot" + bottomEsquerda.longitude + "\nLat top " + topDireita.latitude +
-                        //"\nLon top " + topDireita.longitude, Toast.LENGTH_LONG).show();
+                    //    "\nLon bot" + bottomEsquerda.longitude + "\nLat top " + topDireita.latitude +
+                    //"\nLon top " + topDireita.longitude, Toast.LENGTH_LONG).show();
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -689,16 +829,25 @@ public class MapsActivity extends AppCompatActivity
                         }
                     }).start();
 
-                    mClusterManager.cluster();
+                    mClusterManagerOcorrencia.cluster();
 
 
+                }
+            });
+
+            mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                @Override
+                public void onMapClick(LatLng latLng) {
+                    for (Circle circle : circles)
+                        circle.setVisible(false);
+                    for (Polygon polygon : polygons)
+                        polygon.setVisible(false);
                 }
             });
 
 
         }
     }
-
 
 
     private boolean pedirMarkers(LatLng botL, LatLng topR) {
@@ -740,12 +889,12 @@ public class MapsActivity extends AppCompatActivity
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
-                            mClusterManager.removeItem(ocorrencia);
+                            mClusterManagerOcorrencia.removeItem(ocorrencia);
                             int index = FeedActivity.ocorrencias.indexOf(ocorrencia);
                             FeedActivity.ocorrencias.get(index).setLatitude(ocorrencia.getLatitude());
                             FeedActivity.ocorrencias.get(index).setLongitude(ocorrencia.getLongitude());
                             FeedActivity.adapter.notifyDataSetChanged();
-                            mClusterManager.addItem(FeedActivity.ocorrencias.get(index));
+                            mClusterManagerOcorrencia.addItem(FeedActivity.ocorrencias.get(index));
                             onBackPressed();
 
 
@@ -838,10 +987,12 @@ public class MapsActivity extends AppCompatActivity
                                         String type = null;
                                         boolean hasLiked = false;
                                         String image_uri = null;
+                                        String user_image = null;
                                         List<String> likers = new ArrayList<>();
                                         long creationDate = 0;
                                         String district = null;
                                         double risk = 0;
+                                        double radius = 0;
                                         long likes = 0;
                                         long status = 0;
                                         double latitude = 0;
@@ -872,6 +1023,8 @@ public class MapsActivity extends AppCompatActivity
                                                 image_uri = image.getString("value");
                                         }
 
+                                        if (ocorrencia.has("radius"))
+                                            radius = ocorrencia.getDouble("radius");
                                         if (ocorrencia.has("hasLike"))
                                             hasLiked = ocorrencia.getBoolean("hasLike");
                                         if (ocorrencia.has("creationDate"))
@@ -916,11 +1069,18 @@ public class MapsActivity extends AppCompatActivity
                                                 likers.add(lik.getString(a));
                                         }
 
+                                        JSONObject imageuser = null;
+                                        if (ocorrencia.has("user_image")) {
+                                            imageuser = ocorrencia.getJSONObject("user_image");
+                                            if (imageuser.has("value"))
+                                                user_image = image.getString("value");
+                                        }
+
 
                                         Ocorrencia ocorrencia1 = new Ocorrencia(titulo, risk, "23:12", id,
                                                 descricao, owner, likers, status, latitude, longitude, likes, type, image_uri,
-                                                comentarios, creationDate, district, hasLiked);
-                                        if (ocorrencia1.getImage_uri() != null)
+                                                comentarios, creationDate, district, hasLiked, user_image, radius);
+                                        if (ocorrencia1.getImage_uri() != null && !FeedActivity.ocorrencias.contains(ocorrencia1))
                                             receberImagemVolley(ocorrencia1);
                                         else {
                                             String tipo = ocorrencia1.getType();
@@ -935,10 +1095,16 @@ public class MapsActivity extends AppCompatActivity
                                             }
                                         }
 
+                                        if (ocorrencia1.getUser_image() != null && !FeedActivity.ocorrencias.contains(ocorrencia1))
+                                            receberImagemUserVolley(ocorrencia1);
+                                        else {
+                                            ocorrencia1.setImageIDUser(R.drawable.ic_person_black_24dp);
+                                        }
+
 
                                         if (!FeedActivity.ocorrencias.contains(ocorrencia1)) {
                                             FeedActivity.ocorrencias.add(ocorrencia1);
-                                            mClusterManager.addItem(ocorrencia1);
+                                            mClusterManagerOcorrencia.addItem(ocorrencia1);
                                         }
                                         Log.d("ID", id);
                                         Log.d("titulo", titulo);
@@ -1011,5 +1177,50 @@ public class MapsActivity extends AppCompatActivity
         AppController.getInstance().addToRequestQueue(stringRequest, tag_json_obj);
 
     }
+
+    private void receberImagemUserVolley(final Ocorrencia item) {
+        String tag_json_obj = "octect_request";
+        String url = item.getUser_image();
+
+
+        final String token = getSharedPreferences("Prefs", MODE_PRIVATE).getString("tokenID", "erro");
+        ByteRequest stringRequest = new ByteRequest(Request.Method.GET, url, new Response.Listener<byte[]>() {
+
+            @Override
+            public void onResponse(byte[] response) {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(response, 0, response.length);
+                item.setBitmapUser(response);
+                FeedActivity.adapter.notifyDataSetChanged();
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("erroIMAGEMocorrencia", "Error: " + error.getMessage());
+                String tipo = item.getType();
+                if (tipo.equals("bonfire")) {
+                    item.setImageID(R.mipmap.ic_bonfire_foreground);
+                } else if (tipo.equals("fire")) {
+                    item.setImageID(R.mipmap.ic_fire_foreground);
+                } else if (tipo.equals("trash")) {
+                    item.setImageID(R.mipmap.ic_garbage_foreground);
+                } else {
+                    item.setImageID(R.mipmap.ic_grass_foreground);
+                }
+                FeedActivity.adapter.notifyDataSetChanged();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+
+        };
+        AppController.getInstance().addToRequestQueue(stringRequest, tag_json_obj);
+
+    }
+
 
 }

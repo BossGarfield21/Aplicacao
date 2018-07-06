@@ -204,6 +204,7 @@ public class ComentariosActivity extends AppCompatActivity implements Serializab
             grupo.put("message", com.getMessage());
             grupo.put("image", com.getImage());
             grupo.put("creation_date", com.getCreation_date());
+            grupo.put("image", sharedPreferences.getString("image_user", null));
             //grupo.put("id", com.getId());
 
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, url, grupo,
@@ -264,6 +265,7 @@ public class ComentariosActivity extends AppCompatActivity implements Serializab
             grupo.put("image", com.getImage());
             grupo.put("creation_date", com.getCreation_date());
             grupo.put("id", com.getId());
+            grupo.put("image", sharedPreferences.getString("image_user", null));
 
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, url, grupo,
                     new Response.Listener<JSONObject>() {

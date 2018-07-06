@@ -29,7 +29,7 @@
                 android:layout_height="80dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                app:srcCompat="@mipmap/ic_novaleaf_foreground" />
+                app:srcCompat="@mipmap/ic_novaleaf_foreground"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -80,14 +80,21 @@
             android:layout_marginStart="@dimen/activity_horizontal_margin"
             android:layout_marginTop="8dp"
             android:fontFamily="@font/roboto_regular"
-            android:minHeight="130dp"
-            android:text="Hoje vai haver limpeza no matagal da Joana"
+            android:text="Ya bina"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="@color/textcolor"
             android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/headerfragment_post"/>
+
+        <ImageView
+            android:id="@+id/imagePost"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textPostMessage"/>
 
         <View
             android:id="@+id/view1"
@@ -97,7 +104,7 @@
             android:background="#849d9d9d"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textPostMessage" />
+            app:layout_constraintTop_toBottomOf="@+id/imagePost"/>
 
         <LinearLayout
             android:id="@+id/linearInfo"

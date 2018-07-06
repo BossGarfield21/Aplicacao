@@ -31,6 +31,7 @@ import pt.novaleaf.www.maisverde.OcorrenciaFragment.OnListFragmentInteractionLis
 import utils.ByteRequest;
 
 import java.io.Serializable;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -153,6 +154,13 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
             holder.time.setText(data);
         }
 
+        if (mValues.get(position).getBitmapUser()!=null){
+            holder.mImageUser.setImageBitmap(BitmapFactory.decodeByteArray(mValues.get(position).getBitmapUser(),
+                    0, mValues.get(position).getBitmapUser().length));
+        } else {
+            holder.mImageUser.setImageResource(R.drawable.ic_person_black_24dp);
+        }
+
         if (mValues.get(position).getImage_uri() != null && mValues.get(position).getBitmap() != null) {
             holder.mImageReport.setAdjustViewBounds(true);
 
@@ -172,22 +180,30 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
 
         }
 
-        holder.time.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mListener.onEditInteraction(mValues.get(position), view);
-            }
-        });
+        if (mValues.get(position).getOwner().equals(mContext.getSharedPreferences("Prefs", Context.MODE_PRIVATE).getString("username", "erro"))) {
+            holder.mImageEdit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mListener.onEditInteraction(mValues.get(position), view);
+                }
+            });
+        }
 
-//        holder.mRisco.setText(String.format("Risco\n%s", mValues.get(position).getRisk()));
+        holder.mRisco.setText(MessageFormat.format(" {0}", (int) mValues.get(position).getRisk()));
+        if (mValues.get(position).getRisk() < 33)
+            holder.mRisco.setTextColor(ContextCompat.getColor(mContext, R.color.loginColor));
+        else if (mValues.get(position).getRisk() < 66)
+            holder.mRisco.setTextColor(ContextCompat.getColor(mContext, R.color.coloryellow));
+        else
+            holder.mRisco.setTextColor(ContextCompat.getColor(mContext, R.color.colorred));
+
 
         int numComentarios = mValues.get(position).getComments().size();
 
-        if (numComentarios!=1)
+        if (numComentarios != 1)
             holder.mTextComentarios.setText(String.format("%d comentários", numComentarios));
         else
             holder.mTextComentarios.setText(String.format("%d comentário", numComentarios));
-
 
 
     }
@@ -199,6 +215,7 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
 
     public class ViewHolder extends RecyclerView.ViewHolder implements Serializable {
         public ImageView mImageReport;
+        public ImageView mImageUser;
         public TextView titulo;
         public TextView username;
         public TextView time;
@@ -209,20 +226,23 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
         public TextView mTextComentarios;
         public ImageView mImageGosto;
         public ImageView mImageComentario;
+        public ImageView mImageEdit;
 
         public ViewHolder(View v) {
             super(v);
             mImageReport = (ImageView) v.findViewById(R.id.imageReport);
+            mImageUser = (ImageView) v.findViewById(R.id.userImage);
             titulo = (TextView) v.findViewById(R.id.tituloReport);
             username = (TextView) v.findViewById(R.id.userName);
             time = (TextView) v.findViewById(R.id.time);
-            //mRisco = (TextView) v.findViewById(R.id.riscoCalculado);
+            mRisco = (TextView) v.findViewById(R.id.riscofeed);
             mTextComentarios = (TextView) v.findViewById(R.id.comentarios);
             mRelative = (ConstraintLayout) v.findViewById(R.id.relative);
             mLinearInfo = (LinearLayout) v.findViewById(R.id.linearInfo);
             mTextNumLikes = (TextView) v.findViewById(R.id.likes);
             mImageGosto = (ImageView) v.findViewById(R.id.imageGosto);
             mImageComentario = (ImageView) v.findViewById(R.id.imageComentar);
+            mImageEdit = (ImageView) v.findViewById(R.id.imageEdit);
 
 
         }

@@ -88,8 +88,23 @@ public class GruposActivity extends AppCompatActivity implements Serializable {
 
 
         if (getIntent().getBooleanExtra("isMember", false)) {
-            mButtonPedido.setVisibility(View.GONE);
+            mButtonPedido.setText("Já é membro");
+            mButtonPedido.setClickable(false);
 
+        } else {
+            if (grupo != null)
+                if (grupo.isEnviouPedido())
+                    mButtonPedido.setText("Cancelar pedido");
+
+            mButtonPedido.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (mButtonPedido.getText().equals("Enviar pedido"))
+                        joinGroupVolley();
+                    else
+                        cancelJoinGroupVolley();
+                }
+            });
         }
 
 
@@ -108,19 +123,7 @@ public class GruposActivity extends AppCompatActivity implements Serializable {
             else
                 mTextNumPessoas.setText(String.format("%d pessoa", grupo.getNumPessoas()));
 
-        if (grupo != null)
-            if (grupo.isEnviouPedido())
-                mButtonPedido.setText("Cancelar pedido");
 
-        mButtonPedido.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mButtonPedido.getText().equals("Enviar pedido"))
-                    joinGroupVolley();
-                else
-                    cancelJoinGroupVolley();
-            }
-        });
 /**
  if (grupo.getBitmap() != null) {
  mImage.setImageBitmap(BitmapFactory.decodeByteArray(grupo.getBitmap(), 0, grupo.getBitmap().length));
@@ -131,9 +134,8 @@ public class GruposActivity extends AppCompatActivity implements Serializable {
 
     private void cancelJoinGroupVolley() {
 
-        String groupID = "id";
         String tag_json_obj = "json_obj_req";
-        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/cancel_request?group_id=" + groupID;
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/cancel_request?group_id=" + grupo.getGroupId();
 
         SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
         final String token = sharedPreferences.getString("tokenID", "erro");
@@ -223,9 +225,7 @@ public class GruposActivity extends AppCompatActivity implements Serializable {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        if (id == R.id.action_help) {
-            return true;
-        } else if (id == R.id.action_logout) {
+        if (id == R.id.action_logout) {
             //TODO: sair da app
             final AlertDialog.Builder alert = new AlertDialog.Builder(GruposActivity.this);
             alert.setTitle("Terminar sessão");

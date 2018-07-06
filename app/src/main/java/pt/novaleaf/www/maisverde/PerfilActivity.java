@@ -290,9 +290,7 @@ public class PerfilActivity extends AppCompatActivity
             intent.putExtra("telemovel", arrayList.get(8).getDescricao());
             startActivity(intent);
 
-        } else if (id == R.id.action_help) {
-            return true;
-        } else if (id == R.id.action_logout) {
+        }  else if (id == R.id.action_logout) {
 
             final AlertDialog.Builder alert = new AlertDialog.Builder(PerfilActivity.this);
             alert.setTitle("Terminar sessão");
@@ -321,9 +319,6 @@ public class PerfilActivity extends AppCompatActivity
             alertDialog.show();
 
 
-        } else if (id == R.id.action_acerca) {
-            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://anovaleaf.ddns.net"));
-            startActivity(i);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -359,6 +354,38 @@ public class PerfilActivity extends AppCompatActivity
             startActivity(i);
             finish();
 
+        }else if (id == R.id.nav_acerca){
+            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://anovaleaf.ddns.net"));
+            startActivity(i);
+        } else if (id == R.id.nav_help){
+            return true;
+        } else if (id == R.id.nav_end){
+
+            final AlertDialog.Builder alert = new AlertDialog.Builder(PerfilActivity.this);
+            alert.setTitle("Terminar sessão");
+            alert
+                    .setMessage("Deseja terminar sessão?")
+                    .setCancelable(true)
+                    .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
+                            editor.clear();
+                            editor.commit();
+                            Intent intent = new Intent(PerfilActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    })
+                    .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    });
+
+            AlertDialog alertDialog = alert.create();
+            alertDialog.show();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

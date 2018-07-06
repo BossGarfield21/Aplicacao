@@ -7,19 +7,4 @@
         android:orderInCategory="100"
         android:title="Alterar dados"
         app:showAsAction="ifRoom"/>
-    <item
-        android:id="@+id/action_help"
-        android:orderInCategory="100"
-        android:title="Ajuda"
-        app:showAsAction="never"/>
-    <item
-        android:id="@+id/action_acerca"
-        android:orderInCategory="100"
-        android:title="Acerca de"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_logout"
-        android:orderInCategory="100"
-        android:title="Sair"
-        app:showAsAction="never" />
 </menu>
