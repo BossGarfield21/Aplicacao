@@ -26,7 +26,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
 
@@ -35,45 +35,44 @@
             android:layout_width="match_parent"
             android:layout_height="160dp"
             android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            />
+            android:scaleType="centerCrop" />
 
         <View
             android:id="@+id/atvGroups_spliter1"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:background="#849d9d9d"/>
+            android:background="#849d9d9d" />
 
 
-            <LinearLayout
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical|center_horizontal"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/buttonPedido"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/activity_horizontal_margin"
-                android:layout_marginStart="@dimen/activity_horizontal_margin"
-                android:orientation="horizontal">
+                android:layout_height="35dp"
+                android:layout_weight="2"
+                android:background="@drawable/buttonshape"
+                android:gravity="center_vertical|center_horizontal"
+                android:text="Enviar pedido"
+                android:textColor="#FFFFFF" />
 
-                <TextView
-                    android:id="@+id/textGrupoPessoas"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:layout_weight="1"
-                    android:text="123 pessoas"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-                    android:textColor="@color/textcolor"/>
+        </LinearLayout>
 
-                <Button
-                    android:id="@+id/buttonPedido"
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_weight="2"
-                    android:background="@drawable/buttonshape"
-                    android:text="Enviar pedido"
-                    android:textColor="#FFFFFF"/>
-
-            </LinearLayout>
+        <View
+            android:id="@+id/atvGroups_spliter2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:background="#849d9d9d" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -81,32 +80,104 @@
             android:layout_marginEnd="@dimen/activity_horizontal_margin"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
             android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/textGrupoPontos"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="32 pontos"
-                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-                android:textColor="@color/textcolor"/>
 
-            <TextView
-                android:id="@+id/textGrupoDistrito"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="end"
-                android:text="Porto"
-                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-                android:textColor="@color/textcolor"/>
+                android:layout_height="match_parent"
+                android:layout_marginBottom="8dp"
+                android:orientation="horizontal">
+
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
+                    android:src="@drawable/ic_if_user_group_285648" />
+
+
+                <TextView
+
+                    android:id="@+id/textGrupoPessoas"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/roboto_light"
+                    android:text="32 Membros"
+                    android:textAlignment="viewStart"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                    android:textColor="@color/textcolor"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="8dp"
+                android:orientation="horizontal">
+
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
+                    android:src="@drawable/ic_if_cup" />
+
+
+                <TextView
+
+                    android:id="@+id/textGrupoPontos"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/roboto_light"
+                    android:text="32 pontos"
+                    android:textAlignment="viewStart"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                    android:textColor="@color/textcolor"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_if_map_marker_299087"
+                    android:layout_weight="3"
+                    />
+
+
+                <TextView
+
+                    android:id="@+id/textGrupoDistrict"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/roboto_light"
+                    android:text="Setubal"
+                    android:textAlignment="viewStart"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                    android:textColor="@color/textcolor"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
 
 
         </LinearLayout>
 
 
-        </LinearLayout>
+    </LinearLayout>
 
 
 </LinearLayout>
