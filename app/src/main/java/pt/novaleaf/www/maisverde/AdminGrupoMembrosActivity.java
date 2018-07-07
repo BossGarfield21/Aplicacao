@@ -20,6 +20,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -145,11 +146,11 @@ public class AdminGrupoMembrosActivity extends AppCompatActivity implements Seri
         final String token = sharedPreferences.getString("tokenID", "erro");
 
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.DELETE, url, eventos,
-                new Response.Listener<JSONObject>() {
+        StringRequest jsonObjectRequest = new StringRequest(Request.Method.DELETE, url,
+                new Response.Listener<String >() {
 
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(String response) {
 
 
                     }
@@ -184,11 +185,11 @@ public class AdminGrupoMembrosActivity extends AppCompatActivity implements Seri
         final String token = sharedPreferences.getString("tokenID", "erro");
 
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, url, eventos,
-                new Response.Listener<JSONObject>() {
+        StringRequest jsonObjectRequest = new StringRequest(Request.Method.PUT, url,
+                new Response.Listener<String >() {
 
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(String  response) {
 
 
                     }
@@ -224,11 +225,11 @@ public class AdminGrupoMembrosActivity extends AppCompatActivity implements Seri
         final String token = sharedPreferences.getString("tokenID", "erro");
 
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.DELETE, url, eventos,
-                new Response.Listener<JSONObject>() {
+        StringRequest jsonObjectRequest = new StringRequest(Request.Method.DELETE, url,
+                new Response.Listener<String>() {
 
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(String  response) {
 
 
                     }

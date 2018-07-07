@@ -20,6 +20,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -78,14 +79,14 @@ public class AdminGrupoConvitesActivity extends AppCompatActivity implements Ser
     }
 
 
-    private void popupConvites(View view, String s) {
+    private void popupConvites(View view, final String s) {
         PopupMenu popupMenu = new PopupMenu(AdminGrupoConvitesActivity.this, view);
 
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.cancelar_convite) {
-
+                    cancelConviteVolley(s);
                 }
                 return false;
             }
@@ -99,7 +100,7 @@ public class AdminGrupoConvitesActivity extends AppCompatActivity implements Ser
     private void volleyGetConvites() {
 
         String tag_json_obj = "json_request";
-        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/gadmin/group_requests?group_id="
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/gadmin/pending_requests?group_id="
                 + grupo.getGroupId() + "&cursor=startquery";
 
         Log.d("ché bate só", url);
@@ -115,11 +116,11 @@ public class AdminGrupoConvitesActivity extends AppCompatActivity implements Ser
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            if (!response.isNull("list")) {
+                            if (!response.isNull("list") && response.getJSONArray("list").length()>0) {
                                 JSONArray list = response.getJSONArray("list");
                                 for (int i = 0; i < list.length(); i++) {
 
-                                    String convite = list.getString(i);
+                                    String convite = list.getJSONObject(i).getString("username");
                                     convites.add(convite);
                                     adapter.notifyDataSetChanged();
 
@@ -159,5 +160,43 @@ public class AdminGrupoConvitesActivity extends AppCompatActivity implements Ser
 
                 addToRequestQueue(jsonObjectRequest, tag_json_obj);
     }
+
+    private void cancelConviteVolley(final String username) {
+
+        String tag_json_obj = "json_obj_req";
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/gadmin/cancelgrouprequest?group_id=" + grupo.getGroupId()
+                + "&username=" + username;
+
+        SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+        final String token = sharedPreferences.getString("tokenID", "erro");
+
+
+        StringRequest jsonObjectRequest = new StringRequest(Request.Method.PUT, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        convites.remove(username);
+                        adapter.notifyDataSetChanged();
+
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                VolleyLog.d("erroJoingrupo", "Error: " + error.getMessage());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+
+        };
+        AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
+    }
+
 
 }

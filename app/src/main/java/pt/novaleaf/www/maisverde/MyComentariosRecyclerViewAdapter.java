@@ -219,7 +219,12 @@ public class MyComentariosRecyclerViewAdapter extends RecyclerView.Adapter {
                     public void onResponse(String response) {
                         comentarios.remove(com);
                         notifyDataSetChanged();
-                        OcorrenciaFragment.myOcorrenciaRecyclerViewAdapter.notifyDataSetChanged();
+                        Ocorrencia ocorrencia = new Ocorrencia(null, 0, null, com.getMarkerid(),
+                                null, null, null,  0L, 0, 0, 0, null, null,
+                                null, 0, null, false, null, 0);
+                        FeedActivity.ocorrencias.get(FeedActivity.ocorrencias.indexOf(ocorrencia)).removeComentario(com);
+
+                        FeedActivity.adapter.notifyDataSetChanged();
                     }
                 }, new Response.ErrorListener() {
 
@@ -258,7 +263,11 @@ public class MyComentariosRecyclerViewAdapter extends RecyclerView.Adapter {
                     public void onResponse(String response) {
                         comentarios.remove(com);
                         notifyDataSetChanged();
-                        OcorrenciaFragment.myOcorrenciaRecyclerViewAdapter.notifyDataSetChanged();
+                        Post post = new Post(com.getPostId(),null,null,null,null,null,
+                                0L,false,null,null);
+
+                        GrupoFeedActivity.posts.get(GrupoFeedActivity.posts.indexOf(post)).removeComent(com);
+                        GrupoFeedActivity.adapter.notifyDataSetChanged();
                     }
                 }, new Response.ErrorListener() {
 

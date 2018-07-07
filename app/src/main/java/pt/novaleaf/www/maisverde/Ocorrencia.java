@@ -83,6 +83,10 @@ public class Ocorrencia implements Serializable, ClusterItem{
 
     }
 
+    public void setDistrict(String district) {
+        this.district = district;
+    }
+
     public double getRadius() {
         return radius;
     }
@@ -259,4 +263,7 @@ public class Ocorrencia implements Serializable, ClusterItem{
         this.type = type;
     }
 
+    public void removeComentario(Comentario com) {
+        comments.remove(com.getId());
+    }
 }

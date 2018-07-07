@@ -82,9 +82,9 @@
                                   <option name="values">
                                     <map>
                                       <entry key="backgroundLayerName" value="ic_launcher_background" />
-                                      <entry key="foregroundImage" value="C:\Users\Hugo Mochão\Desktop\imagensMapa\tratadaGarbage.png" />
-                                      <entry key="foregroundLayerName" value="ic_tratada_garbage" />
-                                      <entry key="outputName" value="tratada_garbage" />
+                                      <entry key="foregroundImage" value="C:\Users\Hugo Mochão\Desktop\evento_marker.png" />
+                                      <entry key="foregroundLayerName" value="ic_evento_marker" />
+                                      <entry key="outputName" value="evento_marker" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -138,10 +138,25 @@
                   <entry key="vectorAssetStep">
                     <value>
                       <PersistentState>
+                        <option name="children">
+                          <map>
+                            <entry key="clipartAsset">
+                              <value>
+                                <PersistentState>
+                                  <option name="values">
+                                    <map>
+                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/social/ic_people_black_24dp.xml" />
+                                    </map>
+                                  </option>
+                                </PersistentState>
+                              </value>
+                            </entry>
+                          </map>
+                        </option>
                         <option name="values">
                           <map>
-                            <entry key="assetSourceType" value="FILE" />
-                            <entry key="outputName" value="ic_if_basics_30_679117" />
+                            <entry key="color" value="ffffff" />
+                            <entry key="outputName" value="ic_people_white_24dp" />
                             <entry key="sourceFile" value="C:\Users\Hugo Mochão\Desktop\if_basics-30_679117.svg" />
                           </map>
                         </option>

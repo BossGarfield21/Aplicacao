@@ -7,4 +7,10 @@
         android:orderInCategory="100"
         android:title="Alterar dados"
         app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/grupos"
+        android:icon="@drawable/ic_people_white_24dp"
+        android:orderInCategory="100"
+        android:title="Ver grupos"
+        app:showAsAction="ifRoom"/>
 </menu>

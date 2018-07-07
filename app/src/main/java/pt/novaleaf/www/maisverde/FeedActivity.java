@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -44,17 +46,21 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import utils.ByteRequest;
+import utils.LruBitmapCache;
 
 import static pt.novaleaf.www.maisverde.ComentariosActivity.comentarios;
 import static pt.novaleaf.www.maisverde.EventoFragment.listEventos;
@@ -75,13 +81,17 @@ public class FeedActivity extends AppCompatActivity
     NavigationView navigationView;
     private String cursorOcorrencias = "";
     private boolean isFinishedOcorrencias = false;
+    private PopupMenu popup = null;
     Fragment ocorrenciaFragment;
     private LinearLayout linearLayout;
     public static List<Ocorrencia> ocorrencias = new ArrayList<>();
+    public static List<Ocorrencia> tempOcorrencias = new ArrayList<>();
     OcorrenciaFragment.OnListFragmentInteractionListener mListener;
     public static MyOcorrenciaRecyclerViewAdapter adapter;
     RecyclerView recyclerView;
     private boolean canScroll = false;
+    private String distrito;
+    LruBitmapCache lruBitmapCache = new LruBitmapCache();
 
 
     @Override
@@ -90,6 +100,7 @@ public class FeedActivity extends AppCompatActivity
         setContentView(R.layout.activity_feed);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        distrito = "TUDO";
 
 
         // Set up the ViewPager with the sections adapter.
@@ -245,34 +256,9 @@ public class FeedActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-         if (id == R.id.action_logout) {
+        if (id == R.id.filter) {
 
-            final AlertDialog.Builder alert = new AlertDialog.Builder(FeedActivity.this);
-            alert.setTitle("Terminar sessão");
-            alert
-                    .setMessage("Deseja terminar sessão?")
-                    .setCancelable(true)
-                    .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
-                            editor.clear();
-                            editor.commit();
-                            Intent intent = new Intent(FeedActivity.this, LoginActivity.class);
-                            startActivity(intent);
-                            finish();
-                        }
-                    })
-                    .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.dismiss();
-                        }
-                    });
-
-            AlertDialog alertDialog = alert.create();
-            alertDialog.show();
-
+            showMenu(findViewById(R.id.filter));
 
         }
 
@@ -308,12 +294,12 @@ public class FeedActivity extends AppCompatActivity
             //startActivity(i);
             //finish();
 
-        } else if (id == R.id.nav_acerca){
+        } else if (id == R.id.nav_acerca) {
             Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://anovaleaf.ddns.net"));
             startActivity(i);
-        } else if (id == R.id.nav_help){
+        } else if (id == R.id.nav_help) {
             return true;
-        } else if (id == R.id.nav_end){
+        } else if (id == R.id.nav_end) {
 
             final AlertDialog.Builder alert = new AlertDialog.Builder(FeedActivity.this);
             alert.setTitle("Terminar sessão");
@@ -359,15 +345,76 @@ public class FeedActivity extends AppCompatActivity
         }
     }
 
+    private void showDistrict(String distrito) {
+
+        //tempGrupos.clear();
+        Log.d("DITRITO", distrito);
+
+        if (!distrito.equals("TUDO")) {
+            tempOcorrencias.clear();
+
+            for (Ocorrencia ocorrencia : ocorrencias) {
+                if (ocorrencia.getDistrict() != null)
+                    if (ocorrencia.getDistrict().toUpperCase().equals(distrito.toUpperCase()))
+                        tempOcorrencias.add(ocorrencia);
+            }
+            MyOcorrenciaRecyclerViewAdapter.mValues = tempOcorrencias;
+            adapter.notifyDataSetChanged();
+        } else {
+            tempOcorrencias = new ArrayList<>(ocorrencias);
+            MyOcorrenciaRecyclerViewAdapter.mValues = tempOcorrencias;
+            adapter.notifyDataSetChanged();
+        }
+
+    }
+
+    public void showMenu(View v) {
+        if (popup == null) {
+            popup = new PopupMenu(this, v);
+            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+
+                    if (!item.isChecked()) {
+                        item.setCheckable(true);
+                        item.setChecked(!item.isChecked());
+                        setUncheckedMenu(popup, item);
+                        distrito = item.getTitle().toString();
+                        showDistrict(distrito);
+                    }
+
+                    return false;
+                }
+            });// to implement on click event on items of menu
+            MenuInflater inflater = popup.getMenuInflater();
+            inflater.inflate(R.menu.menu_distritos_feed, popup.getMenu());
+
+            popup.getMenu().findItem(R.id.d0).setCheckable(true);
+            popup.getMenu().findItem(R.id.d0).setChecked(true);
+        }
+        popup.show();
+    }
+
+    private void setUncheckedMenu(PopupMenu menu, MenuItem item) {
+
+
+        for (int i = 0; i < menu.getMenu().size(); i++) {
+            if (!menu.getMenu().getItem(i).equals(item)) {
+                menu.getMenu().getItem(i).setCheckable(false);
+                menu.getMenu().getItem(i).setChecked(false);
+            }
+        }
+
+    }
 
     public void volleyGetOcorrencias() {
 
         final String tag_json_obj = "json_request";
         String url;
         if (cursorOcorrencias.equals(""))
-            url = "https://novaleaf-197719.appspot.com/rest/withtoken/social/feed/?cursor=startquery";
+            url = "https://novaleaf-197719.appspot.com/rest/withtoken/social/feed?cursor=startquery";
         else
-            url = "https://novaleaf-197719.appspot.com/rest/withtoken/social/feed/?cursor=" + cursorOcorrencias;
+            url = "https://novaleaf-197719.appspot.com/rest/withtoken/social/feed?cursor=" + cursorOcorrencias;
 
         Log.d("ché bate só", url);
 
@@ -442,6 +489,8 @@ public class FeedActivity extends AppCompatActivity
                                         status = ocorrencia.getLong("status");
                                     if (ocorrencia.has("type"))
                                         type = ocorrencia.getString("type");
+                                    if (ocorrencia.has("district"))
+                                        district = ocorrencia.getString("district");
                                     JSONObject image = null;
                                     if (ocorrencia.has("image_uri")) {
                                         image = ocorrencia.getJSONObject("image_uri");
@@ -452,7 +501,8 @@ public class FeedActivity extends AppCompatActivity
                                     if (ocorrencia.has("user_image")) {
                                         imageuser = ocorrencia.getJSONObject("user_image");
                                         if (imageuser.has("value"))
-                                            user_image = image.getString("value");
+                                            user_image = imageuser.getString("value");
+                                        Log.d("user image bina:", user_image);
                                     }
 
                                     if (ocorrencia.has("hasLike"))
@@ -475,8 +525,13 @@ public class FeedActivity extends AppCompatActivity
                                             else origem = 2;
 
                                             String imag = null;
-                                            if (com.has("image"))
-                                                imag = com.getString("image");
+                                            JSONObject im = null;
+                                            if (com.has("image")) {
+                                                im = com.getJSONObject("image");
+                                                if (im.has("value"))
+                                                    imag = im.getString("value");
+                                            }
+
 
                                             String comentID = com.getString("id");
 
@@ -502,13 +557,36 @@ public class FeedActivity extends AppCompatActivity
                                     if (ocorrencia.has("radius"))
                                         radius = ocorrencia.getDouble("radius");
 
+                                    if (district == null) {
+                                        Geocoder geocoder;
+                                        List<Address> addresses;
+                                        geocoder = new Geocoder(FeedActivity.this, Locale.getDefault());
 
+                                        try {
+                                            addresses = geocoder.getFromLocation(latitude, longitude, 1);
+                                        } catch (IOException e) {
+                                            continue;
+                                        }
+                                        if (addresses != null && addresses.size() > 0) {
+                                            if (addresses.get(0).getAdminArea() != null)
+                                                district = addresses.get(0).getAdminArea();
+                                            else if (addresses.get(0).getLocality() != null)
+                                                district = addresses.get(0).getLocality();
+                                        }
+                                    }
                                     Ocorrencia ocorrencia1 = new Ocorrencia(titulo, risk, "23:12", id,
                                             descricao, owner, likers, status, latitude, longitude, likes, type, image_uri,
                                             comentarios, creationDate, district, hasLiked, user_image, radius);
-                                    if (ocorrencia1.getImage_uri() != null)
-                                        receberImagemVolley(ocorrencia1);
-                                    else {
+                                    if (ocorrencia1.getImage_uri() != null) {
+                                        if (lruBitmapCache.getBitmap(ocorrencia1.getImage_uri())==null)
+                                            receberImagemVolley(ocorrencia1);
+                                        else {
+                                            Log.d("Usou a cache", "BOA!!!");
+                                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                            lruBitmapCache.getBitmap(ocorrencia1.getImage_uri()).compress(Bitmap.CompressFormat.PNG, 100, stream);
+                                            ocorrencia1.setBitmap(stream.toByteArray());
+                                        }
+                                    } else {
                                         String tipo = ocorrencia1.getType();
                                         if (tipo.equals("bonfire")) {
                                             ocorrencia1.setImageID(R.mipmap.ic_bonfire_foreground);
@@ -521,8 +599,16 @@ public class FeedActivity extends AppCompatActivity
                                         }
                                     }
 
-                                    if (ocorrencia1.getUser_image() != null && !ocorrencias.contains(ocorrencia1))
-                                        receberImagemUserVolley(ocorrencia1);
+                                    if (ocorrencia1.getUser_image() != null && !ocorrencias.contains(ocorrencia1)) {
+                                        if (lruBitmapCache.getBitmap(ocorrencia1.getUser_image())==null)
+                                            receberImagemUserVolley(ocorrencia1);
+                                        else {
+                                            Log.d("Usou a cache", "BOA!!!");
+                                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                            lruBitmapCache.getBitmap(ocorrencia1.getUser_image()).compress(Bitmap.CompressFormat.PNG, 100, stream);
+                                            ocorrencia1.setBitmapUser(stream.toByteArray());
+                                        }
+                                    }
                                     else {
                                         ocorrencia1.setImageIDUser(R.drawable.ic_person_black_24dp);
                                     }
@@ -532,10 +618,15 @@ public class FeedActivity extends AppCompatActivity
                                         ocorrencias.add(ocorrencia1);
                                     Log.d("ID", id);
                                     Log.d("titulo", titulo);
+                                    if (titulo.contains("Árvore")){
+                                        Log.d("imagem oco", image_uri);
+                                        Log.d("imagem minha", user_image);
+                                    }
                                     Log.d("desc", descricao);
                                     adapter.notifyDataSetChanged();
 
                                 }
+                            showDistrict(distrito);
                             isFinishedOcorrencias = response.getBoolean("isFinished");
                             if (list.length() < 15 || isFinishedOcorrencias)
                                 canScroll = false;
@@ -648,6 +739,8 @@ public class FeedActivity extends AppCompatActivity
             public void onResponse(byte[] response) {
                 item.setBitmap(response);
                 adapter.notifyDataSetChanged();
+                lruBitmapCache.putBitmap(item.getImage_uri(), BitmapFactory.decodeByteArray(response, 0, response.length));
+
 
             }
         }, new Response.ErrorListener() {
@@ -691,6 +784,7 @@ public class FeedActivity extends AppCompatActivity
             public void onResponse(byte[] response) {
                 item.setBitmapUser(response);
                 adapter.notifyDataSetChanged();
+                lruBitmapCache.putBitmap(item.getUser_image(), BitmapFactory.decodeByteArray(response, 0, response.length));
 
             }
         }, new Response.ErrorListener() {

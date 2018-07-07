@@ -26,7 +26,7 @@
             android:layout_height="80dp"
             android:layout_gravity="center_vertical"
             android:layout_marginTop="8dp"
-            android:scaleType="center"
+            android:scaleType="centerCrop"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.051"
             app:layout_constraintStart_toStartOf="parent"
@@ -94,6 +94,7 @@
             android:fontFamily="@font/roboto_thin"
             android:maxLines="1"
             android:text="Lixo aqui"
+            android:autoSizeTextType="uniform"
             android:textColor="@color/colorTextToolbar"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -240,13 +241,20 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/textView6"
-            android:layout_width="54dp"
+            android:id="@+id/textDistrito"
+            android:layout_width="0dp"
             android:layout_height="16dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginStart="10dp"
             android:layout_marginTop="8dp"
-            android:text="Setubal"
+            android:autoSizeTextType="uniform"
+            android:maxLines="1"
+            android:lines="1"
+            android:autoSizeMinTextSize="8dp"
+            android:text="Portalegre"
             android:textSize="12sp"
+            app:layout_constraintEnd_toStartOf="@+id/riscofeed"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/time"
             app:layout_constraintTop_toBottomOf="@+id/userName"/>
 

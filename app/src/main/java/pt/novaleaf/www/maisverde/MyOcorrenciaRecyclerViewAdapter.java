@@ -47,7 +47,7 @@ import java.util.Random;
  */
 public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcorrenciaRecyclerViewAdapter.ViewHolder> implements Serializable {
 
-    private final List<Ocorrencia> mValues;
+    static List<Ocorrencia> mValues;
     private final OnListFragmentInteractionListener mListener;
     private final Context mContext;
 
@@ -154,11 +154,11 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
             holder.time.setText(data);
         }
 
-        if (mValues.get(position).getBitmapUser()!=null){
+        if (mValues.get(position).getBitmapUser() != null) {
             holder.mImageUser.setImageBitmap(BitmapFactory.decodeByteArray(mValues.get(position).getBitmapUser(),
                     0, mValues.get(position).getBitmapUser().length));
         } else {
-            holder.mImageUser.setImageResource(R.drawable.ic_person_black_24dp);
+            holder.mImageUser.setImageResource(R.drawable.ic_person_outline_black_24dp);
         }
 
         if (mValues.get(position).getImage_uri() != null && mValues.get(position).getBitmap() != null) {
@@ -188,6 +188,9 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
                 }
             });
         }
+
+        if (mValues.get(position).getDistrict() != null)
+            holder.mTextDistrito.setText(mValues.get(position).getDistrict());
 
         holder.mRisco.setText(MessageFormat.format(" {0}", (int) mValues.get(position).getRisk()));
         if (mValues.get(position).getRisk() < 33)
@@ -224,6 +227,7 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
         public TextView mTextNumLikes;
         public TextView mRisco;
         public TextView mTextComentarios;
+        public TextView mTextDistrito;
         public ImageView mImageGosto;
         public ImageView mImageComentario;
         public ImageView mImageEdit;
@@ -236,6 +240,7 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
             username = (TextView) v.findViewById(R.id.userName);
             time = (TextView) v.findViewById(R.id.time);
             mRisco = (TextView) v.findViewById(R.id.riscofeed);
+            mTextDistrito = (TextView) v.findViewById(R.id.textDistrito);
             mTextComentarios = (TextView) v.findViewById(R.id.comentarios);
             mRelative = (ConstraintLayout) v.findViewById(R.id.relative);
             mLinearInfo = (LinearLayout) v.findViewById(R.id.linearInfo);

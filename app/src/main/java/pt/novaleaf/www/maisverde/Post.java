@@ -120,4 +120,11 @@ public class Post implements Serializable {
         Post post = (Post) obj;
         return this.getId().equals(post.getId());
     }
+
+    public void removeComent(Comentario com) {
+        comments.remove(com.getId());
+    }
+
+
+
 }

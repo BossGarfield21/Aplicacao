@@ -214,6 +214,10 @@
             android:name=".ProximosLocalActivity"
             android:label="Perto de si">
         </activity>
+        <activity
+            android:name=".UserGruposActivity"
+            android:label="Grupos">
+        </activity>
     </application>
 
 </manifest>

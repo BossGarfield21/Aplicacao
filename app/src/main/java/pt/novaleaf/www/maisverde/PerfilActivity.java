@@ -290,35 +290,9 @@ public class PerfilActivity extends AppCompatActivity
             intent.putExtra("telemovel", arrayList.get(8).getDescricao());
             startActivity(intent);
 
-        }  else if (id == R.id.action_logout) {
-
-            final AlertDialog.Builder alert = new AlertDialog.Builder(PerfilActivity.this);
-            alert.setTitle("Terminar sessão");
-            alert
-                    .setMessage("Deseja terminar sessão?")
-                    .setCancelable(true)
-                    .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
-                            editor.clear();
-                            editor.commit();
-                            Intent intent = new Intent(PerfilActivity.this, LoginActivity.class);
-                            startActivity(intent);
-                            finish();
-                        }
-                    })
-                    .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.dismiss();
-                        }
-                    });
-
-            AlertDialog alertDialog = alert.create();
-            alertDialog.show();
-
-
+        }  else if (id == R.id.grupos) {
+            Intent intent = new Intent(PerfilActivity.this, UserGruposActivity.class);
+            startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
     }

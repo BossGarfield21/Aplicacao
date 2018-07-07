@@ -951,9 +951,7 @@ public class CriarOcorrenciaActivity extends AppCompatActivity implements Serial
                             FeedActivity.ocorrencias.get(index).setType(tipo);
 
                             FeedActivity.adapter.notifyDataSetChanged();
-                            Intent i = new Intent(CriarOcorrenciaActivity.this, FeedActivity.class);
-                            startActivity(i);
-                            finish();
+                            onBackPressed();
                         }
                     }, new Response.ErrorListener() {
 

@@ -39,6 +39,7 @@ public class AdminGrupoPedidosActivity extends AppCompatActivity implements Seri
     private ListView listView;
     ArrayAdapter adapter;
     List<String> pedidos;
+    Map<String, String > ids;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +65,7 @@ public class AdminGrupoPedidosActivity extends AppCompatActivity implements Seri
 
 
         pedidos = new ArrayList<>();
+        ids = new HashMap<>();
 
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -104,10 +106,10 @@ public class AdminGrupoPedidosActivity extends AppCompatActivity implements Seri
 
     }
 
-    private void volleyAceitarUser(String user) {
+    private void volleyAceitarUser(final String user) {
         String tag_json_obj = "json_request";
         String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/gadmin/accept?group_id=" +
-                grupo.getGroupId() + "&username=" + user;
+                grupo.getGroupId() + "&group_request=" + ids.get(user);
 
         Log.d("ché bate só", url);
 
@@ -121,6 +123,9 @@ public class AdminGrupoPedidosActivity extends AppCompatActivity implements Seri
 
                     @Override
                     public void onResponse(String response) {
+                        ids.remove(user);
+                        pedidos.remove(user);
+                        adapter.notifyDataSetChanged();
                     }
 
                 }, new Response.ErrorListener()
@@ -148,10 +153,10 @@ public class AdminGrupoPedidosActivity extends AppCompatActivity implements Seri
                 addToRequestQueue(jsonObjectRequest, tag_json_obj);
     }
 
-    private void volleyRejeitarUser(String user) {
+    private void volleyRejeitarUser(final String user) {
         String tag_json_obj = "json_request";
-        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/gadmin/refuse?group_id=" +
-                grupo.getGroupId() + "&username=" + user;
+        final String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/gadmin/refuse?group_id=" +
+                grupo.getGroupId() + "&group_request=" + ids.get(user);
 
         Log.d("ché bate só", url);
 
@@ -165,6 +170,9 @@ public class AdminGrupoPedidosActivity extends AppCompatActivity implements Seri
 
                     @Override
                     public void onResponse(String response) {
+                        ids.remove(user);
+                        pedidos.remove(user);
+                        adapter.notifyDataSetChanged();
                     }
 
                 }, new Response.ErrorListener()
@@ -211,12 +219,15 @@ public class AdminGrupoPedidosActivity extends AppCompatActivity implements Seri
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            if (!response.isNull("list")) {
+                            if (!response.isNull("list") && response.getJSONArray("list").length()>0) {
                                 JSONArray list = response.getJSONArray("list");
                                 for (int i = 0; i < list.length(); i++) {
 
-                                    String pedido = list.getString(i);
+
+                                    String id = list.getJSONObject(i).getString("key");
+                                    String pedido = list.getJSONObject(i).getString("value");
                                     pedidos.add(pedido);
+                                    ids.put(pedido, id);
                                     adapter.notifyDataSetChanged();
 
                                 }
@@ -253,8 +264,6 @@ public class AdminGrupoPedidosActivity extends AppCompatActivity implements Seri
         };
 
 
-        AppController.getInstance().
-
-                addToRequestQueue(jsonObjectRequest, tag_json_obj);
+        AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
     }
 }

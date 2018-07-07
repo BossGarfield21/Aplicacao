@@ -256,12 +256,12 @@ public class FeedEventosActivity extends AppCompatActivity
             //startActivity(i);
             //finish();
 
-        } else if (id == R.id.nav_acerca){
+        } else if (id == R.id.nav_acerca) {
             Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://anovaleaf.ddns.net"));
             startActivity(i);
-        } else if (id == R.id.nav_help){
+        } else if (id == R.id.nav_help) {
             return true;
-        } else if (id == R.id.nav_end){
+        } else if (id == R.id.nav_end) {
 
             final AlertDialog.Builder alert = new AlertDialog.Builder(FeedEventosActivity.this);
             alert.setTitle("Terminar sessão");
@@ -453,7 +453,8 @@ public class FeedEventosActivity extends AppCompatActivity
                                     else
                                         evento1.setImageID(R.drawable.ic_baseline_calendar_eventos_24px);
 
-                                    eventosList.add(evento1);
+                                    if (!eventosList.contains(evento1))
+                                        eventosList.add(evento1);
                                     adapter.notifyDataSetChanged();
 
                                 }
@@ -477,143 +478,6 @@ public class FeedEventosActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
-/**
- JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, eventos,
- new Response.Listener<JSONObject>() {
-
-@Override public void onResponse(JSONObject response) {
-try {
-Log.d("nabo", cursorEventos + "pixa");
-cursorEventos = response.getString("cursor");
-Log.d("nabo", cursorEventos);
-
-
-JSONArray list = response.getJSONArray("list");
-if (!response.isNull("list")) {
-if (!isFinishedEventos) {
-isFinishedEventos = response.getBoolean("isFinished");
-Log.d("ACABOU???", String.valueOf(isFinishedEventos));
-
-for (int i = 0; i < list.length(); i++) {
-
-String name = null;
-String creator = null;
-long creationDate = 0;
-long meetupDate = 0;
-long endDate = 0;
-List<String> interests = new ArrayList<>();
-List<String> confirmations = new ArrayList<>();
-List<String> admin = new ArrayList<>();
-String image_uri = null;
-String id = null;
-String location = null;
-String alert = null;
-String description = null;
-String weather = null;
-double longitudeMeetUp = 0;
-double latitudeMeetUp = 0;
-double latitudeCenter = 0;
-double longitudeCenter = 0;
-double radious = 0;
-
-JSONObject evento = list.getJSONObject(i);
-if (evento.has("id"))
-id = evento.getString("alert");
-if (evento.has("name"))
-name = evento.getString("name");
-if (evento.has("creator"))
-creator = evento.getString("creator");
-if (evento.has("description"))
-description = evento.getString("description");
-if (evento.has("creator"))
-creator = evento.getString("creator");
-if (evento.has("location"))
-location = evento.getString("location");
-if (evento.has("alert"))
-alert = evento.getString("alert");
-if (evento.has("creationDate"))
-creationDate = evento.getLong("creationDate");
-if (evento.has("meetupDate"))
-meetupDate = evento.getLong("meetupDate");
-if (evento.has("radious"))
-radious = evento.getLong("radious");
-if (evento.has("endDate"))
-endDate = evento.getLong("endDate");
-if (evento.has("image_uri"))
-image_uri = evento.getString("image_uri");
-if (evento.has("weather"))
-weather = evento.getString("weather");
-
-if (evento.has("interests")) {
-JSONArray interest = evento.getJSONArray("interests");
-for (int a = 0; a < interest.length(); a++)
-interests.add(interest.getString(a));
-}
-
-if (evento.has("confirmations")) {
-JSONArray confirmation = evento.getJSONArray("confirmations");
-for (int a = 0; a < confirmation.length(); a++)
-confirmations.add(confirmation.getString(a));
-}
-
-if (evento.has("admin")) {
-JSONArray admins = evento.getJSONArray("admin");
-for (int a = 0; a < admins.length(); a++)
-admin.add(admins.getString(a));
-}
-
-if (evento.has("meetupPoint")) {
-JSONObject coordinates = evento.getJSONObject("coordinates");
-latitudeMeetUp = coordinates.getDouble("latitude");
-longitudeMeetUp = coordinates.getDouble("longitude");
-}
-
-if (evento.has("center")) {
-JSONObject coordinates = evento.getJSONObject("coordinates");
-latitudeCenter = coordinates.getDouble("latitude");
-longitudeCenter = coordinates.getDouble("longitude");
-}
-
-
-Evento evento1 = new Evento(name, creator, creationDate, meetupDate, endDate,
-interests, confirmations, admin, id, location, alert, description, weather, image_uri,
-latitudeMeetUp, longitudeMeetUp, latitudeCenter, longitudeCenter, radious);
-
-if (image_uri != null)
-receberImagemVolley(evento1);
-
-listEventos.add(evento1);
-myEventoRecyclerViewAdapter.notifyDataSetChanged();
-
-}
-}
-
-} else {
-isFinishedEventos = true;
-}
-} catch (JSONException e) {
-e.printStackTrace();
-}
-}
-
-
-}, new Response.ErrorListener() {
-
-@Override public void onErrorResponse(VolleyError error) {
-VolleyLog.d("erroLOGIN", "Error: " + error.getMessage());
-}
-}) {
-@Override public Map<String, String> getHeaders() throws AuthFailureError {
-HashMap<String, String> headers = new HashMap<String, String>();
-headers.put("Authorization", token);
-return headers;
-}
-};
-
-
- AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
- */
-
     }
 
     private void receberImagemVolley(final Evento item) {
@@ -636,7 +500,7 @@ return headers;
             public void onErrorResponse(VolleyError error) {
                 VolleyLog.d("erroIMAGEMocorrencia", "Error: " + error.getMessage());
 
-                item.setImageID(R.drawable.ic_if_calendar_clock_299096);
+                item.setImageID(R.drawable.ic_baseline_calendar_eventos_24px);
 
                 adapter.notifyDataSetChanged();
             }

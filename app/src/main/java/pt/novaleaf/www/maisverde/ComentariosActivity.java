@@ -88,6 +88,7 @@ public class ComentariosActivity extends AppCompatActivity implements Serializab
 
                     //comentarios.add(com);
                     if (ocorrencia != null) {
+                        Log.d("enviar ocorrencia", "nice");
 
                         volleyAdicionarComentarioOcorrencia(com);
                     } else if (post != null) {
@@ -206,14 +207,17 @@ public class ComentariosActivity extends AppCompatActivity implements Serializab
             grupo.put("creation_date", com.getCreation_date());
             grupo.put("image", sharedPreferences.getString("image_user", null));
             //grupo.put("id", com.getId());
+            Log.d("A receber ocorrencia", "0");
 
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, url, grupo,
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
                             try {
-                                comentarios.add(com);
+                                Log.d("A receber ocorrencia", "1");
                                 com.setId(response.getString("id"));
+                                comentarios.add(com);
+                                Log.d("A receber ocorrencia", com.getMessage());
                                 int a = FeedActivity.ocorrencias.indexOf(ocorrencia);
                                 FeedActivity.ocorrencias.get(a).addComentario(com);
                                 FeedActivity.adapter.notifyDataSetChanged();
@@ -288,7 +292,6 @@ public class ComentariosActivity extends AppCompatActivity implements Serializab
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     if (error.networkResponse != null) {
-                        comentarios.remove(comentarios.size() - 1);
                         Toast.makeText(ComentariosActivity.this, "Falhou o envio", Toast.LENGTH_SHORT).show();
                         VolleyLog.d("erroNOVAOCORRENCIA", "Error: " + error.getMessage());
                     }

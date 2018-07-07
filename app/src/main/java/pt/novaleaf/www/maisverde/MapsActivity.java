@@ -9,6 +9,8 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -66,16 +68,20 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import utils.ByteRequest;
+import utils.LruBitmapCache;
 
 public class MapsActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, Serializable {
@@ -99,6 +105,9 @@ public class MapsActivity extends AppCompatActivity
     List<Polygon> polygons = new ArrayList<>();
     double latitude;
     double longitude;
+    private String cursorEventos = "";
+    private boolean isFinishedEventos = false;
+    LruBitmapCache lruBitmapCache = new LruBitmapCache();
 
 
     @Override
@@ -332,23 +341,23 @@ public class MapsActivity extends AppCompatActivity
                         markerOptions.draggable(true);
                 if (position != null)
                     if (markerItem.getPosition().equals(position)) {
-                        if (markerItem.getRadius()>0){
+                        if (markerItem.getRadius() > 0) {
                             CircleOptions circleOptions = new CircleOptions()
-                                    .center(ocorrencia.getPosition())
-                                    .radius(ocorrencia.radius);
+                                    .center(markerItem.getPosition())
+                                    .radius(markerItem.radius);
                             Circle circle = mMap.addCircle(circleOptions);
                             circle.setFillColor(R.color.colorred);
                             circle.setStrokeColor(R.color.colorGreen);
-                            circle.setTag(ocorrencia);
                             circles.add(circle);
                         }
 
                     }
 
 
-                markerOptions.infoWindowAnchor(0.47f, 0.3f);
+                markerOptions.infoWindowAnchor(0.47f, 0.27f);
                 markerOptions.anchor(0.47f, 0.67f);
                 markerOptions.position(markerItem.getPosition());
+
 
                 if (markerItem.getStatus() == 1) {
                     if (markerItem.getType().equals("trash"))
@@ -384,7 +393,7 @@ public class MapsActivity extends AppCompatActivity
 
                 if (position != null)
                     if (markerItem.getPosition().equals(position)) {
-                        if (markerItem.getRadious()>0){
+                        if (markerItem.getRadious() > 0) {
                             CircleOptions circleOptions = new CircleOptions()
                                     .center(ocorrencia.getPosition())
                                     .radius(ocorrencia.radius);
@@ -409,6 +418,10 @@ public class MapsActivity extends AppCompatActivity
 
                 markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
                 markerOptions.position(markerItem.getPosition());
+
+                markerOptions.infoWindowAnchor(0.5f, 0.27f);
+                markerOptions.anchor(0.5f, 0.67f);
+                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_evento_marker));
 
             }
 
@@ -713,7 +726,6 @@ public class MapsActivity extends AppCompatActivity
 
 
         if (ocorrencia != null) {
-            Toast.makeText(this, "OCORRENCIA", Toast.LENGTH_SHORT).show();
 
             fab.setImageResource(R.drawable.ic_check_white_24dp);
             //fab.setVisibility(View.GONE);
@@ -804,6 +816,16 @@ public class MapsActivity extends AppCompatActivity
             topRightLatitude = mMap.getProjection().getVisibleRegion().farRight.latitude;
             topRightLongitude = mMap.getProjection().getVisibleRegion().farRight.longitude;
 
+            new Thread(new Runnable() {
+                @Override
+
+                public void run() {
+                    for (int i = 0; i < 4 && !isFinishedEventos; i++)
+                        volleyGetEventos();
+                }
+
+
+            }).start();
 
             mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
                 @Override
@@ -846,6 +868,7 @@ public class MapsActivity extends AppCompatActivity
             });
 
 
+            mClusterManagerEvento.cluster();
         }
     }
 
@@ -1045,8 +1068,12 @@ public class MapsActivity extends AppCompatActivity
                                                 else origem = 2;
 
                                                 String imag = null;
-                                                if (com.has("image"))
-                                                    imag = com.getString("image");
+                                                JSONObject im = null;
+                                                if (com.has("image")) {
+                                                    im = com.getJSONObject("image");
+                                                    if (im.has("value"))
+                                                        imag = im.getString("value");
+                                                }
 
                                                 String comentID = com.getString("id");
 
@@ -1073,16 +1100,42 @@ public class MapsActivity extends AppCompatActivity
                                         if (ocorrencia.has("user_image")) {
                                             imageuser = ocorrencia.getJSONObject("user_image");
                                             if (imageuser.has("value"))
-                                                user_image = image.getString("value");
+                                                user_image = imageuser.getString("value");
+                                        }
+
+                                        if (ocorrencia.has("district"))
+                                            district = ocorrencia.getString("district");
+                                        if (district == null) {
+                                            Geocoder geocoder;
+                                            List<Address> addresses;
+                                            geocoder = new Geocoder(MapsActivity.this, Locale.getDefault());
+
+                                            try {
+                                                addresses = geocoder.getFromLocation(latitude, longitude, 1);
+                                            } catch (IOException e) {
+                                                continue;
+                                            }
+                                            if (addresses != null && addresses.size() > 0) {
+                                                if (addresses.get(0).getAdminArea() != null)
+                                                    district = addresses.get(0).getAdminArea();
+                                                else if (addresses.get(0).getLocality() != null)
+                                                    district = addresses.get(0).getLocality();
+                                            }
                                         }
 
 
                                         Ocorrencia ocorrencia1 = new Ocorrencia(titulo, risk, "23:12", id,
                                                 descricao, owner, likers, status, latitude, longitude, likes, type, image_uri,
                                                 comentarios, creationDate, district, hasLiked, user_image, radius);
-                                        if (ocorrencia1.getImage_uri() != null && !FeedActivity.ocorrencias.contains(ocorrencia1))
-                                            receberImagemVolley(ocorrencia1);
-                                        else {
+                                        if (ocorrencia1.getImage_uri() != null) {
+                                            if (lruBitmapCache.getBitmap(ocorrencia1.getImage_uri())==null)
+                                                receberImagemVolley(ocorrencia1);
+                                            else {
+                                                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                                lruBitmapCache.getBitmap(ocorrencia1.getImage_uri()).compress(Bitmap.CompressFormat.PNG, 100, stream);
+                                                ocorrencia1.setBitmap(stream.toByteArray());
+                                            }
+                                        } else {
                                             String tipo = ocorrencia1.getType();
                                             if (tipo.equals("bonfire")) {
                                                 ocorrencia1.setImageID(R.mipmap.ic_bonfire_foreground);
@@ -1094,9 +1147,15 @@ public class MapsActivity extends AppCompatActivity
                                                 ocorrencia1.setImageID(R.mipmap.ic_grass_foreground);
                                             }
                                         }
-
-                                        if (ocorrencia1.getUser_image() != null && !FeedActivity.ocorrencias.contains(ocorrencia1))
-                                            receberImagemUserVolley(ocorrencia1);
+                                        if (ocorrencia1.getUser_image() != null && !FeedActivity.ocorrencias.contains(ocorrencia1)) {
+                                            if (lruBitmapCache.getBitmap(ocorrencia1.getUser_image())==null)
+                                                receberImagemUserVolley(ocorrencia1);
+                                            else {
+                                                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                                lruBitmapCache.getBitmap(ocorrencia1.getUser_image()).compress(Bitmap.CompressFormat.PNG, 100, stream);
+                                                ocorrencia1.setBitmapUser(stream.toByteArray());
+                                            }
+                                        }
                                         else {
                                             ocorrencia1.setImageIDUser(R.drawable.ic_person_black_24dp);
                                         }
@@ -1131,6 +1190,230 @@ public class MapsActivity extends AppCompatActivity
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+    }
+
+
+    public void volleyGetEventos() {
+
+        String tag_json_obj = "json_request";
+        String url;
+        if (cursorEventos.equals(""))
+            url = "https://novaleaf-197719.appspot.com/rest/withtoken/events/?cursor=startquery";
+        else
+            url = "https://novaleaf-197719.appspot.com/rest/withtoken/events/?cursor=" + cursorEventos;
+
+        Log.d("ché bate só", url);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+        final JSONObject eventos = new JSONObject();
+        final String token = sharedPreferences.getString("tokenID", "erro");
+
+        final RequestFuture<JSONObject> future = RequestFuture.newFuture();
+        final JsonObjectRequest jsonObjectRequest1 = new JsonObjectRequest(Request.Method.GET, url, new JSONObject(),
+                future, future) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+        };
+        future.setRequest(jsonObjectRequest1);
+
+
+        jsonObjectRequest1.setTag(tag_json_obj);
+        AppController.getInstance().addToRequestQueue(jsonObjectRequest1);
+        try {
+
+            final JSONObject response = future.get();
+            cursorEventos = response.getString("cursor");
+            Log.d("SUA PUTA TAS AI???", response.toString());
+            final JSONArray list = response.getJSONArray("list");
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    try {
+                        if (!response.isNull("list")) {
+                            if (!isFinishedEventos) {
+                                isFinishedEventos = response.getBoolean("isFinished");
+                                Log.d("ACABOU???", String.valueOf(isFinishedEventos));
+
+                                for (int i = 0; i < list.length(); i++) {
+
+                                    String name = null;
+                                    String creator = null;
+                                    long creationDate = 0;
+                                    long meetupDate = 0;
+                                    long endDate = 0;
+                                    List<String> interests = new ArrayList<>();
+                                    List<String> confirmations = new ArrayList<>();
+                                    List<String> admin = new ArrayList<>();
+                                    List<LatLng> area = new ArrayList<>();
+                                    String image_uri = null;
+                                    String id = null;
+                                    String location = null;
+                                    String alert = null;
+                                    String description = null;
+                                    String weather = null;
+                                    double longitudeMeetUp = 0;
+                                    double latitudeMeetUp = 0;
+                                    double latitudeCenter = 0;
+                                    double longitudeCenter = 0;
+                                    double radius = 0;
+                                    boolean hasInterest = false;
+                                    boolean hasConfirmation = false;
+
+                                    JSONObject evento = list.getJSONObject(i);
+                                    if (evento.has("id"))
+                                        id = evento.getString("id");
+                                    if (evento.has("name"))
+                                        name = evento.getString("name");
+                                    if (evento.has("creator"))
+                                        creator = evento.getString("creator");
+                                    if (evento.has("description"))
+                                        description = evento.getString("description");
+                                    if (evento.has("creator"))
+                                        creator = evento.getString("creator");
+                                    if (evento.has("location"))
+                                        location = evento.getString("location");
+                                    if (evento.has("alert"))
+                                        alert = evento.getString("alert");
+                                    if (evento.has("creationDate"))
+                                        creationDate = evento.getLong("creationDate");
+                                    if (evento.has("meetupDate"))
+                                        meetupDate = evento.getLong("meetupDate");
+                                    if (evento.has("radius"))
+                                        radius = evento.getLong("radius");
+                                    if (evento.has("endDate"))
+                                        endDate = evento.getLong("endDate");
+                                    if (evento.has("image_uri"))
+                                        image_uri = evento.getString("image_uri");
+                                    if (evento.has("weather"))
+                                        weather = evento.getString("weather");
+                                    if (evento.has("hasInterest"))
+                                        hasInterest = evento.getBoolean("hasInterest");
+
+                                    if (evento.has("hasConfirmation"))
+                                        hasConfirmation = evento.getBoolean("hasConfirmation");
+
+
+                                    if (evento.has("interests")) {
+                                        JSONArray interest = evento.getJSONArray("interests");
+                                        for (int a = 0; a < interest.length(); a++)
+                                            interests.add(interest.getString(a));
+                                    }
+
+                                    if (evento.has("confirmations")) {
+                                        JSONArray confirmation = evento.getJSONArray("confirmations");
+                                        for (int a = 0; a < confirmation.length(); a++)
+                                            confirmations.add(confirmation.getString(a));
+                                    }
+
+                                    if (evento.has("admin")) {
+                                        JSONArray admins = evento.getJSONArray("admin");
+                                        for (int a = 0; a < admins.length(); a++)
+                                            admin.add(admins.getString(a));
+                                    }
+
+                                    if (evento.has("meetupPoint")) {
+                                        JSONObject coordinates = evento.getJSONObject("meetupPoint");
+                                        latitudeMeetUp = coordinates.getDouble("latitude");
+                                        longitudeMeetUp = coordinates.getDouble("longitude");
+                                    }
+
+                                    if (evento.has("center")) {
+                                        JSONObject coordinates = evento.getJSONObject("center");
+                                        latitudeCenter = coordinates.getDouble("latitude");
+                                        longitudeCenter = coordinates.getDouble("longitude");
+                                    }
+
+                                    if (evento.has("area")) {
+                                        JSONArray are = evento.getJSONArray("area");
+                                        for (int c = 0; c < are.length(); c++) {
+                                            JSONObject coords = are.getJSONObject(c);
+                                            double lat = coords.getDouble("latitude");
+                                            double lon = coords.getDouble("longitude");
+                                            area.add(new LatLng(lat, lon));
+                                        }
+                                    }
+
+
+                                    Evento evento1 = new Evento(name, creator, creationDate, meetupDate, endDate,
+                                            interests, confirmations, admin, id, location, alert, description, weather, image_uri,
+                                            latitudeMeetUp, longitudeMeetUp, latitudeCenter, longitudeCenter, radius, hasConfirmation,
+                                            hasInterest, area);
+
+                                    if (image_uri != null)
+                                        receberImagemVolleyEvento(evento1);
+                                    else
+                                        evento1.setImageID(R.drawable.ic_baseline_calendar_eventos_24px);
+
+                                    if (!FeedEventosActivity.eventosList.contains(evento1)) {
+                                        FeedEventosActivity.eventosList.add(evento1);
+                                        mClusterManagerEvento.addItem(evento1);
+                                    }
+                                    FeedEventosActivity.adapter.notifyDataSetChanged();
+
+                                }
+                            }
+
+                        } else {
+                            isFinishedEventos = true;
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+
+                    }
+                }
+            });
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void receberImagemVolleyEvento(final Evento item) {
+        String tag_json_obj = "octect_request";
+        String url = item.getImage_uri();
+
+
+        final String token = getSharedPreferences("Prefs", MODE_PRIVATE).getString("tokenID", "erro");
+        ByteRequest stringRequest = new ByteRequest(Request.Method.GET, url, new Response.Listener<byte[]>() {
+
+            @Override
+            public void onResponse(byte[] response) {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(response, 0, response.length);
+                FeedEventosActivity.eventosList.get(FeedEventosActivity.eventosList.indexOf(item)).setBitmap(response);
+                FeedEventosActivity.adapter.notifyDataSetChanged();
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("erroIMAGEMocorrencia", "Error: " + error.getMessage());
+
+                item.setImageID(R.drawable.ic_baseline_calendar_eventos_24px);
+
+                FeedEventosActivity.adapter.notifyDataSetChanged();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+
+        };
+        AppController.getInstance().addToRequestQueue(stringRequest, tag_json_obj);
 
     }
 
