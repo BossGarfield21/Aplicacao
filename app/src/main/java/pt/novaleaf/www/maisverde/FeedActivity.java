@@ -168,7 +168,7 @@ public class FeedActivity extends AppCompatActivity
                             Intent intent = new Intent(FeedActivity.this, CriarOcorrenciaActivity.class);
                             intent.putExtra("ocorrencia", (Serializable) itemm);
                             startActivity(intent);
-                        } else if (item.getItemId() == R.id.editar_coordenadas){
+                        } else if (item.getItemId() == R.id.editar_coordenadas) {
                             Intent intent = new Intent(FeedActivity.this, MapsActivity.class);
                             intent.putExtra("ocorrencia", (Serializable) itemm);
                             startActivity(intent);
@@ -816,7 +816,7 @@ public class FeedActivity extends AppCompatActivity
 
     }
 
-    private void apagarOcorrenciaVolley(final Ocorrencia ocorrencia){
+    private void apagarOcorrenciaVolley(final Ocorrencia ocorrencia) {
 
         String tag_json_obj = "json_obj_req";
         String url = "https://novaleaf-197719.appspot.com/rest/withtoken/mapsupport/deletemarker?markerid="
@@ -830,7 +830,8 @@ public class FeedActivity extends AppCompatActivity
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        ocorrencias.remove(ocorrencia);
+                        tempOcorrencias.remove(ocorrencias.get(ocorrencias.indexOf(ocorrencia)));
+                        ocorrencias.remove(ocorrencias.get(ocorrencias.indexOf(ocorrencia)));
                         adapter.notifyDataSetChanged();
 
                     }

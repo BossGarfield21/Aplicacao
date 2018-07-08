@@ -557,7 +557,7 @@ public class MapsActivity extends AppCompatActivity
         alert
                 .setMessage("Escolha a localização da ocorrência")
                 .setCancelable(true)
-                .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
 

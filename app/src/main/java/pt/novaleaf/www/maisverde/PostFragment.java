@@ -127,7 +127,7 @@ public class PostFragment extends Fragment {
 
         void onCommentInteraction(Post item);
 
-        void onEditInteraction(Post item);
+        void onEditInteraction(Post item, View view);
 
         void onImagemInteraction(Post item);
     }

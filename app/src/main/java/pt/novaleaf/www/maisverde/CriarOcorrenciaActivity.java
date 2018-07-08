@@ -65,6 +65,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import utils.ByteRequest;
 
 
 /**
@@ -772,6 +773,7 @@ public class CriarOcorrenciaActivity extends AppCompatActivity implements Serial
                         public void onResponse(JSONObject response) {
 
                             try {
+                                Log.d("YA IMAGEM", response.toString());
 
 
                                 String id = null;
@@ -781,6 +783,7 @@ public class CriarOcorrenciaActivity extends AppCompatActivity implements Serial
                                 String type = null;
                                 boolean hasLiked = false;
                                 String image_uri = null;
+                                String user_image = null;
                                 List<String> likers = new ArrayList<>();
                                 long creationDate = 0;
                                 String district = null;
@@ -860,12 +863,20 @@ public class CriarOcorrenciaActivity extends AppCompatActivity implements Serial
                                         likers.add(lik.getString(a));
                                 }
 
+                                JSONObject imageuser = null;
+                                if (ocorrencia.has("user_image")) {
+                                    imageuser = ocorrencia.getJSONObject("user_image");
+                                    if (imageuser.has("value"))
+                                        user_image = imageuser.getString("value");
+                                    Log.d("user image bina:", user_image);
+                                }
+
                                 if (ocorrencia.has("radius"))
                                     radius = ocorrencia.getDouble("radius");
 
                                 Ocorrencia ocorrencia1 = new Ocorrencia(titulo, risk, "23:12", id,
                                         descricao, owner, likers, status, latitude, longitude, likes, type, image_uri,
-                                        comentarios, creationDate, district, hasLiked, sharedPreferences.getString("image_user", null), radius);
+                                        comentarios, creationDate, district, hasLiked, user_image, radius);
                                 if (ocorrencia1.getImage_uri() != null)
                                     ocorrencia1.setBitmap(imageBytes);
                                 else {
@@ -880,6 +891,9 @@ public class CriarOcorrenciaActivity extends AppCompatActivity implements Serial
                                         ocorrencia1.setImageID(R.mipmap.ic_grass_foreground);
                                     }
                                 }
+
+                                if (user_image != null)
+                                    receberImagemUserVolley(ocorrencia1);
 
 
                                 if (!FeedActivity.ocorrencias.contains(ocorrencia1))
@@ -973,6 +987,74 @@ public class CriarOcorrenciaActivity extends AppCompatActivity implements Serial
             e.printStackTrace();
         }
     }
+
+
+    private void receberImagemUserVolley(final Post item) {
+        String tag_json_obj = "octect_request";
+        final String url = item.getUser_image();
+
+
+        final String token = getSharedPreferences("Prefs", MODE_PRIVATE).getString("tokenID", "erro");
+        ByteRequest stringRequest = new ByteRequest(Request.Method.GET, url, new Response.Listener<byte[]>() {
+
+            @Override
+            public void onResponse(byte[] response) {
+                item.setBitmapUser(response);
+                GrupoFeedActivity.adapter.notifyDataSetChanged();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("erroIMAGEMPost", "Error: " + error.getMessage());
+
+
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+
+        };
+        AppController.getInstance().addToRequestQueue(stringRequest, tag_json_obj);
+
+    }
+
+    private void receberImagemUserVolley(final Ocorrencia item) {
+        String tag_json_obj = "octect_request";
+        final String url = item.getUser_image();
+
+
+        final String token = getSharedPreferences("Prefs", MODE_PRIVATE).getString("tokenID", "erro");
+        ByteRequest stringRequest = new ByteRequest(Request.Method.GET, url, new Response.Listener<byte[]>() {
+
+            @Override
+            public void onResponse(byte[] response) {
+                FeedActivity.ocorrencias.get(FeedActivity.ocorrencias.indexOf(item)).setBitmapUser(response);
+                FeedActivity.tempOcorrencias.get(FeedActivity.ocorrencias.indexOf(item)).setBitmapUser(response);
+                FeedActivity.adapter.notifyDataSetChanged();
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("erroIMAGEMocorrencia", "Error: " + error.getMessage());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+
+        };
+        AppController.getInstance().addToRequestQueue(stringRequest, tag_json_obj);
+
+    }
+
 
 
     /**

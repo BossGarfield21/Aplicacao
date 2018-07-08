@@ -8,10 +8,12 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -111,9 +113,24 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
             }
 
             @Override
-            public void onEditInteraction(Post item) {
-                Toast.makeText(GrupoFeedActivity.this, "olá", Toast.LENGTH_SHORT).show();
+            public void onEditInteraction(final Post itemm, View view) {
 
+                PopupMenu popup = new PopupMenu(GrupoFeedActivity.this, view);
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+
+                        if (item.getItemId() == R.id.apagar_post) {
+
+                            apagarPostVolley(itemm);
+                        }
+
+                        return false;
+                    }
+                });// to implement on click event on items of menu
+                MenuInflater inflater = popup.getMenuInflater();
+                inflater.inflate(R.menu.menu_apagar_post, popup.getMenu());
+                popup.show();
             }
 
             @Override
@@ -710,5 +727,44 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
         AppController.getInstance().addToRequestQueue(stringRequest, tag_json_obj);
 
     }
+
+    private void apagarPostVolley(final Post post){
+
+        String tag_json_obj = "json_obj_req";
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/delete_publication?" +
+                "group_id=" + novoGrupo.getGroupId() + "&publication_id=" + post.getId();
+
+        SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+        final String token = sharedPreferences.getString("tokenID", "erro");
+
+
+        StringRequest jsonObjectRequest = new StringRequest(Request.Method.DELETE, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        posts.remove(post);
+                        adapter.notifyDataSetChanged();
+
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                VolleyLog.d("erroJoingrupo", "Error: " + error.getMessage());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+
+        };
+        AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
+
+    }
+
 
 }

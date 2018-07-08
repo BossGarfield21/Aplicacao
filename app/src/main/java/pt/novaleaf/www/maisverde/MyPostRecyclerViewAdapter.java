@@ -144,7 +144,7 @@ public class MyPostRecyclerViewAdapter extends RecyclerView.Adapter<MyPostRecycl
                 if (mListener != null) {
                     if (mValues.get(position).getAuthor().equals(mContext.
                             getSharedPreferences("Prefs", Context.MODE_PRIVATE).getString("username", "")))
-                        mListener.onEditInteraction(mValues.get(position));
+                        mListener.onEditInteraction(mValues.get(position), holder.mImageDef);
                 }
             }
         });

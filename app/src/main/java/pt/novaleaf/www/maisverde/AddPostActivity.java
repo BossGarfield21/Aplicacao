@@ -562,8 +562,6 @@ public class AddPostActivity extends AppCompatActivity {
                                 post1.setBitmap(imageBytes);
                             if (user_image != null)
                                 receberImagemUserVolley(post1);
-                            else
-                                Toast.makeText(AddPostActivity.this, "olé", Toast.LENGTH_SHORT).show();
 
                             GrupoFeedActivity.posts.add(0, post1);
                             GrupoFeedActivity.adapter.notifyDataSetChanged();
