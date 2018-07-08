@@ -118,6 +118,7 @@ public class AdminGrupoConvitesActivity extends AppCompatActivity implements Ser
                         try {
                             if (!response.isNull("list") && response.getJSONArray("list").length()>0) {
                                 JSONArray list = response.getJSONArray("list");
+                                Log.d("Convites", response.toString());
                                 for (int i = 0; i < list.length(); i++) {
 
                                     String convite = list.getJSONObject(i).getString("username");

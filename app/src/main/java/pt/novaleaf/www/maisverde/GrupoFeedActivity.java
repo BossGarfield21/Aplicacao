@@ -49,7 +49,7 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
     private boolean isFinishedPosts = false;
     private String cursorPosts = "";
     Grupo group;
-    Grupo novoGrupo;
+    static Grupo novoGrupo;
 
 
     @Override
@@ -397,7 +397,7 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
 
         String tag_json_obj = "json_obj_req";
         String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/remove_like?group_id=" + group.getGroupId() +
-                "&publication=" + item.getId();
+                "&publication_id=" + item.getId();
 
         JSONObject grupo = new JSONObject();
         SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
@@ -471,7 +471,7 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
 
                     try {
                         JSONArray list = response.getJSONArray("list");
-                        if (!response.isNull("list"))
+                        if (!response.isNull("list") && list.length() > 0)
                             if (!isFinishedPosts) {
                                 isFinishedPosts = response.getBoolean("isFinished");
                                 Log.d("ACABOU???", String.valueOf(isFinishedPosts));
@@ -562,19 +562,18 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
                                         receberImagemUserVolley(post1);
 
 
-
                                     if (!posts.contains(post1))
                                         posts.add(post1);
-
-
-
 
 
                                     adapter.notifyDataSetChanged();
 
 
                                 }
+                                if (list.length() < 15)
+                                    isFinishedPosts = true;
                             }
+
 
                     } catch (JSONException e) {
                         e.printStackTrace();

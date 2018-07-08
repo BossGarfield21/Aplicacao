@@ -670,7 +670,8 @@ public class MapsActivity extends AppCompatActivity
 
                     lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-                    centerMapOnLocation(lastKnownLocation);
+                    if (lastKnownLocation != null)
+                        centerMapOnLocation(lastKnownLocation);
 
                     startMap();
 
@@ -807,7 +808,10 @@ public class MapsActivity extends AppCompatActivity
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currrPos, 15));
 
             } else {
-                currrPos = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+                if (lastKnownLocation != null)
+                    currrPos = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+                else
+                    currrPos = new LatLng(39.449439, -8.183010);
 
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currrPos, 10));
             }
@@ -1128,7 +1132,7 @@ public class MapsActivity extends AppCompatActivity
                                                 descricao, owner, likers, status, latitude, longitude, likes, type, image_uri,
                                                 comentarios, creationDate, district, hasLiked, user_image, radius);
                                         if (ocorrencia1.getImage_uri() != null) {
-                                            if (lruBitmapCache.getBitmap(ocorrencia1.getImage_uri())==null)
+                                            if (lruBitmapCache.getBitmap(ocorrencia1.getImage_uri()) == null)
                                                 receberImagemVolley(ocorrencia1);
                                             else {
                                                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -1148,15 +1152,14 @@ public class MapsActivity extends AppCompatActivity
                                             }
                                         }
                                         if (ocorrencia1.getUser_image() != null && !FeedActivity.ocorrencias.contains(ocorrencia1)) {
-                                            if (lruBitmapCache.getBitmap(ocorrencia1.getUser_image())==null)
+                                            if (lruBitmapCache.getBitmap(ocorrencia1.getUser_image()) == null)
                                                 receberImagemUserVolley(ocorrencia1);
                                             else {
                                                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                                                 lruBitmapCache.getBitmap(ocorrencia1.getUser_image()).compress(Bitmap.CompressFormat.PNG, 100, stream);
                                                 ocorrencia1.setBitmapUser(stream.toByteArray());
                                             }
-                                        }
-                                        else {
+                                        } else {
                                             ocorrencia1.setImageIDUser(R.drawable.ic_person_black_24dp);
                                         }
 

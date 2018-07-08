@@ -48,7 +48,6 @@ import java.util.concurrent.ExecutionException;
 import utils.ByteRequest;
 
 
-
 /**
  * Author: Hugo Mochao
  * Atividade relativa aos grupos
@@ -133,7 +132,7 @@ public class GruposListActivity extends AppCompatActivity
             @Override
 
             public void run() {
-                for (int i=0; i<4 && !isFinishedGrupos; i++)
+                for (int i = 0; i < 4 && !isFinishedGrupos; i++)
                     volleyGetGrupos();
             }
 
@@ -339,12 +338,12 @@ public class GruposListActivity extends AppCompatActivity
             startActivity(i);
             finish();
 
-        } else if (id == R.id.nav_acerca){
+        } else if (id == R.id.nav_acerca) {
             Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://anovaleaf.ddns.net"));
             startActivity(i);
-        } else if (id == R.id.nav_help){
+        } else if (id == R.id.nav_help) {
             return true;
-        } else if (id == R.id.nav_end){
+        } else if (id == R.id.nav_end) {
 
             final AlertDialog.Builder alert = new AlertDialog.Builder(GruposListActivity.this);
             alert.setTitle("Terminar sessão");
@@ -420,7 +419,7 @@ public class GruposListActivity extends AppCompatActivity
                 public void run() {
 
                     try {
-                        if (!response.isNull("list")) {
+                        if (!response.isNull("list") && list.length()>0) {
                             if (!isFinishedGrupos) {
 
                                 for (int i = 0; i < list.length(); i++) {
@@ -499,6 +498,8 @@ public class GruposListActivity extends AppCompatActivity
                                 isFinishedGrupos = response.getBoolean("isFinished");
 
                                 Log.d("ACABOU???", String.valueOf(isFinishedGrupos));
+                                if (list.length() < 15)
+                                    isFinishedGrupos = true;
                             } else {
                                 isFinishedGrupos = true;
                             }

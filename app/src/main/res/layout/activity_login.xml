@@ -48,7 +48,6 @@
                 android:hint="Username"
                 android:maxLines="1"
                 android:singleLine="true"
-                android:text="admin"
                 android:textColor="@color/charcoal"
 
                 android:textColorHighlight="@color/charcoal"
@@ -74,11 +73,10 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto_light"
                 android:hint="Password"
+                android:inputType="textPassword"
                 android:maxLines="1"
                 android:singleLine="true"
-                android:text="adminadmin"
                 android:textColor="@color/charcoal"
-                android:inputType="textPassword"
                 android:textColorHighlight="@color/charcoal"
                 android:textColorHint="@color/charcoal"
                 android:textColorLink="@color/charcoal"
@@ -86,6 +84,14 @@
                 android:theme="@style/InputTextCustom"
                 android:typeface="normal"/>
         </android.support.design.widget.TextInputLayout>
+
+        <CheckBox
+            android:id="@+id/checkBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/roboto_light"
+            android:text="Guardar credenciais"/>
 
         <Button
             android:id="@+id/btn_login"

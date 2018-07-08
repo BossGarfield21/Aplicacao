@@ -16,14 +16,29 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class AdministrarGrupoActivity extends AppCompatActivity implements Serializable{
+public class AdministrarGrupoActivity extends AppCompatActivity implements Serializable {
 
 
     ListView listView;
+    static Grupo grupo;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,7 +58,7 @@ public class AdministrarGrupoActivity extends AppCompatActivity implements Seria
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        final Grupo grupo = (Grupo) getIntent().getSerializableExtra("grupo");
+        grupo = (Grupo) getIntent().getSerializableExtra("grupo");
 
         Log.d("TAS FIXE??", grupo.getAdmins().get(0));
 
@@ -53,7 +68,7 @@ public class AdministrarGrupoActivity extends AppCompatActivity implements Seria
         lista.add("Gerir membros");
         lista.add("Convites enviados");
 //        if (grupo.getPrivacy().equals("public"))
-          lista.add("Pedidos pendentes");
+        lista.add("Pedidos pendentes");
         listView = (ListView) findViewById(R.id.listAdmin);
 
         ArrayAdapter adapter = new ArrayAdapter(this,
@@ -65,15 +80,15 @@ public class AdministrarGrupoActivity extends AppCompatActivity implements Seria
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = null;
-                if (i==0)
+                if (i == 0)
                     intent = new Intent(AdministrarGrupoActivity.this, AdminGrupoConvidarActivity.class);
-                else if (i==1)
+                else if (i == 1)
                     intent = new Intent(AdministrarGrupoActivity.this, AdminGrupoAtualizarActivity.class);
-                else if (i==2)
+                else if (i == 2)
                     intent = new Intent(AdministrarGrupoActivity.this, AdminGrupoMembrosActivity.class);
-                else if (i==3)
+                else if (i == 3)
                     intent = new Intent(AdministrarGrupoActivity.this, AdminGrupoConvitesActivity.class);
-                else if (i==4)
+                else if (i == 4)
                     intent = new Intent(AdministrarGrupoActivity.this, AdminGrupoPedidosActivity.class);
 
 
@@ -84,8 +99,6 @@ public class AdministrarGrupoActivity extends AppCompatActivity implements Seria
 
 
     }
-
-
 
 
     @Override
@@ -104,9 +117,7 @@ public class AdministrarGrupoActivity extends AppCompatActivity implements Seria
 
         if (id == R.id.acabar_grupo) {
             return true;
-        }
-
-        else if (id == R.id.action_logout) {
+        } else if (id == R.id.action_logout) {
             //TODO: sair da app
             final AlertDialog.Builder alert = new AlertDialog.Builder(AdministrarGrupoActivity.this);
             alert.setTitle("Terminar sessão");
@@ -137,4 +148,57 @@ public class AdministrarGrupoActivity extends AppCompatActivity implements Seria
 
         return super.onOptionsItemSelected(item);
     }
+
+
+    private void volleyDissolverGrupo() {
+
+        String tag_json_obj = "json_request";
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/gadmin/dissolve?group_id="
+                + grupo.getGroupId();
+
+        Log.d("ché bate só", url);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+        JSONObject eventos = new JSONObject();
+        final String token = sharedPreferences.getString("tokenID", "erro");
+
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, eventos,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                        GrupoFeedActivity.posts.remove(grupo);
+                        GrupoFeedActivity.adapter.notifyDataSetChanged();
+
+                        finish();
+                    }
+
+                }, new Response.ErrorListener()
+
+        {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("erroLOGIN", "Error: " + error.getMessage());
+            }
+        })
+
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+        };
+
+
+        AppController.getInstance().
+
+                addToRequestQueue(jsonObjectRequest, tag_json_obj);
+    }
+
+
 }

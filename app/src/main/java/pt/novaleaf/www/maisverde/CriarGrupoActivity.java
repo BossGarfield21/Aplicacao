@@ -62,14 +62,8 @@ public class CriarGrupoActivity extends AppCompatActivity implements Serializabl
     private Switch mPrivacidade;
     private PopupMenu popup = null;
     private String distrito = "";
-    private boolean isImage = false;
     LinearLayout linearLayout;
-    byte[] imageBytes;
-    private String mCurrentPhotoPath;
-    static final int REQUEST_TAKE_PHOTO = 1;
-    static final int PICK_IMAGE = 2;
-    private ImageButton imageButton;
-    private ImageView imageView;
+
 
 
     @Override
@@ -95,8 +89,6 @@ public class CriarGrupoActivity extends AppCompatActivity implements Serializabl
         mNomeGrupo = (AutoCompleteTextView) findViewById(R.id.input_group);
         mPrivacidade = (Switch) findViewById(R.id.switchGoups);
         linearLayout = (LinearLayout) findViewById(R.id.linearCriarGrupo);
-        imageView = (ImageView) findViewById(R.id.imageView3);
-        imageButton = (ImageButton) findViewById(R.id.imageButton);
 
         mButtonCriarGrupo.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,13 +105,6 @@ public class CriarGrupoActivity extends AppCompatActivity implements Serializabl
             }
         });
 
-        imageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                choosePicture();
-            }
-        });
 
     }
 
@@ -157,329 +142,6 @@ public class CriarGrupoActivity extends AppCompatActivity implements Serializabl
             popup.getMenu().getItem(0).setVisible(false);
         }
         popup.show();
-    }
-
-
-    private void takePic() {
-
-        if (!isImage) {
-            //Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            //startActivityForResult(intent, 0);
-
-            dispatchTakePictureIntent();
-        } else {
-            AlertDialog.Builder builder = new AlertDialog.Builder(CriarGrupoActivity.this);
-            builder.setTitle("Outra imagem")
-                    .setOnCancelListener(new DialogInterface.OnCancelListener() {
-                        @Override
-                        public void onCancel(DialogInterface dialogInterface) {
-                            if (isImage) {
-                                Snackbar snackbar = Snackbar
-                                        .make(linearLayout, "Fotografia escolhida", Snackbar.LENGTH_INDEFINITE)
-                                        .setAction("Escolher outra fotografia", new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View view) {
-                                                choosePicture();
-                                                //dispatchTakePictureIntent();
-                                            }
-                                        });
-
-                                snackbar.show();
-                            }
-                        }
-                    })
-                    .setCancelable(true)
-                    .setMessage("Tem a certeza de que quer tirar outra foto?\n" +
-                            "A foto tirada anteriormente será perdida")
-                    .setPositiveButton("Tirar outra", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            imageButton.setVisibility(View.GONE);
-                            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                            startActivityForResult(intent, 0);
-                        }
-                    })
-                    .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.dismiss();
-                        }
-                    });
-            builder.create().show();
-        }
-    }
-
-    private void chooseGalery() {
-
-        if (!isImage) {
-            //Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            //startActivityForResult(intent, 0);
-
-            Intent intent = new Intent();
-            intent.setType("image/*");
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-            startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
-        } else {
-            AlertDialog.Builder builder = new AlertDialog.Builder(CriarGrupoActivity.this);
-            builder.setTitle("Outra imagem")
-                    .setOnCancelListener(new DialogInterface.OnCancelListener() {
-                        @Override
-                        public void onCancel(DialogInterface dialogInterface) {
-                            if (isImage) {
-                                Snackbar snackbar = Snackbar
-                                        .make(linearLayout, "Fotografia escolhida", Snackbar.LENGTH_INDEFINITE)
-                                        .setAction("Escolher outra fotografia", new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View view) {
-                                                choosePicture();
-                                                //dispatchTakePictureIntent();
-                                            }
-                                        });
-
-                                snackbar.show();
-                            }
-                        }
-                    })
-                    .setCancelable(true)
-                    .setMessage("Tem a certeza de que quer escolher outra foto?\n" +
-                            "A foto tirada anteriormente será perdida")
-                    .setPositiveButton("Escolher outra", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            Intent intent = new Intent();
-                            intent.setType("image/*");
-                            intent.setAction(Intent.ACTION_GET_CONTENT);
-                            startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
-                        }
-                    })
-                    .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.dismiss();
-                        }
-                    });
-            builder.create().show();
-        }
-    }
-
-
-    private File createImageFile() throws IOException {
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
-
-        // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = image.getAbsolutePath();
-        return image;
-    }
-
-
-    private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            // Create the File where the photo should go
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                Log.d("che", ex.getMessage());
-                // Error occurred while creating the File
-            }
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this,
-                        "com.example.android.fileprovider",
-                        photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
-                imageButton.setVisibility(View.GONE);
-            }
-        }
-    }
-
-    public static Bitmap rotateImage(Bitmap source, float angle) {
-        Matrix matrix = new Matrix();
-        matrix.postRotate(angle);
-        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(),
-                matrix, true);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-
-        if (requestCode == 1) {
-            if (resultCode == RESULT_OK) {
-                ExifInterface ei = null;
-                try {
-                    ei = new ExifInterface(mCurrentPhotoPath);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION,
-                        ExifInterface.ORIENTATION_UNDEFINED);
-
-                Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
-
-                Bitmap rotatedBitmap = null;
-                switch (orientation) {
-
-                    case ExifInterface.ORIENTATION_ROTATE_90:
-                        rotatedBitmap = rotateImage(bitmap, 90);
-                        break;
-
-                    case ExifInterface.ORIENTATION_ROTATE_180:
-                        rotatedBitmap = rotateImage(bitmap, 180);
-                        break;
-
-                    case ExifInterface.ORIENTATION_ROTATE_270:
-                        rotatedBitmap = rotateImage(bitmap, 270);
-                        break;
-
-                    case ExifInterface.ORIENTATION_NORMAL:
-                    default:
-                        rotatedBitmap = bitmap;
-                }
-
-
-                imageView.setImageBitmap(rotatedBitmap);
-                isImage = true;
-                ByteArrayOutputStream bao = new ByteArrayOutputStream();
-                rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 50, bao);
-                imageBytes = bao.toByteArray();
-
-                Snackbar snackbar = Snackbar
-                        .make(linearLayout, "Fotografia captada", Snackbar.LENGTH_INDEFINITE)
-                        .setAction("Tirar outra fotografia", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                choosePicture();
-                                //dispatchTakePictureIntent();
-                            }
-                        });
-
-                snackbar.show();
-
-            } else {
-                if (!isImage)
-                    imageButton.setVisibility(View.VISIBLE);
-                else {
-                    Snackbar snackbar = Snackbar
-                            .make(linearLayout, "Fotografia captada", Snackbar.LENGTH_INDEFINITE)
-                            .setAction("Tirar outra fotografia", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    choosePicture();
-                                    //dispatchTakePictureIntent();
-                                }
-                            });
-
-                    snackbar.show();
-                }
-
-            }
-        } else if (requestCode == 2) {
-            if (resultCode == RESULT_OK) {
-                try {
-                    InputStream inputStream = this.getContentResolver().openInputStream(data.getData());
-                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                    imageView.setImageBitmap(bitmap);
-
-                    isImage = true;
-                    ByteArrayOutputStream bao = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, bao);
-                    imageBytes = bao.toByteArray();
-
-                    Snackbar snackbar = Snackbar
-                            .make(linearLayout, "Fotografia escolhida", Snackbar.LENGTH_INDEFINITE)
-                            .setAction("Escolher outra fotografia", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    choosePicture();
-                                    //dispatchTakePictureIntent();
-                                }
-                            });
-
-                    snackbar.show();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                if (!isImage)
-                    imageButton.setVisibility(View.VISIBLE);
-                else {
-                    Snackbar snackbar = Snackbar
-                            .make(linearLayout, "Fotografia escolhida", Snackbar.LENGTH_INDEFINITE)
-                            .setAction("Escolher outra fotografia", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    choosePicture();
-                                    //dispatchTakePictureIntent();
-                                }
-                            });
-
-                    snackbar.show();
-                }
-
-            }
-        } else {
-            Snackbar snackbar = Snackbar
-                    .make(linearLayout, "Fotografia escolhida", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Escolher outra fotografia", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            choosePicture();
-                            //dispatchTakePictureIntent();
-                        }
-                    });
-
-            snackbar.show();
-        }
-    }
-
-    private void choosePicture() {
-
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(CriarGrupoActivity.this);
-        builder.setTitle("Escolher foto")
-                .setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialogInterface) {
-                        if (isImage) {
-                            Snackbar snackbar = Snackbar
-                                    .make(linearLayout, "Fotografia escolhida", Snackbar.LENGTH_INDEFINITE)
-                                    .setAction("Escolher outra fotografia", new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            choosePicture();
-                                            //dispatchTakePictureIntent();
-                                        }
-                                    });
-
-                            snackbar.show();
-                        }
-                    }
-                })
-                .setCancelable(true)
-                .setMessage("Tirar foto, ou escolher da galeria?")
-                .setPositiveButton("Tirar foto", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        takePic();
-                    }
-                })
-                .setNegativeButton("Escolher da galeria", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        chooseGalery();
-                    }
-                });
-        builder.create().show();
     }
 
 
@@ -534,13 +196,77 @@ public class CriarGrupoActivity extends AppCompatActivity implements Serializabl
         final String token = sharedPreferences.getString("tokenID", "erro");
 
 
-        StringRequest jsonObjectRequest = new StringRequest(Request.Method.POST, url,
-                new Response.Listener<String>() {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(),
+                new Response.Listener<JSONObject>() {
                     @Override
-                    public void onResponse(String response) {
-                        Intent i = new Intent(CriarGrupoActivity.this, GruposListActivity.class);
-                        startActivity(i);
-                        finish();
+                    public void onResponse(JSONObject response) {
+                        try {
+
+
+                            String name = null;
+                            long numbMembers = 0;
+                            long points = 0;
+                            long creationDate = 0;
+                            String groupId = null;
+                            String privacy = null;
+                            String image_uri = null;
+                            String distrito = null;
+                            boolean isMember = false;
+                            boolean isAdmin = false;
+                            boolean hasRequested = false;
+
+                            JSONObject grupo = response;
+                            if (grupo.has("groupId"))
+                                groupId = grupo.getString("groupId");
+                            if (grupo.has("name"))
+                                name = grupo.getString("name");
+                            if (grupo.has("creationDate"))
+                                creationDate = grupo.getLong("creationDate");
+                            if (grupo.has("points"))
+                                points = grupo.getLong("points");
+                            JSONObject image = null;
+                            if (grupo.has("image_uri")) {
+                                image = grupo.getJSONObject("image_uri");
+                                if (image.has("value"))
+                                    image_uri = image.getString("value");
+                            }
+                            if (grupo.has("groupId"))
+                                groupId = grupo.getString("groupId");
+                            if (grupo.has("privacy"))
+                                privacy = grupo.getString("privacy");
+                            if (grupo.has("district"))
+                                distrito = grupo.getString("district");
+
+
+                            if (grupo.has("isAdmin")) {
+                                isAdmin = grupo.getBoolean("isAdmin");
+                            }
+                            if (grupo.has("isMember")) {
+                                isMember = grupo.getBoolean("isMember");
+                            }
+                            if (grupo.has("numbMembers")) {
+                                numbMembers = grupo.getLong("numbMembers");
+                            }
+                            if (grupo.has("hasRequested")) {
+                                hasRequested = grupo.getBoolean("hasRequested");
+                            }
+
+                            Log.d("name", name);
+                            Log.d("groupId", groupId);
+//                                    Log.d("privacy", privacy);
+
+                            Grupo grupo1 = new Grupo(name, null, null, points,
+                                    creationDate, image_uri, groupId, privacy, distrito, isAdmin, isMember,
+                                    numbMembers, hasRequested);
+                            GruposListActivity.grupos.add(grupo1);
+                            GruposListActivity.adapter.notifyDataSetChanged();
+
+                            Intent i = new Intent(CriarGrupoActivity.this, GruposListActivity.class);
+                            startActivity(i);
+                            finish();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }, new Response.ErrorListener() {
 

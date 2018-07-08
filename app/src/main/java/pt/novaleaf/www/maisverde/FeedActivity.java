@@ -30,6 +30,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -38,6 +39,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.StringRequest;
@@ -578,7 +580,7 @@ public class FeedActivity extends AppCompatActivity
                                             descricao, owner, likers, status, latitude, longitude, likes, type, image_uri,
                                             comentarios, creationDate, district, hasLiked, user_image, radius);
                                     if (ocorrencia1.getImage_uri() != null) {
-                                        if (lruBitmapCache.getBitmap(ocorrencia1.getImage_uri())==null)
+                                        if (lruBitmapCache.getBitmap(ocorrencia1.getImage_uri()) == null)
                                             receberImagemVolley(ocorrencia1);
                                         else {
                                             Log.d("Usou a cache", "BOA!!!");
@@ -600,7 +602,7 @@ public class FeedActivity extends AppCompatActivity
                                     }
 
                                     if (ocorrencia1.getUser_image() != null && !ocorrencias.contains(ocorrencia1)) {
-                                        if (lruBitmapCache.getBitmap(ocorrencia1.getUser_image())==null)
+                                        if (lruBitmapCache.getBitmap(ocorrencia1.getUser_image()) == null)
                                             receberImagemUserVolley(ocorrencia1);
                                         else {
                                             Log.d("Usou a cache", "BOA!!!");
@@ -608,8 +610,7 @@ public class FeedActivity extends AppCompatActivity
                                             lruBitmapCache.getBitmap(ocorrencia1.getUser_image()).compress(Bitmap.CompressFormat.PNG, 100, stream);
                                             ocorrencia1.setBitmapUser(stream.toByteArray());
                                         }
-                                    }
-                                    else {
+                                    } else {
                                         ocorrencia1.setImageIDUser(R.drawable.ic_person_black_24dp);
                                     }
 
@@ -618,7 +619,7 @@ public class FeedActivity extends AppCompatActivity
                                         ocorrencias.add(ocorrencia1);
                                     Log.d("ID", id);
                                     Log.d("titulo", titulo);
-                                    if (titulo.contains("Árvore")){
+                                    if (titulo.contains("Árvore")) {
                                         Log.d("imagem oco", image_uri);
                                         Log.d("imagem minha", user_image);
                                     }
@@ -626,6 +627,8 @@ public class FeedActivity extends AppCompatActivity
                                     adapter.notifyDataSetChanged();
 
                                 }
+
+                            Log.d("cache", lruBitmapCache.hitCount() + " hits");
                             showDistrict(distrito);
                             isFinishedOcorrencias = response.getBoolean("isFinished");
                             if (list.length() < 15 || isFinishedOcorrencias)
@@ -729,7 +732,7 @@ public class FeedActivity extends AppCompatActivity
 
     private void receberImagemVolley(final Ocorrencia item) {
         String tag_json_obj = "octect_request";
-        String url = item.getImage_uri();
+        final String url = item.getImage_uri();
 
 
         final String token = getSharedPreferences("Prefs", MODE_PRIVATE).getString("tokenID", "erro");
@@ -739,7 +742,7 @@ public class FeedActivity extends AppCompatActivity
             public void onResponse(byte[] response) {
                 item.setBitmap(response);
                 adapter.notifyDataSetChanged();
-                lruBitmapCache.putBitmap(item.getImage_uri(), BitmapFactory.decodeByteArray(response, 0, response.length));
+                lruBitmapCache.putBitmap(url, BitmapFactory.decodeByteArray(response, 0, response.length));
 
 
             }
@@ -774,7 +777,7 @@ public class FeedActivity extends AppCompatActivity
 
     private void receberImagemUserVolley(final Ocorrencia item) {
         String tag_json_obj = "octect_request";
-        String url = item.getUser_image();
+        final String url = item.getUser_image();
 
 
         final String token = getSharedPreferences("Prefs", MODE_PRIVATE).getString("tokenID", "erro");
@@ -784,7 +787,9 @@ public class FeedActivity extends AppCompatActivity
             public void onResponse(byte[] response) {
                 item.setBitmapUser(response);
                 adapter.notifyDataSetChanged();
-                lruBitmapCache.putBitmap(item.getUser_image(), BitmapFactory.decodeByteArray(response, 0, response.length));
+                lruBitmapCache.putBitmap(url, BitmapFactory.decodeByteArray(response, 0, response.length));
+                Log.d("cache", lruBitmapCache.hitCount() + " hits");
+
 
             }
         }, new Response.ErrorListener() {

@@ -102,8 +102,6 @@ public class PerfilActivity extends AppCompatActivity
         String image = getSharedPreferences("Prefs", MODE_PRIVATE).getString("image_user", null);
         if (image!=null)
             receberImagemVolley(image);
-        else
-            Toast.makeText(this, "NULL", Toast.LENGTH_SHORT).show();
 
         mImage.setOnLongClickListener(new View.OnLongClickListener() {
             @Override

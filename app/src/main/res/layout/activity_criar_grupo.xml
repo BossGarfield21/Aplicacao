@@ -58,28 +58,6 @@
             android:hint="Grupo privado"
             android:textColor="@color/charcoal"/>
 
-        <RelativeLayout
-            android:id="@+id/relativeAddPost"
-            android:layout_width="match_parent"
-            android:layout_height="171dp"
-            android:layout_marginEnd="@dimen/activity_horizontal_margin"
-            android:layout_marginStart="@dimen/activity_horizontal_margin"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayout">
-
-        <ImageButton
-            android:id="@+id/imageButton"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:srcCompat="@drawable/ic_menu_camera"/>
-
-        <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-        </RelativeLayout>
-
         <Button
             android:id="@+id/bDistritos"
             android:layout_width="match_parent"

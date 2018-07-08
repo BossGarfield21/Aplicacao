@@ -32,6 +32,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -89,6 +90,7 @@ public class LoginActivity extends AppCompatActivity  {
     private View mLoginFormView;
     private ImageView mLogoView;
     private Context mContext;
+    private CheckBox mCheckBox;
 
 
     @Override
@@ -97,6 +99,7 @@ public class LoginActivity extends AppCompatActivity  {
         setContentView(R.layout.activity_login);
         // Set up the login form.
         mUsernameView = (AutoCompleteTextView) findViewById(R.id.username);
+
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -109,6 +112,14 @@ public class LoginActivity extends AppCompatActivity  {
                 return false;
             }
         });
+
+        mCheckBox = (CheckBox) findViewById(R.id.checkBox);
+        boolean isChecked = getSharedPreferences("Prefs", MODE_PRIVATE).getBoolean("checked", false);
+        if (isChecked){
+            mCheckBox.setChecked(true);
+            mUsernameView.setText(getSharedPreferences("Prefs", MODE_PRIVATE).getString("username", ""));
+            mPasswordView.setText(getSharedPreferences("Prefs", MODE_PRIVATE).getString("password", ""));
+        }
 
         Button mEmailSignInButton = (Button) findViewById(R.id.btn_login);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
@@ -162,18 +173,18 @@ public class LoginActivity extends AppCompatActivity  {
 
         // Check for a valid password, if the user entered one.
         if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
+            mPasswordView.setError("Password inválida");
             focusView = mPasswordView;
             cancel = true;
         }
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
-            mUsernameView.setError(getString(R.string.error_field_required));
+            mUsernameView.setError("Campo não pode estar vazio");
             focusView = mUsernameView;
             cancel = true;
         } else if (!isEmailValid(email)) {
-            mUsernameView.setError(getString(R.string.error_invalid_email));
+            mUsernameView.setError("Username inválido");
             focusView = mUsernameView;
             cancel = true;
         }
@@ -217,6 +228,11 @@ public class LoginActivity extends AppCompatActivity  {
                         public void onResponse(JSONObject response) {
                             editor.putString("username", email);
                             editor.putString("password", password);
+                            if (mCheckBox.isChecked())
+                                editor.putBoolean("checked", true);
+                            else
+                                editor.putBoolean("checked", false);
+
                             editor.commit();
                             pDialog.hide();
                             voleyGetInfo();
@@ -306,6 +322,8 @@ public class LoginActivity extends AppCompatActivity  {
                         editor.putString("mobile_phone", response.getString("mobile_phone"));
                     if (response.has("name"))
                         editor.putString("name", response.getString("name"));
+                    if (response.has("image_uri"))
+                        editor.putString("image_user", response.getString("image_uri"));
                     editor.commit();
                 } catch (JSONException e) {
                     e.printStackTrace();

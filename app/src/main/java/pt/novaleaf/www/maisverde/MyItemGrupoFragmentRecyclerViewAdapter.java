@@ -74,7 +74,7 @@ public class MyItemGrupoFragmentRecyclerViewAdapter extends RecyclerView.Adapter
         } else if (mValues.get(position).getImageID() != 0) {
             //holder.mImageLogo.setAdjustViewBounds(false);
 
-            holder.mImageLogo.setImageResource(mValues.get(position).getImageID());
+            holder.mImageLogo.setImageResource(R.drawable.ic_people_black_24dp);
 
         }
 

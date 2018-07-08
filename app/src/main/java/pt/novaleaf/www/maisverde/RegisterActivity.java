@@ -88,7 +88,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         // Check for a valid password, if the user entered one.
         if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
+            mPasswordView.setError("Password demasiado curta");
             focusView = mPasswordView;
             cancel = true;
         }
@@ -101,7 +101,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
+            mEmailView.setError("Campo não pode estar vazio");
             focusView = mEmailView;
             cancel = true;
         } else if (!isEmailValid(email)) {
@@ -112,7 +112,11 @@ public class RegisterActivity extends AppCompatActivity {
 
         //check for a valid username
         if (TextUtils.isEmpty(username)) {
-            mUsernameView.setError(getString(R.string.error_field_required));
+            mUsernameView.setError("Campo não pode estar vazio");
+            focusView = mUsernameView;
+            cancel = true;
+        } else if (username.length()>13){
+            mUsernameView.setError("Username demasiado grande");
             focusView = mUsernameView;
             cancel = true;
         }
@@ -194,7 +198,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
-        return password.length() > 4;
+        return password.length() > 6;
     }
 
     /**

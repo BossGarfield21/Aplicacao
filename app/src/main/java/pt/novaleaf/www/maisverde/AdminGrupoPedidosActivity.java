@@ -156,7 +156,7 @@ public class AdminGrupoPedidosActivity extends AppCompatActivity implements Seri
     private void volleyRejeitarUser(final String user) {
         String tag_json_obj = "json_request";
         final String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/gadmin/refuse?group_id=" +
-                grupo.getGroupId() + "&group_request=" + ids.get(user);
+                grupo.getGroupId() + "&request=" + ids.get(user);
 
         Log.d("ché bate só", url);
 

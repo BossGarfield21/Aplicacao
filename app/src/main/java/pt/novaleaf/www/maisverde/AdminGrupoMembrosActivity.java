@@ -134,7 +134,7 @@ public class AdminGrupoMembrosActivity extends AppCompatActivity implements Seri
 
     }
 
-    private void volleyExpulsarUser(String user) {
+    private void volleyExpulsarUser(final String user) {
 
         String tag_json_obj = "json_request";
         String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/gadmin/kick_user/?group_id="
@@ -151,7 +151,14 @@ public class AdminGrupoMembrosActivity extends AppCompatActivity implements Seri
 
                     @Override
                     public void onResponse(String response) {
+                        AdministrarGrupoActivity.grupo.getBase_users().remove(user);
+                        AdministrarGrupoActivity.grupo.getAdmins().remove(user);
 
+                        GrupoFeedActivity.novoGrupo.getBase_users().remove(user);
+                        GrupoFeedActivity.novoGrupo.getAdmins().remove(user);
+
+                        grupo.getBase_users().remove(user);
+                        grupo.getAdmins().remove(user);
 
                     }
                 }, new Response.ErrorListener() {
@@ -173,7 +180,7 @@ public class AdminGrupoMembrosActivity extends AppCompatActivity implements Seri
         AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
     }
 
-    private void volleyAdicionarAdmin(String user) {
+    private void volleyAdicionarAdmin(final String user) {
 
         String tag_json_obj = "json_request";
         String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/gadmin/new_admin/?group_id="
@@ -190,8 +197,13 @@ public class AdminGrupoMembrosActivity extends AppCompatActivity implements Seri
 
                     @Override
                     public void onResponse(String  response) {
+                        //AdministrarGrupoActivity.grupo.getBase_users().add(user);
+                        AdministrarGrupoActivity.grupo.getAdmins().add(user);
 
+                        //GrupoFeedActivity.novoGrupo.getBase_users().remove(user);
+                        GrupoFeedActivity.novoGrupo.getAdmins().add(user);
 
+                        grupo.getAdmins().add(user);
                     }
                 }, new Response.ErrorListener() {
 
@@ -213,7 +225,7 @@ public class AdminGrupoMembrosActivity extends AppCompatActivity implements Seri
     }
 
 
-    private void volleyRemoverAdmin(String user) {
+    private void volleyRemoverAdmin(final String user) {
 
         String tag_json_obj = "json_request";
         String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/gadmin/remove_admin/?group_id="
@@ -231,6 +243,12 @@ public class AdminGrupoMembrosActivity extends AppCompatActivity implements Seri
                     @Override
                     public void onResponse(String  response) {
 
+                        AdministrarGrupoActivity.grupo.getAdmins().remove(user);
+
+                        //GrupoFeedActivity.novoGrupo.getBase_users().remove(user);
+                        GrupoFeedActivity.novoGrupo.getAdmins().remove(user);
+
+                        grupo.getAdmins().remove(user);
 
                     }
                 }, new Response.ErrorListener() {

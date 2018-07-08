@@ -17,6 +17,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 
 import org.json.JSONObject;
 
@@ -81,10 +82,10 @@ public class AdminGrupoConvidarActivity extends AppCompatActivity implements Ser
         final String token = sharedPreferences.getString("tokenID", "erro");
 
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, grupo,
-                new Response.Listener<JSONObject>() {
+        StringRequest jsonObjectRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(String response) {
 
                         Toast.makeText(AdminGrupoConvidarActivity.this, user + " convidado", Toast.LENGTH_SHORT).show();
                     }
@@ -95,10 +96,11 @@ public class AdminGrupoConvidarActivity extends AppCompatActivity implements Ser
                 if (error.networkResponse != null) {
                     if (error.networkResponse.statusCode == 409)
                         Toast.makeText(AdminGrupoConvidarActivity.this, user + " já está no grupo ou já foi convidado", Toast.LENGTH_SHORT).show();
-                } else {
+                else {
 
-                    Toast.makeText(AdminGrupoConvidarActivity.this, "Username não encontrado", Toast.LENGTH_SHORT).show();
-                    VolleyLog.d("erroJoingrupo", "Error: " + error.getMessage());
+                        Toast.makeText(AdminGrupoConvidarActivity.this, "Username não encontrado", Toast.LENGTH_SHORT).show();
+                        VolleyLog.d("erroJoingrupo", "Error: " + error.getMessage());
+                    }
                 }
             }
         }) {

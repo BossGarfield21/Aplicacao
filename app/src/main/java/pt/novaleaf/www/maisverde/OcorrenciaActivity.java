@@ -28,6 +28,7 @@ public class OcorrenciaActivity extends AppCompatActivity implements Serializabl
     private TextView mTexto;
     private ImageView mMapa;
     private ImageView mImage;
+    private ImageView mImageStatus;
     private ImageView mImageTipo;
     private TextView mTipo;
     private TextView mCriador;
@@ -62,18 +63,25 @@ public class OcorrenciaActivity extends AppCompatActivity implements Serializabl
         mMapa = (ImageView) findViewById(R.id.imageView8);
         mImage = (ImageView) findViewById(R.id.ocorrenciaImagem);
         mImageTipo = (ImageView) findViewById(R.id.typeimageview);
+        mImageStatus = (ImageView) findViewById(R.id.imageStatus);
         mRisco = (TextView) findViewById(R.id.risktext);
         mTipo = (TextView) findViewById(R.id.textView5);
         mStatus = (TextView) findViewById(R.id.statusOcorrencia);
         mCriador = (TextView) findViewById(R.id.textCriador);
 
         long status = ocorrencia.getStatus();
-        if (status == 3)
+        if (status == 3) {
             mStatus.setText("Em aberto");
-        else if (status == 2)
+            mImageStatus.setImageResource(R.drawable.statuscirclered);
+        }
+        else if (status == 2) {
             mStatus.setText("Em tratamento");
-        else if (status == 1)
+            mImageStatus.setImageResource(R.drawable.statuscircleredyellow);
+        }
+        else if (status == 1) {
             mStatus.setText("Tratada");
+            mImageStatus.setImageResource(R.drawable.statuscircle);
+        }
 
         String tipo = ocorrencia.getType();
         if (tipo.equals("bonfire")) {
