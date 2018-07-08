@@ -69,6 +69,8 @@ public class MyPostRecyclerViewAdapter extends RecyclerView.Adapter<MyPostRecycl
                     }
                     mValues.get(position).like();
                     mListener.onLikeInteraction(mValues.get(position));
+
+                    holder.mTextNumLikes.setText(String.valueOf(mValues.get(position).getLikes()));
                 }
             }
         });

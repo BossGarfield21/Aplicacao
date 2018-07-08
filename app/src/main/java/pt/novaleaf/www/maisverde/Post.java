@@ -100,7 +100,13 @@ public class Post implements Serializable {
     }
 
     public void like() {
-        liked = !liked;
+        if (liked) {
+            liked = !liked;
+            likes--;
+        } else {
+            liked = !liked;
+            likes++;
+        }
     }
 
     public long getCreationDate() {

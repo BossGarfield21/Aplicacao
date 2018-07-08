@@ -1358,7 +1358,8 @@ public class MapsActivity extends AppCompatActivity
                                         FeedEventosActivity.eventosList.add(evento1);
                                         mClusterManagerEvento.addItem(evento1);
                                     }
-                                    FeedEventosActivity.adapter.notifyDataSetChanged();
+                                    if (FeedEventosActivity.adapter != null)
+                                        FeedEventosActivity.adapter.notifyDataSetChanged();
 
                                 }
                             }
