@@ -93,6 +93,7 @@ public class ComentariosActivity extends AppCompatActivity implements Serializab
                         volleyAdicionarComentarioOcorrencia(com);
                     } else if (post != null) {
 
+                        Log.d("enviar post", "nice");
                         volleyAdicionarComentarioPost(com);
                     }
                     View v = getCurrentFocus();
@@ -205,7 +206,7 @@ public class ComentariosActivity extends AppCompatActivity implements Serializab
             grupo.put("message", com.getMessage());
             grupo.put("image", com.getImage());
             grupo.put("creation_date", com.getCreation_date());
-            grupo.put("image", sharedPreferences.getString("image_user", null));
+            //grupo.put("image", sharedPreferences.getString("image_user", null));
             //grupo.put("id", com.getId());
             Log.d("A receber ocorrencia", "0");
 
@@ -268,14 +269,15 @@ public class ComentariosActivity extends AppCompatActivity implements Serializab
             grupo.put("message", com.getMessage());
             grupo.put("image", com.getImage());
             grupo.put("creation_date", com.getCreation_date());
-            grupo.put("id", com.getId());
-            grupo.put("image", sharedPreferences.getString("image_user", null));
+            //grupo.put("id", com.getId());
+            //grupo.put("image", sharedPreferences.getString("image_user", null));
 
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, url, grupo,
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
                             try {
+                                Log.d("receber post", "ok puto");
                                 comentarios.add(com);
                                 com.setId(response.getString("id"));
                                 int a = GrupoFeedActivity.posts.indexOf(post);
@@ -291,10 +293,8 @@ public class ComentariosActivity extends AppCompatActivity implements Serializab
 
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    if (error.networkResponse != null) {
-                        Toast.makeText(ComentariosActivity.this, "Falhou o envio", Toast.LENGTH_SHORT).show();
-                        VolleyLog.d("erroNOVAOCORRENCIA", "Error: " + error.getMessage());
-                    }
+                    Toast.makeText(ComentariosActivity.this, "Falhou o envio", Toast.LENGTH_SHORT).show();
+                    VolleyLog.d("erroNOVAOCORRENCIA", "Error: " + error.getMessage());
                 }
             }) {
                 @Override

@@ -69,9 +69,9 @@ public class PostFragment extends Fragment {
                 myRecyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
                 myRecyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
+            }/**
             myPostRecyclerViewAdapter = new MyPostRecyclerViewAdapter(listPosts, mListener);
-            myRecyclerView.setAdapter(myPostRecyclerViewAdapter);
+            myRecyclerView.setAdapter(myPostRecyclerViewAdapter);*/
         }
         return view;
     }
@@ -127,7 +127,7 @@ public class PostFragment extends Fragment {
 
         void onCommentInteraction(Post item);
 
-        void onFavoritoInteraction(Post item);
+        void onEditInteraction(Post item);
 
         void onImagemInteraction(Post item);
     }

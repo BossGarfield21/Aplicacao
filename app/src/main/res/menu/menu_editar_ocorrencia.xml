@@ -12,4 +12,10 @@
         android:orderInCategory="100"
         android:title="Editar coordenadas"
         app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/apagar_ocorrencia"
+        android:orderInCategory="100"
+        android:title="Apagar ocorrência"
+        app:showAsAction="never"/>
 </menu>

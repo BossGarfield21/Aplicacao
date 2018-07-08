@@ -36,6 +36,9 @@ public class AdminGrupoMembrosActivity extends AppCompatActivity implements Seri
 
     private Grupo grupo;
     private ListView listView;
+    List<String> membros = new ArrayList<>();
+    ArrayAdapter adapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +62,6 @@ public class AdminGrupoMembrosActivity extends AppCompatActivity implements Seri
 
         grupo = (Grupo) getIntent().getSerializableExtra("grupo");
 
-        final List<String> membros = new ArrayList<>();
         if (grupo.getBase_users() != null)
          membros.addAll(grupo.getBase_users());
         if (grupo.getAdmins() != null)
@@ -67,7 +69,7 @@ public class AdminGrupoMembrosActivity extends AppCompatActivity implements Seri
 
         Log.d("TAS FIXE??", grupo.getName());
 
-        ArrayAdapter adapter = new ArrayAdapter(this,
+        adapter = new ArrayAdapter(this,
                 android.R.layout.simple_list_item_1, membros);
 
         listView.setAdapter(adapter);
@@ -159,6 +161,8 @@ public class AdminGrupoMembrosActivity extends AppCompatActivity implements Seri
 
                         grupo.getBase_users().remove(user);
                         grupo.getAdmins().remove(user);
+                        membros.remove(user);
+                        adapter.notifyDataSetChanged();
 
                     }
                 }, new Response.ErrorListener() {

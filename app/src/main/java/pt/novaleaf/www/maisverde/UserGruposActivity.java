@@ -312,7 +312,7 @@ public class UserGruposActivity extends AppCompatActivity {
             listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    if (!items.get(i).equals("Não há pedidos..."))
+                    if (!items.get(i).equals("Não há convites..."))
                         popupPedidos(view, items.get(i));
                     return false;
                 }
@@ -352,7 +352,7 @@ public class UserGruposActivity extends AppCompatActivity {
                                     }
                                 } else {
                                     Log.d("olá", "heheehehe");
-                                    items.add("Não há pedidos...");
+                                    items.add("Não há convites...");
                                     arrayAdapter.notifyDataSetChanged();
 
                                 }

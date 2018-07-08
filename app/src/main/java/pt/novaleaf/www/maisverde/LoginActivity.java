@@ -323,7 +323,7 @@ public class LoginActivity extends AppCompatActivity  {
                     if (response.has("name"))
                         editor.putString("name", response.getString("name"));
                     if (response.has("image_uri"))
-                        editor.putString("image_user", response.getString("image_uri"));
+                        editor.putString("image_user", response.getJSONObject("image_uri").getString("value"));
                     editor.commit();
                 } catch (JSONException e) {
                     e.printStackTrace();

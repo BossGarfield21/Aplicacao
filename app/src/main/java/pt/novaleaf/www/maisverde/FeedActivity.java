@@ -168,10 +168,12 @@ public class FeedActivity extends AppCompatActivity
                             Intent intent = new Intent(FeedActivity.this, CriarOcorrenciaActivity.class);
                             intent.putExtra("ocorrencia", (Serializable) itemm);
                             startActivity(intent);
-                        } else {
+                        } else if (item.getItemId() == R.id.editar_coordenadas){
                             Intent intent = new Intent(FeedActivity.this, MapsActivity.class);
                             intent.putExtra("ocorrencia", (Serializable) itemm);
                             startActivity(intent);
+                        } else {
+                            apagarOcorrenciaVolley(itemm);
                         }
 
                         return false;
@@ -814,5 +816,42 @@ public class FeedActivity extends AppCompatActivity
 
     }
 
+    private void apagarOcorrenciaVolley(final Ocorrencia ocorrencia){
+
+        String tag_json_obj = "json_obj_req";
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/mapsupport/deletemarker?markerid="
+                + ocorrencia.getId();
+
+        SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+        final String token = sharedPreferences.getString("tokenID", "erro");
+
+
+        StringRequest jsonObjectRequest = new StringRequest(Request.Method.DELETE, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        ocorrencias.remove(ocorrencia);
+                        adapter.notifyDataSetChanged();
+
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                VolleyLog.d("erroJoingrupo", "Error: " + error.getMessage());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+
+        };
+        AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
+
+    }
 
 }

@@ -1,5 +1,6 @@
 package pt.novaleaf.www.maisverde;
 
+import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -17,10 +18,12 @@ public class MyPostRecyclerViewAdapter extends RecyclerView.Adapter<MyPostRecycl
 
     private final List<Post> mValues;
     private final PostFragment.OnListFragmentInteractionListener mListener;
+    private final Context mContext;
 
-    public MyPostRecyclerViewAdapter(List<Post> items, PostFragment.OnListFragmentInteractionListener listener) {
+    public MyPostRecyclerViewAdapter(List<Post> items, PostFragment.OnListFragmentInteractionListener listener, Context context) {
         mValues = items;
         mListener = listener;
+        mContext = context;
     }
 
     @Override
@@ -46,6 +49,12 @@ public class MyPostRecyclerViewAdapter extends RecyclerView.Adapter<MyPostRecycl
         holder.mAutor.setText(mValues.get(position).getAuthor());
 
         holder.mMessage.setText(mValues.get(position).getMessage());
+
+        if (mValues.get(position).isLiked()) {
+            holder.mImageGosto.setImageResource(R.drawable.ic_favorite_green_24dp);
+        } else {
+            holder.mImageGosto.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+        }
 
         holder.mImageGosto.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,10 +85,7 @@ public class MyPostRecyclerViewAdapter extends RecyclerView.Adapter<MyPostRecycl
         });
 
 
-        if (mValues.get(position).getLikes() != 1)
-            holder.mTextNumLikes.setText(String.valueOf(mValues.get(position).getLikes()) + " likes");
-        else
-            holder.mTextNumLikes.setText(String.valueOf(mValues.get(position).getLikes()) + " like");
+        holder.mTextNumLikes.setText(String.valueOf(mValues.get(position).getLikes()));
 
 
         if (mValues.get(position).getComments().size() != 1)
@@ -100,6 +106,17 @@ public class MyPostRecyclerViewAdapter extends RecyclerView.Adapter<MyPostRecycl
             }
         });
 
+        holder.mImageComentar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (null != mListener) {
+                    // Notify the active callbacks interface (the activity, if the
+                    // fragment is attached to one) that an item has been selected.
+                    mListener.onCommentInteraction(mValues.get(position));
+                }
+            }
+        });
+
         long time = mValues.get(position).getCreationDate();
 
         if (time != 0) {
@@ -108,17 +125,29 @@ public class MyPostRecyclerViewAdapter extends RecyclerView.Adapter<MyPostRecycl
             holder.mHour.setText(data);
         }
 
-        if (mValues.get(position).getBitmapUser()!=null){
+        if (mValues.get(position).getBitmapUser() != null) {
             holder.mImageUser.setImageBitmap(BitmapFactory.decodeByteArray(mValues.get(position).getBitmapUser(),
                     0, mValues.get(position).getBitmapUser().length));
         } else {
             holder.mImageUser.setImageResource(R.drawable.ic_person_black_24dp);
         }
 
-        if (mValues.get(position).getBitmap()!=null){
+        if (mValues.get(position).getBitmap() != null) {
             holder.mImagePost.setImageBitmap(BitmapFactory.decodeByteArray(mValues.get(position).getBitmap(),
                     0, mValues.get(position).getBitmap().length));
         }
+
+
+        holder.mImageDef.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mListener != null) {
+                    if (mValues.get(position).getAuthor().equals(mContext.
+                            getSharedPreferences("Prefs", Context.MODE_PRIVATE).getString("username", "")))
+                        mListener.onEditInteraction(mValues.get(position));
+                }
+            }
+        });
 
 
     }
@@ -139,10 +168,14 @@ public class MyPostRecyclerViewAdapter extends RecyclerView.Adapter<MyPostRecycl
         public TextView mAutor;
         public TextView mHour;
         public ImageView mImageGosto;
+        public ImageView mImageComentar;
+        public ImageView mImageDef;
 
         public ViewHolder(View v) {
             super(v);
             mImageGosto = (ImageView) v.findViewById(R.id.imageGosto);
+            mImageComentar = (ImageView) v.findViewById(R.id.imageComentar);
+            mImageDef = (ImageView) v.findViewById(R.id.def);
             mImageUser = (ImageView) v.findViewById(R.id.imagePostAuthor);
             mImagePost = (ImageView) v.findViewById(R.id.imagePost);
             mMessage = (TextView) v.findViewById(R.id.textPostMessage);

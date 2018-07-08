@@ -22,4 +22,9 @@
         android:orderInCategory="100"
         android:title="Sair do grupo"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/acabar_grupo"
+        android:orderInCategory="100"
+        android:title="Dissolver grupo"
+        app:showAsAction="never"/>
 </menu>

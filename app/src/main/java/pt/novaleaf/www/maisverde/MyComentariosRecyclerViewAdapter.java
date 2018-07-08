@@ -249,7 +249,7 @@ public class MyComentariosRecyclerViewAdapter extends RecyclerView.Adapter {
     private void volleyEliminarComentarioPost(final Comentario com) {
 
         String tag_json_obj = "json_obj_req";
-        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/comment?group_id="
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/removecomment?group_id="
                 + com.getGroupId() + "&publication_id=" + com.getPostId() + "&comment_id=" + com.getId();
 
         JSONObject grupo = new JSONObject();

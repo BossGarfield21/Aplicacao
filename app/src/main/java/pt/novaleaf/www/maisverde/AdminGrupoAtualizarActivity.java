@@ -124,12 +124,13 @@ public class AdminGrupoAtualizarActivity extends AppCompatActivity implements Se
 
     private void volleyUpdateGrupo(String id) {
         String tag_json_obj = "json_request";
-        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/gadmin/update";
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/gadmin/update?group_id=" +
+                this.grupo.getGroupId();
 
         Log.d("ché bate só", url);
 
         SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
-        final JSONObject grupo = new JSONObject();
+        final JSONObject grup = new JSONObject();
         final String token = sharedPreferences.getString("tokenID", "erro");
         final String privaci;
         boolean privacy = mSwitch.isChecked();
@@ -141,18 +142,18 @@ public class AdminGrupoAtualizarActivity extends AppCompatActivity implements Se
         try {
 
 
-            grupo.put("groupId", this.grupo.getGroupId());
-            grupo.put("privacy", privaci);
-            grupo.put("name", mNomeGrupo.getText().toString());
+            grup.put("groupId", this.grupo.getGroupId());
+            grup.put("privacy", privaci);
+            grup.put("name", mNomeGrupo.getText().toString());
             if (id!=null)
-                grupo.put("image_uri", "https://novaleaf-197719.appspot.com/gcs/novaleaf-197719.appspot.com/"+id);
+                grup.put("image_uri", "https://novaleaf-197719.appspot.com/gcs/novaleaf-197719.appspot.com/"+id);
 
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, url, grupo,
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, url, grup,
                 new Response.Listener<JSONObject>() {
 
                     @Override
@@ -164,6 +165,7 @@ public class AdminGrupoAtualizarActivity extends AppCompatActivity implements Se
                         GruposListActivity.adapter.notifyDataSetChanged();
 
                         Toast.makeText(AdminGrupoAtualizarActivity.this, "Alterações efetuadas", Toast.LENGTH_SHORT).show();
+                        finish();
                     }
 
                 }, new Response.ErrorListener()

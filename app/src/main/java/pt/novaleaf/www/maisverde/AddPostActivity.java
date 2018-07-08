@@ -35,6 +35,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -44,9 +45,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import utils.ByteRequest;
 
 public class AddPostActivity extends AppCompatActivity {
 
@@ -373,7 +378,7 @@ public class AddPostActivity extends AppCompatActivity {
                 }
 
             }
-        } else{
+        } else {
             Snackbar snackbar = Snackbar
                     .make(linearLayout, "Fotografia escolhida", Snackbar.LENGTH_INDEFINITE)
                     .setAction("Escolher outra fotografia", new View.OnClickListener() {
@@ -450,9 +455,9 @@ public class AddPostActivity extends AppCompatActivity {
 
     private void createPostVolley(String message) {
 
-        String groupID = "id";
+
         String tag_json_obj = "json_obj_req";
-        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/publish?group_id=" + groupID;
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/publish?group_id=" + GrupoFeedActivity.novoGrupo.getGroupId();
 
         JSONObject grupo = new JSONObject();
         SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
@@ -470,7 +475,104 @@ public class AddPostActivity extends AppCompatActivity {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        finish();
+
+                        try {
+
+                            Log.d("Novo post", response.toString());
+
+                            String id = null;
+                            String author = null;
+                            String message = null;
+                            String image = null;
+                            String user_image = null;
+                            List<String> likers = new ArrayList<>();
+                            Map<String, Comentario> comments = new HashMap<>();
+                            long likes = 0;
+                            boolean liked = false;
+
+                            JSONObject post = response;
+                            if (post.has("id"))
+                                id = post.getString("id");
+                            if (post.has("author"))
+                                author = post.getString("author");
+                            if (post.has("message"))
+                                message = post.getString("message");
+                            if (post.has("likes"))
+                                likes = post.getLong("likes");
+                            if (post.has("liked"))
+                                liked = post.getBoolean("liked");
+
+                            if (post.has("likers")) {
+                                JSONArray lik = post.getJSONArray("likers");
+                                for (int a = 0; a < lik.length(); a++)
+                                    likers.add(lik.getString(a));
+                            }
+
+                            JSONObject imag = null;
+                            if (post.has("image")) {
+                                imag = post.getJSONObject("image");
+                                if (imag.has("value"))
+                                    image = imag.getString("value");
+                            }
+
+                            JSONObject imageuser = null;
+                            if (post.has("user_picture")) {
+                                imageuser = post.getJSONObject("user_picture");
+                                if (imageuser.has("value"))
+                                    user_image = imageuser.getString("value");
+                            }
+
+                            if (post.has("comments")) {
+                                JSONArray coms = post.getJSONArray("comments");
+
+
+                                for (int a = 0; a < coms.length(); a++) {
+                                    int origem;
+                                    JSONObject com = coms.getJSONObject(a);
+                                    if (com.getString("author").equals(
+                                            getSharedPreferences("Prefs", MODE_PRIVATE).getString("username", "")))
+                                        origem = 1;
+                                    else origem = 2;
+
+                                    String comentImage = null;
+                                    JSONObject im = null;
+                                    if (post.has("image")) {
+                                        im = post.getJSONObject("image");
+                                        if (im.has("value"))
+                                            comentImage = im.getString("value");
+                                    }
+
+
+                                    String comentID = com.getString("id");
+
+
+                                    comments.put(comentID, new Comentario(comentID, com.getString("author"),
+                                            com.getString("message"), comentImage,
+                                            com.getLong("creation_date"), origem, null, id, GrupoFeedActivity.novoGrupo.getGroupId()));
+
+                                }
+                            }
+
+//                                    Log.d("POST???", id);
+
+
+                            Post post1 = new Post(id, author, message, image, likers, comments, likes, liked, GrupoFeedActivity.novoGrupo.getGroupId(), user_image);
+
+                            if (image != null)
+                                post1.setBitmap(imageBytes);
+                            if (user_image != null)
+                                receberImagemUserVolley(post1);
+                            else
+                                Toast.makeText(AddPostActivity.this, "olé", Toast.LENGTH_SHORT).show();
+
+                            GrupoFeedActivity.posts.add(0, post1);
+                            GrupoFeedActivity.adapter.notifyDataSetChanged();
+
+
+                            finish();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }, new Response.ErrorListener() {
 
@@ -491,4 +593,39 @@ public class AddPostActivity extends AppCompatActivity {
         AppController.getInstance().addToRequestQueue(jsonObjectRequest, tag_json_obj);
 
     }
+
+    private void receberImagemUserVolley(final Post item) {
+        String tag_json_obj = "octect_request";
+        final String url = item.getUser_image();
+
+
+        final String token = getSharedPreferences("Prefs", MODE_PRIVATE).getString("tokenID", "erro");
+        ByteRequest stringRequest = new ByteRequest(Request.Method.GET, url, new Response.Listener<byte[]>() {
+
+            @Override
+            public void onResponse(byte[] response) {
+                item.setBitmapUser(response);
+                GrupoFeedActivity.adapter.notifyDataSetChanged();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("erroIMAGEMPost", "Error: " + error.getMessage());
+
+
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+
+        };
+        AppController.getInstance().addToRequestQueue(stringRequest, tag_json_obj);
+
+    }
+
+
 }

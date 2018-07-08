@@ -95,11 +95,9 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
             @Override
             public void onLikeInteraction(Post item) {
 
-                if (!item.isLiked()) {
-                    item.like();
+                if (item.isLiked()) {
                     likePostVolley(item);
                 } else {
-                    item.like();
                     takeLikePostVolley(item);
                 }
             }
@@ -113,7 +111,8 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
             }
 
             @Override
-            public void onFavoritoInteraction(Post item) {
+            public void onEditInteraction(Post item) {
+                Toast.makeText(GrupoFeedActivity.this, "olá", Toast.LENGTH_SHORT).show();
 
             }
 
@@ -122,7 +121,7 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
 
             }
         };
-        adapter = new MyPostRecyclerViewAdapter(posts, mListener);
+        adapter = new MyPostRecyclerViewAdapter(posts, mListener, GrupoFeedActivity.this);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.gruposLinear);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -275,8 +274,9 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-
-        if (id == R.id.admin_grupo) {
+        if (id == R.id.acabar_grupo) {
+            volleyDissolverGrupo();
+        } else if (id == R.id.admin_grupo) {
             Intent intent = new Intent(GrupoFeedActivity.this, AdministrarGrupoActivity.class);
             intent.putExtra("grupo", novoGrupo);
             startActivity(intent);
@@ -319,9 +319,9 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
 
     private void leaveGroupVolley() {
 
-        String groupID = "id";
+
         String tag_json_obj = "json_obj_req";
-        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/leave_group?group_id=" + groupID;
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/leave_group?group_id=" + group.getGroupId();
 
         JSONObject grupo = new JSONObject();
         SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
@@ -332,8 +332,11 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Intent intent = new Intent(GrupoFeedActivity.this, GruposListActivity.class);
-                        startActivity(intent);
+                        GruposListActivity.grupos.get(GruposListActivity.grupos.indexOf(novoGrupo)).
+                                getAdmins().remove(getSharedPreferences("Prefs", MODE_PRIVATE).getString("username", ""));
+                        GruposListActivity.grupos.get(GruposListActivity.grupos.indexOf(novoGrupo)).
+                                getBase_users().remove(getSharedPreferences("Prefs", MODE_PRIVATE).getString("username", ""));
+
                         finish();
                     }
                 }, new Response.ErrorListener() {
@@ -356,6 +359,56 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
 
     }
 
+    private void volleyDissolverGrupo() {
+
+        String tag_json_obj = "json_request";
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/gadmin/dissolve?group_id="
+                + novoGrupo.getGroupId();
+
+        Log.d("ché bate só", url);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+        final String token = sharedPreferences.getString("tokenID", "erro");
+
+
+        StringRequest jsonObjectRequest = new StringRequest(Request.Method.DELETE, url,
+                new Response.Listener<String>() {
+
+                    @Override
+                    public void onResponse(String response) {
+
+                        GruposListActivity.grupos.remove(novoGrupo);
+                        GruposListActivity.adapter.notifyDataSetChanged();
+
+                        finish();
+                    }
+
+                }, new Response.ErrorListener()
+
+        {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("erroLOGIN", "Error: " + error.getMessage());
+            }
+        })
+
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+        };
+
+
+        AppController.getInstance().
+
+                addToRequestQueue(jsonObjectRequest, tag_json_obj);
+    }
+
+
     private void likePostVolley(final Post item) {
 
         String groupID = "id";
@@ -368,7 +421,7 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
         final String token = sharedPreferences.getString("tokenID", "erro");
 
 
-        StringRequest jsonObjectRequest = new StringRequest(Request.Method.POST, url,
+        StringRequest jsonObjectRequest = new StringRequest(Request.Method.PUT, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -396,7 +449,7 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
     private void takeLikePostVolley(final Post item) {
 
         String tag_json_obj = "json_obj_req";
-        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/remove_like?group_id=" + group.getGroupId() +
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/like?group_id=" + group.getGroupId() +
                 "&publication_id=" + item.getId();
 
         JSONObject grupo = new JSONObject();
@@ -437,7 +490,8 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
             url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/feed?group_id=" +
                     group.getGroupId() + "&cursor=startquery";
         else
-            url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/feed?cursor=" + cursorPosts;
+            url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/feed?group_id=" +
+                    group.getGroupId() + "&cursor=" + cursorPosts;
 
         Log.d("ché bate só", url);
 
@@ -473,6 +527,7 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
                         JSONArray list = response.getJSONArray("list");
                         if (!response.isNull("list") && list.length() > 0)
                             if (!isFinishedPosts) {
+                                Log.d("Feed grupos", response.toString());
                                 isFinishedPosts = response.getBoolean("isFinished");
                                 Log.d("ACABOU???", String.valueOf(isFinishedPosts));
 
@@ -497,8 +552,8 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
                                         message = post.getString("message");
                                     if (post.has("likes"))
                                         likes = post.getLong("likes");
-                                    if (post.has("liked"))
-                                        liked = post.getBoolean("liked");
+                                    if (post.has("hasLike"))
+                                        liked = post.getBoolean("hasLike");
 
                                     if (post.has("likers")) {
                                         JSONArray lik = post.getJSONArray("likers");
@@ -514,8 +569,8 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
                                     }
 
                                     JSONObject imageuser = null;
-                                    if (post.has("user_image")) {
-                                        imageuser = post.getJSONObject("user_image");
+                                    if (post.has("user_picture")) {
+                                        imageuser = post.getJSONObject("user_picture");
                                         if (imageuser.has("value"))
                                             user_image = imageuser.getString("value");
                                     }
