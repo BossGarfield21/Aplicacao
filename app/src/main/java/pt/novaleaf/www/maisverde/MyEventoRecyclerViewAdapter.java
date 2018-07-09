@@ -108,7 +108,7 @@ public class MyEventoRecyclerViewAdapter extends RecyclerView.Adapter<MyEventoRe
             }
         });
 
-        long time = mValues.get(position).getCreationDate();
+        long time = mValues.get(position).getMeetupDate();
 
         if (time != 0) {
             SimpleDateFormat simpleDateFormatMes = new SimpleDateFormat("MMM", Locale.UK);

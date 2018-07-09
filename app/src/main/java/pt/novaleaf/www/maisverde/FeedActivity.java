@@ -1,5 +1,6 @@
 package pt.novaleaf.www.maisverde;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -159,29 +160,31 @@ public class FeedActivity extends AppCompatActivity
             @Override
             public void onEditInteraction(final Ocorrencia itemm, View view) {
 
-                PopupMenu popup = new PopupMenu(FeedActivity.this, view);
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
+                if (itemm.getOwner().equals(getSharedPreferences("Prefs", MODE_PRIVATE).getString("username", "erro"))) {
+                    PopupMenu popup = new PopupMenu(FeedActivity.this, view);
+                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
 
-                        if (item.getItemId() == R.id.editar_informacoes) {
-                            Intent intent = new Intent(FeedActivity.this, CriarOcorrenciaActivity.class);
-                            intent.putExtra("ocorrencia", (Serializable) itemm);
-                            startActivity(intent);
-                        } else if (item.getItemId() == R.id.editar_coordenadas) {
-                            Intent intent = new Intent(FeedActivity.this, MapsActivity.class);
-                            intent.putExtra("ocorrencia", (Serializable) itemm);
-                            startActivity(intent);
-                        } else {
-                            apagarOcorrenciaVolley(itemm);
+                            if (item.getItemId() == R.id.editar_informacoes) {
+                                Intent intent = new Intent(FeedActivity.this, CriarOcorrenciaActivity.class);
+                                intent.putExtra("ocorrencia", (Serializable) itemm);
+                                startActivity(intent);
+                            } else if (item.getItemId() == R.id.editar_coordenadas) {
+                                Intent intent = new Intent(FeedActivity.this, MapsActivity.class);
+                                intent.putExtra("ocorrencia", (Serializable) itemm);
+                                startActivity(intent);
+                            } else {
+                                apagarOcorrenciaVolley(itemm);
+                            }
+
+                            return false;
                         }
-
-                        return false;
-                    }
-                });// to implement on click event on items of menu
-                MenuInflater inflater = popup.getMenuInflater();
-                inflater.inflate(R.menu.menu_editar_ocorrencia, popup.getMenu());
-                popup.show();
+                    });// to implement on click event on items of menu
+                    MenuInflater inflater = popup.getMenuInflater();
+                    inflater.inflate(R.menu.menu_editar_ocorrencia, popup.getMenu());
+                    popup.show();
+                }
 
             }
 

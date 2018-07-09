@@ -34,6 +34,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,6 +51,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import utils.ByteRequest;
 
@@ -448,12 +450,18 @@ public class AddPostActivity extends AppCompatActivity {
         if (cancel) {
             focusView.requestFocus();
         } else {
-            createPostVolley(message);
+            String id = null;
+            if (imageBytes!=null){
+                id = UUID.randomUUID().toString().concat(String.valueOf(System.currentTimeMillis()));
+                enviarImagemVolley(imageBytes, id);
+            }
+
+            createPostVolley(message, id);
         }
 
     }
 
-    private void createPostVolley(String message) {
+    private void createPostVolley(String message, String id) {
 
 
         String tag_json_obj = "json_obj_req";
@@ -465,6 +473,8 @@ public class AddPostActivity extends AppCompatActivity {
 
         try {
             grupo.put("message", message);
+            if (id!=null)
+                grupo.put("image", "https://novaleaf-197719.appspot.com/gcs/novaleaf-197719.appspot.com/" + id);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -563,9 +573,10 @@ public class AddPostActivity extends AppCompatActivity {
                             if (user_image != null)
                                 receberImagemUserVolley(post1);
 
-                            GrupoFeedActivity.posts.add(0, post1);
-                            GrupoFeedActivity.adapter.notifyDataSetChanged();
-
+                            if (GrupoFeedActivity.group.getGroupId().equals(post1.getGroupId())) {
+                                GrupoFeedActivity.posts.add(0, post1);
+                                GrupoFeedActivity.adapter.notifyDataSetChanged();
+                            }
 
                             finish();
                         } catch (JSONException e) {
@@ -620,6 +631,41 @@ public class AddPostActivity extends AppCompatActivity {
                 return headers;
             }
 
+        };
+        AppController.getInstance().addToRequestQueue(stringRequest, tag_json_obj);
+
+    }
+
+
+    private void enviarImagemVolley(final byte[] imageBytes, String id) {
+
+        String tag_json_obj = "octect_request";
+        String url = "https://novaleaf-197719.appspot.com/gcs/novaleaf-197719.appspot.com/" + id;
+
+        SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
+        final String token = sharedPreferences.getString("tokenID", "erro");
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("erroIMAGEM", "Error: " + error.getMessage());
+            }
+        }) {
+            @Override
+            public byte[] getBody() throws AuthFailureError {
+                return imageBytes;
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
         };
         AppController.getInstance().addToRequestQueue(stringRequest, tag_json_obj);
 

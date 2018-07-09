@@ -137,6 +137,7 @@ public class MyPostRecyclerViewAdapter extends RecyclerView.Adapter<MyPostRecycl
         if (mValues.get(position).getBitmap() != null) {
             holder.mImagePost.setImageBitmap(BitmapFactory.decodeByteArray(mValues.get(position).getBitmap(),
                     0, mValues.get(position).getBitmap().length));
+            holder.mImagePost.setAdjustViewBounds(true);
         }
 
 

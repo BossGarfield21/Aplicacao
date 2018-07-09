@@ -50,7 +50,7 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
     private PostFragment.OnListFragmentInteractionListener mListener;
     private boolean isFinishedPosts = false;
     private String cursorPosts = "";
-    Grupo group;
+    static Grupo group;
     static Grupo novoGrupo;
 
 
@@ -78,6 +78,7 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
 
         volleyGetGrupo();
 
+        posts.clear();
         //group = (Grupo) getIntent().getSerializableExtra("grupo");
 
 
@@ -466,7 +467,7 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
     private void takeLikePostVolley(final Post item) {
 
         String tag_json_obj = "json_obj_req";
-        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/like?group_id=" + group.getGroupId() +
+        String url = "https://novaleaf-197719.appspot.com/rest/withtoken/groups/member/removelike?group_id=" + group.getGroupId() +
                 "&publication_id=" + item.getId();
 
         JSONObject grupo = new JSONObject();

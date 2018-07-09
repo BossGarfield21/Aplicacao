@@ -92,8 +92,8 @@ public class FeedEventosActivity extends AppCompatActivity
             @Override
             public void onLocationInteraction(Evento item) {
                 Intent intent = new Intent(FeedEventosActivity.this, MapsActivity.class);
-                intent.putExtra("longitude", item.getCenterPointLongitude());
-                intent.putExtra("latitude", item.getCenterPointLatitude());
+                intent.putExtra("longitude", item.getMeetupPointLongitude());
+                intent.putExtra("latitude", item.getMeetupPointLatitude());
                 startActivity(intent);
 
             }

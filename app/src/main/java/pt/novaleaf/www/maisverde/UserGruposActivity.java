@@ -396,7 +396,7 @@ public class UserGruposActivity extends AppCompatActivity {
             final String token = sharedPreferences.getString("tokenID", "erro");
 
 
-            StringRequest jsonObjectRequest = new StringRequest(Request.Method.PUT, url,
+            StringRequest jsonObjectRequest = new StringRequest(Request.Method.GET, url,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {

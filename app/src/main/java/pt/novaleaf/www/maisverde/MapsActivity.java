@@ -395,25 +395,23 @@ public class MapsActivity extends AppCompatActivity
                     if (markerItem.getPosition().equals(position)) {
                         if (markerItem.getRadious() > 0) {
                             CircleOptions circleOptions = new CircleOptions()
-                                    .center(ocorrencia.getPosition())
-                                    .radius(ocorrencia.radius);
+                                    .center(new LatLng(markerItem.getCenterPointLatitude(), markerItem.getCenterPointLongitude()))
+                                    .radius(markerItem.getRadious());
                             Circle circle = mMap.addCircle(circleOptions);
                             circle.setFillColor(R.color.colorred);
                             circle.setStrokeColor(R.color.colorGreen);
                             circle.setTag(ocorrencia);
                             circles.add(circle);
+                        } else {
+                            List<LatLng> area = markerItem.getArea();
+                            PolygonOptions polygonOptions = new PolygonOptions();
+                            for (LatLng latLng : area)
+                                polygonOptions.add(latLng);
+                            Polygon polygon = mMap.addPolygon(polygonOptions);
+                            polygon.setFillColor(R.color.colorPrimary);
+                            polygon.setStrokeColor(R.color.colorGreen);
+                            polygons.add(polygon);
                         }
-
-                    } else {
-                        List<LatLng> area = markerItem.getArea();
-                        PolygonOptions polygonOptions = new PolygonOptions();
-                        for (LatLng latLng : area)
-                            polygonOptions.add(latLng);
-                        Polygon polygon = mMap.addPolygon(polygonOptions);
-                        polygon.setFillColor(R.color.colorPrimary);
-                        polygon.setStrokeColor(R.color.colorGreen);
-                        polygons.add(polygon);
-
                     }
 
                 markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
@@ -490,7 +488,7 @@ public class MapsActivity extends AppCompatActivity
             public boolean onClusterItemClick(Evento evento) {
                 if (evento.getRadious() > 0) {
                     CircleOptions circleOptions = new CircleOptions()
-                            .center(evento.getPosition())
+                            .center(new LatLng(evento.getCenterPointLatitude(), evento.getCenterPointLongitude()))
                             .radius(evento.radious);
                     Circle circle = mMap.addCircle(circleOptions);
                     circle.setFillColor(R.color.colorred);
@@ -856,6 +854,7 @@ public class MapsActivity extends AppCompatActivity
                     }).start();
 
                     mClusterManagerOcorrencia.cluster();
+                    mClusterManagerEvento.cluster();
 
 
                 }
@@ -872,7 +871,6 @@ public class MapsActivity extends AppCompatActivity
             });
 
 
-            mClusterManagerEvento.cluster();
         }
     }
 

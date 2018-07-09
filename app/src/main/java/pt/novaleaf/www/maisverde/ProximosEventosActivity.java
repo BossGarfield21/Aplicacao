@@ -179,6 +179,7 @@ public class ProximosEventosActivity extends AppCompatActivity {
                             if (!isFinishedEventos) {
                                 isFinishedEventos = response.getBoolean("isFinished");
                                 Log.d("ACABOU???", String.valueOf(isFinishedEventos));
+                                Log.d("EVENTOS PROX", response.toString());
 
                                 for (int i = 0; i < list.length(); i++) {
 

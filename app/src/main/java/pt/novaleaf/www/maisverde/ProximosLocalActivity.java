@@ -171,22 +171,25 @@ public class ProximosLocalActivity extends AppCompatActivity {
 
             lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-            for (Evento evento : FeedEventosActivity.eventosList) {
-                LatLng latLng = new LatLng(evento.getMeetupPointLatitude(), evento.getMeetupPointLongitude());
-                LatLng currrPos = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+            if (lastKnownLocation != null) {
+                for (Evento evento : FeedEventosActivity.eventosList) {
+                    LatLng latLng = new LatLng(evento.getMeetupPointLatitude(), evento.getMeetupPointLongitude());
+                    LatLng currrPos = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
 
-                float results[] = new float[1];
-                Location.distanceBetween(
-                        latLng.latitude,
-                        latLng.longitude,
-                        currrPos.latitude,
-                        currrPos.longitude,
-                        results);
-                if (results[0] < 30000)
-                    proximosLocalEventosList.add(evento);
+                    float results[] = new float[1];
+                    Location.distanceBetween(
+                            latLng.latitude,
+                            latLng.longitude,
+                            currrPos.latitude,
+                            currrPos.longitude,
+                            results);
+                    if (results[0] < 30000 && !proximosLocalEventosList.contains(evento))
+                        proximosLocalEventosList.add(evento);
 
 
-            }
+                }
+            } else
+                Toast.makeText(this, "Não foi possível aceder à sua localização", Toast.LENGTH_SHORT).show();
 
             if (proximosLocalEventosList.isEmpty())
                 Toast.makeText(this, "Não há eventos perto de si...", Toast.LENGTH_SHORT).show();
