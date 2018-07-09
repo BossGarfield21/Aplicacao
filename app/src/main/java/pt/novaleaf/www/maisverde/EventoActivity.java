@@ -208,8 +208,19 @@ public class EventoActivity extends AppCompatActivity {
             @Override
             public void onResponse(String response) {
 
-                FeedEventosActivity.eventosList.get(FeedEventosActivity.eventosList.indexOf(item)).setInteresse();
-                FeedEventosActivity.adapter.notifyDataSetChanged();
+                int indexFeed = FeedEventosActivity.eventosList.indexOf(item);
+                if (indexFeed != -1) {
+                    FeedEventosActivity.eventosList.get(indexFeed).setInteresse();
+                    FeedEventosActivity.adapter.notifyDataSetChanged();
+                }
+                int indexProximos = ProximosEventosActivity.proximosEventosList.indexOf(item);
+                if (indexProximos != -1) {
+                    ProximosEventosActivity.proximosEventosList.get(indexProximos).setInteresse();
+                    ProximosEventosActivity.adapterProximos.notifyDataSetChanged();
+                }
+
+                if (ProximosLocalActivity.adapterProximosLocal != null)
+                    ProximosLocalActivity.adapterProximosLocal.notifyDataSetChanged();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -257,14 +268,25 @@ public class EventoActivity extends AppCompatActivity {
             @Override
             public void onResponse(String response) {
 
-                if (item.isIr()){
+                int indexFeed = FeedEventosActivity.eventosList.indexOf(item);
+                int indexProximos = ProximosEventosActivity.proximosEventosList.indexOf(item);
+
+                if (item.isIr()) {
                     item.getConfirmations().add(sharedPreferences.getString("username", "erro"));
-                    FeedEventosActivity.eventosList.get(FeedEventosActivity.eventosList.indexOf(item))
-                            .getConfirmations().add(sharedPreferences.getString("username", "erro"));
+                    if (indexFeed != -1)
+                        FeedEventosActivity.eventosList.get(FeedEventosActivity.eventosList.indexOf(item))
+                                .getConfirmations().add(sharedPreferences.getString("username", "erro"));
+                    if (indexProximos != -1)
+                        ProximosEventosActivity.proximosEventosList.get(indexProximos)
+                                .getConfirmations().add(sharedPreferences.getString("username", "erro"));
                 } else {
                     item.getConfirmations().remove(sharedPreferences.getString("username", "erro"));
-                    FeedEventosActivity.eventosList.get(FeedEventosActivity.eventosList.indexOf(item))
-                            .getConfirmations().remove(sharedPreferences.getString("username", "erro"));
+                    if (indexFeed != -1)
+                        FeedEventosActivity.eventosList.get(FeedEventosActivity.eventosList.indexOf(item))
+                                .getConfirmations().remove(sharedPreferences.getString("username", "erro"));
+                    if (indexProximos != -1)
+                        ProximosEventosActivity.proximosEventosList.get(indexProximos)
+                                .getConfirmations().remove(sharedPreferences.getString("username", "erro"));
                 }
 
                 int numPessoas = item.getConfirmations().size();
@@ -273,8 +295,19 @@ public class EventoActivity extends AppCompatActivity {
                 else
                     mPessoasVao.setText(String.format("Vai %d pessoa", numPessoas));
 
-                FeedEventosActivity.eventosList.get(FeedEventosActivity.eventosList.indexOf(item)).setIr();
-                FeedEventosActivity.adapter.notifyDataSetChanged();
+                if (indexFeed != -1) {
+                    FeedEventosActivity.eventosList.get(indexFeed).setIr();
+                    if (FeedEventosActivity.adapter != null)
+                        FeedEventosActivity.adapter.notifyDataSetChanged();
+                }
+
+
+                if (indexProximos != -1) {
+                    ProximosEventosActivity.proximosEventosList.get(indexProximos).setIr();
+                    if (ProximosEventosActivity.adapterProximos != null)
+                        ProximosEventosActivity.adapterProximos.notifyDataSetChanged();
+                }
+
             }
         }, new Response.ErrorListener() {
             @Override

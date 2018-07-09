@@ -805,7 +805,7 @@ public class CriarOcorrenciaActivity extends AppCompatActivity implements Serial
                                 if (ocorrencia.has("owner"))
                                     owner = ocorrencia.getString("owner");
                                 if (ocorrencia.has("risk"))
-                                    risk = ocorrencia.getInt("risk");
+                                    risk = ocorrencia.getDouble("risk");
                                 if (ocorrencia.has("likes"))
                                     likes = ocorrencia.getInt("likes");
                                 if (ocorrencia.has("status"))
@@ -871,12 +871,16 @@ public class CriarOcorrenciaActivity extends AppCompatActivity implements Serial
                                     Log.d("user image bina:", user_image);
                                 }
 
+
                                 if (ocorrencia.has("radius"))
                                     radius = ocorrencia.getDouble("radius");
 
                                 Ocorrencia ocorrencia1 = new Ocorrencia(titulo, risk, "23:12", id,
                                         descricao, owner, likers, status, latitude, longitude, likes, type, image_uri,
                                         comentarios, creationDate, district, hasLiked, user_image, radius);
+
+
+
                                 if (ocorrencia1.getImage_uri() != null)
                                     ocorrencia1.setBitmap(imageBytes);
                                 else {
@@ -892,12 +896,18 @@ public class CriarOcorrenciaActivity extends AppCompatActivity implements Serial
                                     }
                                 }
 
+
+
+
+                                if (!FeedActivity.ocorrencias.contains(ocorrencia1)) {
+                                    FeedActivity.ocorrencias.add(0, ocorrencia1);
+                                    FeedActivity.tempOcorrencias.add(0, ocorrencia1);
+                                }
+
+
                                 if (user_image != null)
                                     receberImagemUserVolley(ocorrencia1);
 
-
-                                if (!FeedActivity.ocorrencias.contains(ocorrencia1))
-                                    FeedActivity.ocorrencias.add(0, ocorrencia1);
                                 Log.d("ID", id);
                                 Log.d("titulo", titulo);
                                 Log.d("desc", descricao);

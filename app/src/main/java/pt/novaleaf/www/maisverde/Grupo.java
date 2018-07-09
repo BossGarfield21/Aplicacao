@@ -139,4 +139,12 @@ public class Grupo implements Serializable{
     public void setPrivacy(String privacy) {
         this.privacy = privacy;
     }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
+    }
+
+    public void setMember(boolean member) {
+        isMember = member;
+    }
 }

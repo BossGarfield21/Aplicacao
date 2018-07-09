@@ -78,9 +78,8 @@ public class ProximosEventosActivity extends AppCompatActivity {
             @Override
             public void onLocationInteraction(Evento item) {
                 Intent intent = new Intent(ProximosEventosActivity.this, MapsActivity.class);
-                intent.putParcelableArrayListExtra("list", (ArrayList<? extends Parcelable>) item.getArea());
-                item.setArea(null);
-                intent.putExtra("evento", item);
+                intent.putExtra("longitude", item.getMeetupPointLongitude());
+                intent.putExtra("latitude", item.getMeetupPointLatitude());
                 startActivity(intent);
 
             }
@@ -102,8 +101,6 @@ public class ProximosEventosActivity extends AppCompatActivity {
                 //else
                   //  intent.putExtra("evento_area", (Serializable) item.getArea());*/
                 Intent intent = new Intent(ProximosEventosActivity.this, EventoActivity.class);
-                intent.putParcelableArrayListExtra("list", (ArrayList<? extends Parcelable>) item.getArea());
-                item.setArea(null);
                 intent.putExtra("evento", item);
                 startActivity(intent);
 
@@ -128,8 +125,7 @@ public class ProximosEventosActivity extends AppCompatActivity {
 
         }).start();
 
-        if (proximosEventosList.isEmpty())
-            Toast.makeText(this, "Não há eventos próximos...", Toast.LENGTH_SHORT).show();
+
 
     }
 
@@ -291,11 +287,15 @@ public class ProximosEventosActivity extends AppCompatActivity {
                                     else
                                         evento1.setImageID(R.drawable.ic_baseline_calendar_eventos_24px);
 
-                                    proximosEventosList.add(evento1);
-                                    adapterProximos.notifyDataSetChanged();
+                                    if (!proximosEventosList.contains(evento1)) {
+                                        proximosEventosList.add(evento1);
+                                        adapterProximos.notifyDataSetChanged();
+                                    }
 
                                 }
                             }
+                            if (proximosEventosList.isEmpty())
+                                Toast.makeText(ProximosEventosActivity.this, "Não há eventos próximos...", Toast.LENGTH_SHORT).show();
 
                         } else {
                             isFinishedEventos = true;
@@ -513,6 +513,11 @@ return headers;
         StringRequest stringRequest = new StringRequest(method, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
+                int indexFeed = FeedEventosActivity.eventosList.indexOf(item);
+                if (indexFeed != -1) {
+                    FeedEventosActivity.eventosList.get(indexFeed).setInteresse();
+                    FeedEventosActivity.adapter.notifyDataSetChanged();
+                }
 
                 //eventosList.get(FeedEventosActivity.eventosList.indexOf(item)).getInterests().
                 //      add(sharedPreferences.getString("username", "erro"));

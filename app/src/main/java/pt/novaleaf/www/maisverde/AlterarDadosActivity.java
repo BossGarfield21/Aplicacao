@@ -79,6 +79,7 @@ public class AlterarDadosActivity extends AppCompatActivity {
         mLocalidade.setText(localidade);
         mCodigoPostal.setText(codigo_postal);
         mTelemovel.setText(telemovel);
+
     }
 
     @Override

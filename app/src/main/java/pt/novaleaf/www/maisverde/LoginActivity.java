@@ -91,6 +91,7 @@ public class LoginActivity extends AppCompatActivity  {
     private ImageView mLogoView;
     private Context mContext;
     private CheckBox mCheckBox;
+    private String usernome;
 
 
     @Override
@@ -120,6 +121,8 @@ public class LoginActivity extends AppCompatActivity  {
             mUsernameView.setText(getSharedPreferences("Prefs", MODE_PRIVATE).getString("username", ""));
             mPasswordView.setText(getSharedPreferences("Prefs", MODE_PRIVATE).getString("password", ""));
         }
+
+        usernome = getSharedPreferences("Prefs", MODE_PRIVATE).getString("username", null);
 
         Button mEmailSignInButton = (Button) findViewById(R.id.btn_login);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
@@ -226,6 +229,9 @@ public class LoginActivity extends AppCompatActivity  {
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
+                            if (usernome!=null)
+                            if (!usernome.equals(email))
+                                editor.clear();
                             editor.putString("username", email);
                             editor.putString("password", password);
                             if (mCheckBox.isChecked())

@@ -300,7 +300,7 @@ public class GruposListActivity extends AppCompatActivity
             adapter.setDistrito(distrito);
 
             for (Grupo grupo : grupos) {
-                if (grupo.getDistrito().equals(distrito))
+                if (grupo.getDistrito().toLowerCase().equals(distrito.toLowerCase()))
                     tempGrupos.add(grupo);
             }
             MyItemGrupoFragmentRecyclerViewAdapter.mValues = tempGrupos;

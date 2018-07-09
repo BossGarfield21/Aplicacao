@@ -492,6 +492,12 @@ public class FeedEventosActivity extends AppCompatActivity
             @Override
             public void onResponse(String response) {
 
+                int indexProximos = ProximosEventosActivity.proximosEventosList.indexOf(item);
+                if (indexProximos != -1) {
+                    ProximosEventosActivity.proximosEventosList.get(indexProximos).setInteresse();
+                    ProximosEventosActivity.adapterProximos.notifyDataSetChanged();
+                }
+
                 //eventosList.get(FeedEventosActivity.eventosList.indexOf(item)).getInterests().
                 //      add(sharedPreferences.getString("username", "erro"));
                 //adapter.notifyDataSetChanged();

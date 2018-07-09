@@ -66,6 +66,8 @@ public class MyEventoRecyclerViewAdapter extends RecyclerView.Adapter<MyEventoRe
 
         if (mValues.get(position).isInteresse())
             holder.mImageInteresse.setImageResource(R.drawable.ic_if_star_285661);
+        else
+            holder.mImageInteresse.setImageResource(R.drawable.ic_star_border_black_24dp);
 
         holder.mLinearLocation.setOnClickListener(new View.OnClickListener() {
             @Override

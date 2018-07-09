@@ -1034,7 +1034,7 @@ public class MapsActivity extends AppCompatActivity
                                         if (ocorrencia.has("owner"))
                                             owner = ocorrencia.getString("owner");
                                         if (ocorrencia.has("risk"))
-                                            risk = ocorrencia.getInt("risk");
+                                            risk = ocorrencia.getDouble("risk");
                                         if (ocorrencia.has("likes"))
                                             likes = ocorrencia.getInt("likes");
                                         if (ocorrencia.has("status"))

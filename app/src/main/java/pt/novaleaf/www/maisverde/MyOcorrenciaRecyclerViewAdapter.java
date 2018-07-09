@@ -200,7 +200,6 @@ public class MyOcorrenciaRecyclerViewAdapter extends RecyclerView.Adapter<MyOcor
         else
             holder.mRisco.setTextColor(ContextCompat.getColor(mContext, R.color.colorred));
 
-
         int numComentarios = mValues.get(position).getComments().size();
 
         if (numComentarios != 1)

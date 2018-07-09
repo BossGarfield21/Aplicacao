@@ -74,10 +74,9 @@ public class AdminGrupoMembrosActivity extends AppCompatActivity implements Seri
 
         listView.setAdapter(adapter);
 
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 if (!getSharedPreferences("Prefs", MODE_PRIVATE).getString("username", "heee").
                         equals(membros.get(i))) {
                     if (grupo.getAdmins() != null && grupo.getAdmins().contains(membros.get(i)))
@@ -86,9 +85,9 @@ public class AdminGrupoMembrosActivity extends AppCompatActivity implements Seri
                         popupBaseUsers(membros.get(i), view);
                     }
                 }
-                return false;
             }
         });
+
 
 
     }

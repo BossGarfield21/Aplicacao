@@ -346,14 +346,24 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
         final String token = sharedPreferences.getString("tokenID", "erro");
 
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+        StringRequest stringRequest = new StringRequest(Request.Method.DELETE, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        /**
                         GruposListActivity.grupos.get(GruposListActivity.grupos.indexOf(novoGrupo)).
                                 getAdmins().remove(getSharedPreferences("Prefs", MODE_PRIVATE).getString("username", ""));
                         GruposListActivity.grupos.get(GruposListActivity.grupos.indexOf(novoGrupo)).
                                 getBase_users().remove(getSharedPreferences("Prefs", MODE_PRIVATE).getString("username", ""));
+                        GruposListActivity.tempGrupos.get(GruposListActivity.tempGrupos.indexOf(novoGrupo)).
+                                getAdmins().remove(getSharedPreferences("Prefs", MODE_PRIVATE).getString("username", ""));
+                        GruposListActivity.tempGrupos.get(GruposListActivity.tempGrupos.indexOf(novoGrupo)).
+                                getBase_users().remove(getSharedPreferences("Prefs", MODE_PRIVATE).getString("username", ""));
+*/
+                        GruposListActivity.tempGrupos.get(GruposListActivity.tempGrupos.indexOf(novoGrupo)).setAdmin(false);
+                        GruposListActivity.tempGrupos.get(GruposListActivity.tempGrupos.indexOf(novoGrupo)).setAdmin(false);
+                        GruposListActivity.grupos.get(GruposListActivity.grupos.indexOf(novoGrupo)).setMember(false);
+                        GruposListActivity.grupos.get(GruposListActivity.grupos.indexOf(novoGrupo)).setMember(false);
 
                         finish();
                     }
@@ -396,6 +406,7 @@ public class GrupoFeedActivity extends AppCompatActivity implements Serializable
                     public void onResponse(String response) {
 
                         GruposListActivity.grupos.remove(novoGrupo);
+                        GruposListActivity.tempGrupos.remove(novoGrupo);
                         GruposListActivity.adapter.notifyDataSetChanged();
 
                         finish();

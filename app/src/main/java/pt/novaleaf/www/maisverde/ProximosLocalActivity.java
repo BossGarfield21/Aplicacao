@@ -98,6 +98,7 @@ public class ProximosLocalActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+        proximosLocalEventosList.clear();
         mListener = new EventoFragment.OnListFragmentInteractionListener() {
             @Override
             public void onLikeInteraction(Evento item) {
@@ -110,9 +111,8 @@ public class ProximosLocalActivity extends AppCompatActivity {
             @Override
             public void onLocationInteraction(Evento item) {
                 Intent intent = new Intent(ProximosLocalActivity.this, MapsActivity.class);
-                intent.putParcelableArrayListExtra("list", (ArrayList<? extends Parcelable>) item.getArea());
-                item.setArea(null);
-                intent.putExtra("evento", item);
+                intent.putExtra("longitude", item.getMeetupPointLongitude());
+                intent.putExtra("latitude", item.getMeetupPointLatitude());
                 startActivity(intent);
 
             }
@@ -223,6 +223,19 @@ public class ProximosLocalActivity extends AppCompatActivity {
         StringRequest stringRequest = new StringRequest(method, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
+/**
+                int indexFeed = FeedEventosActivity.eventosList.indexOf(item);
+                if (indexFeed != -1) {
+                    FeedEventosActivity.eventosList.get(indexFeed).setInteresse();
+                    FeedEventosActivity.adapter.notifyDataSetChanged();
+                }*/
+                FeedEventosActivity.adapter.notifyDataSetChanged();
+
+                int indexProximos = ProximosEventosActivity.proximosEventosList.indexOf(item);
+                if (indexProximos != -1) {
+                    ProximosEventosActivity.proximosEventosList.get(indexProximos).setInteresse();
+                    ProximosEventosActivity.adapterProximos.notifyDataSetChanged();
+                }
 
                 //eventosList.get(FeedEventosActivity.eventosList.indexOf(item)).getInterests().
                 //      add(sharedPreferences.getString("username", "erro"));

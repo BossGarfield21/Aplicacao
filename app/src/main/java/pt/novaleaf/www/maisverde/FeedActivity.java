@@ -489,7 +489,8 @@ public class FeedActivity extends AppCompatActivity
                                     if (ocorrencia.has("owner"))
                                         owner = ocorrencia.getString("owner");
                                     if (ocorrencia.has("risk"))
-                                        risk = ocorrencia.getInt("risk");
+                                        risk = ocorrencia.getDouble("risk");
+                                    Log.d("riso", risk+ " valore");
                                     if (ocorrencia.has("likes"))
                                         likes = ocorrencia.getInt("likes");
                                     if (ocorrencia.has("status"))
@@ -541,6 +542,7 @@ public class FeedActivity extends AppCompatActivity
 
 
                                             String comentID = com.getString("id");
+
 
 
                                             comentarios.put(comentID, new Comentario(comentID, com.getString("author"),

@@ -2,6 +2,7 @@ package pt.novaleaf.www.maisverde;
 
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -98,7 +99,14 @@ public class OcorrenciaActivity extends AppCompatActivity implements Serializabl
             mImageTipo.setImageResource(R.mipmap.ic_grass_foreground);
         }
 
-        mRisco.setText(String.format("%s", ocorrencia.getRisk()));
+        mRisco.setText(String.format("%d", (int) ocorrencia.getRisk()));
+
+        if (ocorrencia.getRisk() < 33)
+            mRisco.setTextColor(ContextCompat.getColor(this, R.color.loginColor));
+        else if (ocorrencia.getRisk() < 66)
+            mRisco.setTextColor(ContextCompat.getColor(this, R.color.coloryellow));
+        else
+            mRisco.setTextColor(ContextCompat.getColor(this, R.color.colorred));
 
         mCriador.setText(String.format("Criado por: %s", ocorrencia.getOwner()));
 

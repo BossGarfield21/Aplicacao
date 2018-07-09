@@ -111,7 +111,7 @@ public class UserGruposActivity extends AppCompatActivity {
         ListView listView;
         List<String> items;
         ArrayAdapter<String> arrayAdapter;
-        Map<String, String > grupos;
+        Map<String, String> grupos;
 
         public ConvitesEnviados() {
         }
@@ -137,14 +137,14 @@ public class UserGruposActivity extends AppCompatActivity {
             grupos = new HashMap<>();
             arrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, items);
             listView.setAdapter(arrayAdapter);
-            listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
-                public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     if (!items.get(i).equals("Não há pedidos..."))
                         popupCancelar(view, items.get(i));
-                    return false;
                 }
             });
+
             volleyGetPedidosEnviados();
             return rootView;
         }
@@ -223,7 +223,7 @@ public class UserGruposActivity extends AppCompatActivity {
                         public void onResponse(JSONArray response) {
                             Log.d("tao mano", response.toString());
                             try {
-                                if (response!=null && response.length()>0) {
+                                if (response != null && response.length() > 0) {
                                     for (int i = 0; i < response.length(); i++) {
                                         JSONObject pedido = response.getJSONObject(i);
 
@@ -309,14 +309,14 @@ public class UserGruposActivity extends AppCompatActivity {
             arrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, items);
             listView.setAdapter(arrayAdapter);
 
-            listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
-                public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     if (!items.get(i).equals("Não há convites..."))
                         popupPedidos(view, items.get(i));
-                    return false;
                 }
             });
+
             volleyGetPedidos();
 
             return rootView;
@@ -340,7 +340,7 @@ public class UserGruposActivity extends AppCompatActivity {
                         public void onResponse(JSONObject response) {
                             Log.d("tao mano", response.toString());
                             try {
-                                if (!response.isNull("list") && response.getJSONArray("list").length()>0) {
+                                if (!response.isNull("list") && response.getJSONArray("list").length() > 0) {
                                     JSONArray list = response.getJSONArray("list");
                                     for (int i = 0; i < list.length(); i++) {
                                         JSONObject pedido = list.getJSONObject(i);
@@ -348,6 +348,7 @@ public class UserGruposActivity extends AppCompatActivity {
                                         items.add(pedido.getString("name"));
                                         ids.put(pedido.getString("name"), pedido.getString("groupId"));
                                         arrayAdapter.notifyDataSetChanged();
+
 
                                     }
                                 } else {
@@ -403,6 +404,19 @@ public class UserGruposActivity extends AppCompatActivity {
                             items.remove(pedido);
                             ids.remove(pedido);
                             arrayAdapter.notifyDataSetChanged();
+
+                            if (GruposListActivity.grupos != null) {
+                                Grupo grupo = new Grupo(null, null, null, 0L, 0L, null, ids.get(pedido),
+                                        null, null, false, false, 0L, false);
+                                int index = GruposListActivity.grupos.indexOf(grupo);
+                                int index2 = GruposListActivity.tempGrupos.indexOf(grupo);
+                                if (index != -1){
+                                    GruposListActivity.grupos.get(index).setMember(true);
+                                    GruposListActivity.grupos.get(index).getBase_users().add("user");
+                                    GruposListActivity.tempGrupos.get(index2).setMember(true);
+                                    GruposListActivity.tempGrupos.get(index2).getBase_users().add("user");
+                                }
+                            }
                         }
                     }, new Response.ErrorListener() {
 
@@ -442,7 +456,6 @@ public class UserGruposActivity extends AppCompatActivity {
             popupMenu.show();
 
         }
-
 
 
     }
