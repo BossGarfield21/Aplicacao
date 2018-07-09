@@ -318,7 +318,7 @@ public class FeedActivity extends AppCompatActivity
                         public void onClick(DialogInterface dialogInterface, int i) {
                             SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
                             editor.clear();
-                            editor.commit();
+                            editor.apply();
                             Intent intent = new Intent(FeedActivity.this, LoginActivity.class);
                             startActivity(intent);
                             finish();
@@ -549,6 +549,7 @@ public class FeedActivity extends AppCompatActivity
                                                     com.getString("message"), imag,
                                                     com.getLong("creation_date"), origem, id, null, null));
 
+
                                         }
                                     }
                                     if (ocorrencia.has("coordinates")) {
@@ -620,6 +621,8 @@ public class FeedActivity extends AppCompatActivity
                                     } else {
                                         ocorrencia1.setImageIDUser(R.drawable.ic_person_black_24dp);
                                     }
+
+
 
 
                                     if (!ocorrencias.contains(ocorrencia1))
@@ -820,6 +823,8 @@ public class FeedActivity extends AppCompatActivity
         AppController.getInstance().addToRequestQueue(stringRequest, tag_json_obj);
 
     }
+
+
 
     private void apagarOcorrenciaVolley(final Ocorrencia ocorrencia) {
 

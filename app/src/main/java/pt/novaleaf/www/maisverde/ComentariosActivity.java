@@ -3,6 +3,7 @@ package pt.novaleaf.www.maisverde;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -40,6 +41,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import utils.ByteRequest;
 
 public class ComentariosActivity extends AppCompatActivity implements Serializable {
     private RecyclerView mMessageRecycler;
@@ -174,6 +177,10 @@ public class ComentariosActivity extends AppCompatActivity implements Serializab
             });
         }
 
+        for (Comentario comentario : comentarios){
+            if (comentario.getOrigem()==2&&comentario.getImage()!=null)
+                receberImagemUserComsVolley(comentario);
+        }
         //comentarios = new ArrayList<>();
         //comentarios.add(new Comentario("tao isso ja ta limpo?", "bombeirotuga", "tao isso ja ta limpo?", "", 2, 1));
         //comentarios.add(new Comentario("nepia puto", "macambuzio", "05:29", "", 1, 2));
@@ -324,6 +331,43 @@ public class ComentariosActivity extends AppCompatActivity implements Serializab
         }
 
         return true;
+    }
+
+    private void receberImagemUserComsVolley(final Comentario comentario) {
+        String tag_json_obj = "octect_request";
+        final String url = comentario.getImage();
+
+
+        final String token = getSharedPreferences("Prefs", MODE_PRIVATE).getString("tokenID", "erro");
+        ByteRequest stringRequest = new ByteRequest(Request.Method.GET, url, new Response.Listener<byte[]>() {
+
+            @Override
+            public void onResponse(byte[] response) {
+                comentario.setBitmap(response);
+                mMessageAdapter.notifyDataSetChanged();
+
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("erroIMAGEMocorrencia", "Error: " + error.getMessage());
+
+                //item.setImageID(R.drawable.ic_person_black_24dp);
+
+                //adapter.notifyDataSetChanged();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", token);
+                return headers;
+            }
+
+        };
+        AppController.getInstance().addToRequestQueue(stringRequest, tag_json_obj);
+
     }
 
 

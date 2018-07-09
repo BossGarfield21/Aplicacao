@@ -102,6 +102,7 @@ public class LoginActivity extends AppCompatActivity  {
         mUsernameView = (AutoCompleteTextView) findViewById(R.id.username);
 
 
+
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -121,6 +122,10 @@ public class LoginActivity extends AppCompatActivity  {
             mUsernameView.setText(getSharedPreferences("Prefs", MODE_PRIVATE).getString("username", ""));
             mPasswordView.setText(getSharedPreferences("Prefs", MODE_PRIVATE).getString("password", ""));
         }
+
+        SharedPreferences.Editor editor = getSharedPreferences("Prefs", MODE_PRIVATE).edit();
+        editor.clear();
+        editor.commit();
 
         usernome = getSharedPreferences("Prefs", MODE_PRIVATE).getString("username", null);
 
@@ -230,8 +235,10 @@ public class LoginActivity extends AppCompatActivity  {
                         @Override
                         public void onResponse(JSONObject response) {
                             if (usernome!=null)
-                            if (!usernome.equals(email))
+                            if (!usernome.equals(email)) {
                                 editor.clear();
+                                Log.d("ya", "deu clear!!!");
+                            }
                             editor.putString("username", email);
                             editor.putString("password", password);
                             if (mCheckBox.isChecked())

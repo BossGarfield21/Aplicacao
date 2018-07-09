@@ -550,9 +550,7 @@ public class CriarOcorrenciaActivity extends AppCompatActivity implements Serial
                             "A foto tirada anteriormente será perdida")
                     .setPositiveButton("Tirar outra", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            imageButton.setVisibility(View.GONE);
-                            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                            startActivityForResult(intent, 0);
+                            dispatchTakePictureIntent();
                         }
                     })
                     .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -973,6 +971,9 @@ public class CriarOcorrenciaActivity extends AppCompatActivity implements Serial
                             FeedActivity.ocorrencias.get(index).setName(titulo);
                             FeedActivity.ocorrencias.get(index).setDescription(descricao);
                             FeedActivity.ocorrencias.get(index).setType(tipo);
+
+                            if (id!=null)
+                                FeedActivity.ocorrencias.get(index).setBitmap(imageBytes);
 
                             FeedActivity.adapter.notifyDataSetChanged();
                             onBackPressed();

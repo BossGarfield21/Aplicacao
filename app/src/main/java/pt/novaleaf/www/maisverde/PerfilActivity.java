@@ -3,9 +3,13 @@ package pt.novaleaf.www.maisverde;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -41,7 +45,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,7 +56,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import utils.ByteRequest;
-
 
 
 /**
@@ -100,14 +105,14 @@ public class PerfilActivity extends AppCompatActivity
         mImage = (ImageView) findViewById(R.id.profile_pic);
 
         String image = getSharedPreferences("Prefs", MODE_PRIVATE).getString("image_user", null);
-        if (image!=null)
+        if (image != null)
             receberImagemVolley(image);
 
-        mImage.setOnLongClickListener(new View.OnLongClickListener() {
+        mImage.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onLongClick(View view) {
+            public void onClick(View view) {
                 popupImagem(view);
-                return false;
+
             }
         });
 
@@ -178,27 +183,35 @@ public class PerfilActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 2) {
             if (resultCode == RESULT_OK) {
+
+                InputStream inputStream = null;
                 try {
-                    InputStream inputStream = this.getContentResolver().openInputStream(data.getData());
-                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                    mImage.setImageBitmap(bitmap);
+                    inputStream = this.getContentResolver().openInputStream(data.getData());
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                Bitmap loadedBitmap = BitmapFactory.decodeStream(inputStream);
+                    mImage.setImageBitmap(loadedBitmap);
 
 
                     ByteArrayOutputStream bao = new ByteArrayOutputStream();
-                    bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth()/2, bitmap.getHeight()/2, true);
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 20, bao);
+                    loadedBitmap = Bitmap.createScaledBitmap(loadedBitmap, loadedBitmap.getWidth() / 2, loadedBitmap.getHeight() / 2, true);
+                    loadedBitmap.compress(Bitmap.CompressFormat.JPEG, 20, bao);
 
                     imageBytes = bao.toByteArray();
 
 
                     String id = UUID.randomUUID().toString().concat(String.valueOf(System.currentTimeMillis()));
                     enviarImagemVolley(imageBytes, id);
-
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
             }
         }
+    }
+
+
+    public static Bitmap rotateBitmap(Bitmap bitmap, int degrees) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(degrees);
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
     }
 
     private void chageData(Intent intent) {
@@ -288,7 +301,7 @@ public class PerfilActivity extends AppCompatActivity
             intent.putExtra("telemovel", arrayList.get(8).getDescricao());
             startActivity(intent);
 
-        }  else if (id == R.id.grupos) {
+        } else if (id == R.id.grupos) {
             Intent intent = new Intent(PerfilActivity.this, UserGruposActivity.class);
             startActivity(intent);
         }
@@ -326,12 +339,12 @@ public class PerfilActivity extends AppCompatActivity
             startActivity(i);
             finish();
 
-        }else if (id == R.id.nav_acerca){
+        } else if (id == R.id.nav_acerca) {
             Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://anovaleaf.ddns.net"));
             startActivity(i);
-        } else if (id == R.id.nav_help){
+        } else if (id == R.id.nav_help) {
             return true;
-        } else if (id == R.id.nav_end){
+        } else if (id == R.id.nav_end) {
 
             final AlertDialog.Builder alert = new AlertDialog.Builder(PerfilActivity.this);
             alert.setTitle("Terminar sessão");

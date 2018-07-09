@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
@@ -33,7 +34,6 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
-
 
 
 public class RegisterActivity extends AppCompatActivity {
@@ -65,7 +65,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     }
 
-    private void attemptRegister(){
+    private void attemptRegister() {
 
         if (mAuthTask != null) {
             return;
@@ -115,7 +115,7 @@ public class RegisterActivity extends AppCompatActivity {
             mUsernameView.setError("Campo não pode estar vazio");
             focusView = mUsernameView;
             cancel = true;
-        } else if (username.length()>13){
+        } else if (username.length() > 13) {
             mUsernameView.setError("Username demasiado grande");
             focusView = mUsernameView;
             cancel = true;
@@ -159,28 +159,23 @@ public class RegisterActivity extends AppCompatActivity {
 
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject,
                     new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    Log.i("RegisterActivity", response.toString());
-                    // TODO: call the main activity (to be implemented) with data in the intent
-                    pDialog.dismiss();
-                    Intent myIntent = new Intent(RegisterActivity.this, LoginActivity.class);
-                    RegisterActivity.this.startActivity(myIntent);
-                    finish();
-                }
-            }, new Response.ErrorListener() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            Log.i("RegisterActivity", response.toString());
+                            // TODO: call the main activity (to be implemented) with data in the intent
+                            pDialog.dismiss();
+                            Intent myIntent = new Intent(RegisterActivity.this, LoginActivity.class);
+                            RegisterActivity.this.startActivity(myIntent);
+                            finish();
+                        }
+                    }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    if (error.networkResponse == null) {
-                        VolleyLog.d("errolike", "Error: " + error.getMessage());
-                        Intent myIntent = new Intent(RegisterActivity.this, LoginActivity.class);
-                        RegisterActivity.this.startActivity(myIntent);
-                        finish();
-                    } else{
-                        VolleyLog.d("errolike", "Error: " + error.getMessage());
-
-                    }
-
+                    //Intent myIntent = new Intent(RegisterActivity.this, LoginActivity.class);
+                    //RegisterActivity.this.startActivity(myIntent);
+                    //finish();
+                    VolleyLog.d("errolike", "Error: " + error.getMessage());
+                    Toast.makeText(RegisterActivity.this, "Erro de ligação", Toast.LENGTH_SHORT).show();
 //                    VolleyLog.d("ERRO", error.networkResponse.statusCode);
                     pDialog.dismiss();
                 }
@@ -214,9 +209,8 @@ public class RegisterActivity extends AppCompatActivity {
         private final String mRole;
 
 
-
         UserRegisterTask(String email, String password, String username,
-                          String passwordConfirm) {
+                         String passwordConfirm) {
             mEmail = email;
             mPassword = password;
             mPasswordConfirm = passwordConfirm;
@@ -267,7 +261,7 @@ public class RegisterActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(final String result) {
             mAuthTask = null;
-            Log.i("result", result +" ffs+pk");
+            Log.i("result", result + " ffs+pk");
 
             if (result != null) {
 
@@ -290,7 +284,6 @@ public class RegisterActivity extends AppCompatActivity {
             mAuthTask = null;
         }
     }
-
 
 
 }
