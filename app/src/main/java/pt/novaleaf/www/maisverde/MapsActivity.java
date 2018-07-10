@@ -405,6 +405,7 @@ public class MapsActivity extends AppCompatActivity
                         } else {
                             List<LatLng> area = markerItem.getArea();
                             PolygonOptions polygonOptions = new PolygonOptions();
+                            if (area!=null)
                             for (LatLng latLng : area)
                                 polygonOptions.add(latLng);
                             Polygon polygon = mMap.addPolygon(polygonOptions);
@@ -1404,7 +1405,8 @@ public class MapsActivity extends AppCompatActivity
 
                 item.setImageID(R.drawable.ic_baseline_calendar_eventos_24px);
 
-                FeedEventosActivity.adapter.notifyDataSetChanged();
+                if (FeedEventosActivity.adapter != null)
+                    FeedEventosActivity.adapter.notifyDataSetChanged();
             }
         }) {
             @Override
