@@ -33,10 +33,6 @@
                 android:icon="@drawable/ic_feedback_black_24dp"
                 android:title="Acerca de"/>
             <item
-                android:id="@+id/nav_help"
-                android:icon="@drawable/ic_help_outline_black_24dp"
-                android:title="Ajuda"/>
-            <item
                 android:id="@+id/nav_end"
                 android:icon="@drawable/ic_airline_seat_flat_black_24dp"
                 android:title="Terminar sessão"/>

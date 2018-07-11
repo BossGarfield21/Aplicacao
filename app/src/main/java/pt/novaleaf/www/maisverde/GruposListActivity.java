@@ -341,8 +341,6 @@ public class GruposListActivity extends AppCompatActivity
         } else if (id == R.id.nav_acerca) {
             Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://anovaleaf.ddns.net"));
             startActivity(i);
-        } else if (id == R.id.nav_help) {
-            return true;
         } else if (id == R.id.nav_end) {
 
             final AlertDialog.Builder alert = new AlertDialog.Builder(GruposListActivity.this);
